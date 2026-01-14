@@ -202,18 +202,42 @@
               const subCanvas = document.getElementById('chartSubmissions');
               if (subCanvas) {
                   const subCtx = subCanvas.getContext('2d');
+                  const monthlyData = @json($monthlySubmissions ?? []);
+                  
+                  const datasets = [{
+                      label: 'Total Submissions',
+                      data: monthlyData.data || [],
+                      borderColor: '#0056b3',
+                      backgroundColor: 'rgba(0,86,179,0.1)',
+                      tension: 0.3,
+                      fill: true
+                  }];
+                  
+                  // Add separate lines for publications and grants if available
+                  if (monthlyData.publications && monthlyData.grants) {
+                      datasets.push({
+                          label: 'Publications',
+                          data: monthlyData.publications,
+                          borderColor: '#28a745',
+                          backgroundColor: 'rgba(40,167,69,0.1)',
+                          tension: 0.3,
+                          fill: false
+                      });
+                      datasets.push({
+                          label: 'Grants',
+                          data: monthlyData.grants,
+                          borderColor: '#ffc107',
+                          backgroundColor: 'rgba(255,193,7,0.1)',
+                          tension: 0.3,
+                          fill: false
+                      });
+                  }
+                  
                   new Chart(subCtx, {
                       type: 'line',
                       data: {
-                          labels: @json($monthlySubmissions['labels'] ?? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']),
-                          datasets: [{
-                              label: 'Submissions',
-                              data: @json($monthlySubmissions['data'] ?? [5,7,8,9,12,14,11,13,9,10,12,15]),
-                              borderColor: '#0056b3',
-                              backgroundColor: 'rgba(0,86,179,0.1)',
-                              tension: 0.3,
-                              fill: true
-                          }]
+                          labels: monthlyData.labels || ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                          datasets: datasets
                       },
                       options: {
                           responsive: true,
@@ -221,6 +245,11 @@
                           scales: {
                               y: {
                                   beginAtZero: true
+                              }
+                          },
+                          plugins: {
+                              legend: {
+                                  position: 'bottom'
                               }
                           }
                       }
