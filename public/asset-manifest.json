@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.f952754d.css",
+    "main.js": "/static/js/main.e2e0d188.js",
+    "static/js/787.c70a73c1.chunk.js": "/static/js/787.c70a73c1.chunk.js",
+    "static/media/bg.png": "/static/media/bg.2e789649fa7b46551782.png",
+    "static/media/Titanium_Jet_Black_New_Case_StrapBlack-5.png.png": "/static/media/Titanium_Jet_Black_New_Case_StrapBlack-5.png.1c598b5a1e4bd0bf3bda.png",
+    "index.html": "/index.html",
+    "main.f952754d.css.map": "/static/css/main.f952754d.css.map",
+    "main.e2e0d188.js.map": "/static/js/main.e2e0d188.js.map",
+    "787.c70a73c1.chunk.js.map": "/static/js/787.c70a73c1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f952754d.css",
+    "static/js/main.e2e0d188.js"
+  ]
+}
