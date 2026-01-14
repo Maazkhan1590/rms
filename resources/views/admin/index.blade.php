@@ -188,6 +188,39 @@
             </div>
         </div>
 
+        <!-- Additional Charts Section -->
+        <div class="dashboard-charts-grid">
+            <!-- Publications by Type -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Publications by Type</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="publicationsByTypeChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Grants by Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Grants by Status</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="grantsByStatusChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Submissions Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Submissions Overview</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="submissionsByTypeChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Actions -->
         <div class="card">
             <div class="card-header">
@@ -196,16 +229,22 @@
             <div class="card-body">
                 <div class="quick-actions">
                     <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
-                        ➕ Add New User
+                        <i class="fas fa-user-plus"></i> Add New User
                     </a>
-                    <a href="#" class="btn btn-secondary">
-                        📊 Generate Report
+                    <a href="{{ route('admin.reports.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-chart-bar"></i> Generate Report
                     </a>
-                    <a href="#" class="btn btn-secondary">
-                        ⚙️ System Settings
+                    <a href="{{ route('admin.workflows.pending') }}" class="btn btn-secondary">
+                        <i class="fas fa-tasks"></i> Pending Approvals
                     </a>
-                    <a href="#" class="btn btn-secondary">
-                        📋 View Audit Logs
+                    <a href="{{ route('admin.audit-logs.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-clipboard-list"></i> Audit Logs
+                    </a>
+                    <a href="{{ route('admin.publications.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-book"></i> All Publications
+                    </a>
+                    <a href="{{ route('admin.grants.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-money-bill-wave"></i> All Grants
                     </a>
                 </div>
             </div>
@@ -283,6 +322,13 @@
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             margin-top: 1rem;
+        }
+
+        .dashboard-charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .dashboard-content .card {
@@ -365,6 +411,10 @@
             .dashboard-content {
                 grid-template-columns: 1fr;
             }
+
+            .dashboard-charts-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -378,6 +428,10 @@
             }
 
             .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-charts-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -463,6 +517,134 @@ document.addEventListener('DOMContentLoaded', function() {
                         bodyFont: {
                             size: 12
                         }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Publications by Type Chart
+    const pubTypeCtx = document.getElementById('publicationsByTypeChart');
+    if (pubTypeCtx) {
+        const pubTypeData = @json($publicationsByType ?? []);
+        
+        new Chart(pubTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: pubTypeData.labels || [],
+                datasets: [{
+                    data: pubTypeData.data || [],
+                    backgroundColor: pubTypeData.colors || [],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12
+                    }
+                }
+            }
+        });
+    }
+
+    // Grants by Status Chart
+    const grantsStatusCtx = document.getElementById('grantsByStatusChart');
+    if (grantsStatusCtx) {
+        const grantsStatusData = @json($grantsByStatus ?? []);
+        
+        new Chart(grantsStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: grantsStatusData.labels || [],
+                datasets: [{
+                    data: grantsStatusData.data || [],
+                    backgroundColor: grantsStatusData.colors || [],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12
+                    }
+                }
+            }
+        });
+    }
+
+    // Submissions by Type Chart
+    const submissionsCtx = document.getElementById('submissionsByTypeChart');
+    if (submissionsCtx) {
+        const submissionsData = @json($submissionsByType ?? []);
+        
+        new Chart(submissionsCtx, {
+            type: 'bar',
+            data: {
+                labels: submissionsData.labels || [],
+                datasets: [{
+                    label: 'Total Submissions',
+                    data: submissionsData.data || [],
+                    backgroundColor: submissionsData.colors || [],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12
                     }
                 },
                 scales: {

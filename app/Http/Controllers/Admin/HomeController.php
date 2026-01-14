@@ -50,6 +50,9 @@ class HomeController
         // Get monthly submissions and recent activities for all roles
         $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear);
         $stats['recentActivities'] = $this->getRecentActivities();
+        $stats['publicationsByType'] = $this->getPublicationsByType();
+        $stats['grantsByStatus'] = $this->getGrantsByStatus();
+        $stats['submissionsByType'] = $this->getSubmissionsByType();
 
         return view('admin.index', $stats);
     }
@@ -275,5 +278,84 @@ class HomeController
         }
 
         return array_slice($activities, 0, 10);
+    }
+
+    /**
+     * Get publications grouped by type for chart
+     */
+    private function getPublicationsByType(): array
+    {
+        $publicationsByType = Publication::select('publication_type', DB::raw('count(*) as count'))
+            ->whereNotNull('publication_type')
+            ->groupBy('publication_type')
+            ->get();
+
+        $labels = [];
+        $data = [];
+        $colors = ['#4d8bff', '#0056b3', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'];
+
+        foreach ($publicationsByType as $index => $type) {
+            $labels[] = ucfirst(str_replace('_', ' ', $type->publication_type ?? 'Other'));
+            $data[] = $type->count;
+        }
+
+        // If no data, provide defaults
+        if (empty($labels)) {
+            $labels = ['Journal', 'Conference', 'Book'];
+            $data = [0, 0, 0];
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data,
+            'colors' => array_slice($colors, 0, count($labels)),
+        ];
+    }
+
+    /**
+     * Get grants grouped by status for chart
+     */
+    private function getGrantsByStatus(): array
+    {
+        $grantsByStatus = Grant::select('status', DB::raw('count(*) as count'))
+            ->whereNotNull('status')
+            ->groupBy('status')
+            ->get();
+
+        $labels = [];
+        $data = [];
+        $colors = ['#28a745', '#ffc107', '#dc3545', '#6c757d', '#0056b3'];
+
+        foreach ($grantsByStatus as $index => $status) {
+            $labels[] = ucfirst($status->status ?? 'Unknown');
+            $data[] = $status->count;
+        }
+
+        if (empty($labels)) {
+            $labels = ['Approved', 'Pending', 'Rejected'];
+            $data = [0, 0, 0];
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data,
+            'colors' => array_slice($colors, 0, count($labels)),
+        ];
+    }
+
+    /**
+     * Get submissions by type (Publications vs Grants vs RTN)
+     */
+    private function getSubmissionsByType(): array
+    {
+        $publicationsCount = Publication::count();
+        $grantsCount = Grant::count();
+        $rtnCount = RtnSubmission::count();
+
+        return [
+            'labels' => ['Publications', 'Grants', 'RTN Submissions'],
+            'data' => [$publicationsCount, $grantsCount, $rtnCount],
+            'colors' => ['#4d8bff', '#0056b3', '#28a745'],
+        ];
     }
 }
