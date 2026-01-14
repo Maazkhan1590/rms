@@ -7,6 +7,7 @@ Route::get('/', 'HomeController@index')->name('welcome');
 
 // Public Publications Routes
 Route::get('publications', 'PublicationController@index')->name('publications.index');
+Route::get('publications/load-more', 'PublicationController@loadMore')->name('publications.load-more');
 Route::get('publications/create', 'PublicationController@create')->name('publications.create');
 Route::post('publications', 'PublicationController@store')->name('publications.store');
 Route::get('publications/{id}', 'PublicationController@show')->name('publications.show');

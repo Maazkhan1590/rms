@@ -48,44 +48,18 @@
 <section class="publications-grid-section">
     <div class="container">
         @if($publications->count() > 0)
-        <div class="publications-grid-full">
-            @foreach($publications as $publication)
-            <div class="publication-card" data-publication-id="{{ $publication->id }}" onclick="window.location.href='{{ route('publications.show', $publication->id) }}'">
-                <div class="publication-header">
-                    <h3 class="publication-title">{{ $publication->title }}</h3>
-                    <div class="publication-authors">
-                        <i class="fas fa-user-edit"></i>
-                        {{ $publication->submitter->name ?? 'Anonymous' }}
-                        @if($publication->primaryAuthor)
-                            , {{ $publication->primaryAuthor->name }}
-                        @endif
-                    </div>
-                </div>
-                <div class="publication-body">
-                    <p class="publication-abstract">
-                        {{ Str::limit(strip_tags($publication->abstract ?? ''), 200) }}
-                    </p>
-                </div>
-                <div class="publication-footer">
-                    <span class="publication-category">{{ strtoupper(str_replace('_', ' ', $publication->publication_type ?? 'Publication')) }}</span>
-                    <div class="publication-meta">
-                        <div class="publication-date">
-                            <i class="far fa-calendar"></i>
-                            {{ $publication->published_at ? $publication->published_at->format('F d, Y') : ($publication->publication_year ?? 'N/A') }}
-                        </div>
-                    </div>
-                    <div class="publication-actions">
-                        <button class="btn btn-outline view-publication-btn" data-id="{{ $publication->id }}" onclick="event.stopPropagation();">
-                            <i class="fas fa-eye"></i> View Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-            @endforeach
+        <div class="publications-grid-full" id="publications-container">
+            @include('publications.partials.publication-card', ['publications' => $publications])
         </div>
-        @if($publications->hasPages())
-        <div class="pagination">
-            {{ $publications->links() }}
+        @if($hasMore ?? false)
+        <div style="text-align: center; margin-top: 3rem;">
+            <button id="load-more-btn" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.1rem;">
+                <i class="fas fa-arrow-down"></i> Load More Publications
+            </button>
+            <div id="loading-indicator" style="display: none; margin-top: 1rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                <p style="margin-top: 0.5rem; color: var(--text-light);">Loading more publications...</p>
+            </div>
         </div>
         @endif
         @else
@@ -238,6 +212,88 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.closeModal = closeModal;
+
+    // Load More functionality
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const publicationsContainer = document.getElementById('publications-container');
+    let currentOffset = {{ $publications->count() }};
+    let isLoading = false;
+
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            loadMoreBtn.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+
+            // Get current filter parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const params = {
+                offset: currentOffset,
+                search: urlParams.get('search') || '',
+                type: urlParams.get('type') || '',
+                year: urlParams.get('year') || '',
+                sort: urlParams.get('sort') || 'newest',
+            };
+
+            fetch('{{ route("publications.load-more") }}?' + new URLSearchParams(params), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.html) {
+                    // Create a temporary container to parse the HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.html;
+                    
+                    // Append each publication card
+                    const cards = tempDiv.querySelectorAll('.publication-card');
+                    cards.forEach(card => {
+                        publicationsContainer.appendChild(card);
+                    });
+
+                    // Re-attach event listeners to new cards
+                    const newViewButtons = tempDiv.querySelectorAll('.view-publication-btn');
+                    newViewButtons.forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const publicationId = this.getAttribute('data-id');
+                            loadPublicationDetails(publicationId);
+                        });
+                    });
+
+                    currentOffset += cards.length;
+
+                    if (data.hasMore) {
+                        loadMoreBtn.style.display = 'block';
+                    } else {
+                        // Show message when all publications are loaded
+                        const allLoadedMsg = document.createElement('div');
+                        allLoadedMsg.style.textAlign = 'center';
+                        allLoadedMsg.style.marginTop = '2rem';
+                        allLoadedMsg.style.padding = '1rem';
+                        allLoadedMsg.style.color = 'var(--text-light)';
+                        allLoadedMsg.innerHTML = '<i class="fas fa-check-circle"></i> All publications loaded';
+                        loadingIndicator.parentElement.appendChild(allLoadedMsg);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading more publications:', error);
+                loadMoreBtn.style.display = 'block';
+                loadMoreBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error loading. Click to retry';
+            })
+            .finally(() => {
+                isLoading = false;
+                loadingIndicator.style.display = 'none';
+            });
+        });
+    }
 });
 </script>
 @endpush

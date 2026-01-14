@@ -60,9 +60,86 @@ class PublicationController extends Controller
                 break;
         }
 
-        $publications = $query->paginate(12);
+        // For initial load, get first 12 publications
+        $totalCount = $query->count();
+        $publications = $query->take(12)->get();
+        $hasMore = $totalCount > 12;
 
-        return view('publications.index', compact('publications'));
+        // If AJAX request, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'publications' => $publications->map(function($pub) {
+                    return [
+                        'id' => $pub->id,
+                        'title' => $pub->title,
+                        'abstract' => Str::limit(strip_tags($pub->abstract ?? ''), 200),
+                        'publication_type' => $pub->publication_type,
+                        'publication_year' => $pub->publication_year,
+                        'published_at' => $pub->published_at ? $pub->published_at->format('F d, Y') : null,
+                        'submitter_name' => $pub->submitter->name ?? 'Anonymous',
+                        'primary_author_name' => $pub->primaryAuthor->name ?? null,
+                        'url' => route('publications.show', $pub->id),
+                    ];
+                }),
+                'hasMore' => $hasMore,
+            ]);
+        }
+
+        return view('publications.index', compact('publications', 'hasMore'));
+    }
+
+    /**
+     * Load more publications via AJAX
+     */
+    public function loadMore(Request $request)
+    {
+        $offset = $request->get('offset', 12);
+        $limit = 12;
+
+        $query = Publication::with(['submitter', 'primaryAuthor'])
+            ->where('status', 'approved');
+
+        // Apply same filters as index
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('abstract', 'like', "%{$search}%")
+                  ->orWhere('journal_name', 'like', "%{$search}%")
+                  ->orWhere('conference_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('type') && $request->type) {
+            $query->where('publication_type', $request->type);
+        }
+
+        if ($request->has('year') && $request->year) {
+            $query->where('publication_year', $request->year);
+        }
+
+        $sort = $request->get('sort', 'newest');
+        switch($sort) {
+            case 'oldest':
+                $query->oldest('published_at');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->latest('published_at');
+                break;
+        }
+
+        $totalCount = $query->count();
+        $publications = $query->skip($offset)->take($limit)->get();
+        $hasMore = ($offset + $limit) < $totalCount;
+
+        return response()->json([
+            'html' => view('publications.partials.publication-card', ['publications' => $publications])->render(),
+            'hasMore' => $hasMore,
+        ]);
     }
 
     /**
