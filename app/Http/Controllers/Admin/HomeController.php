@@ -79,6 +79,7 @@ class HomeController
             'recentGrants' => Grant::with('submitter')->latest()->limit(5)->get(),
             'pendingWorkflows' => ApprovalWorkflow::pending()->with(['submitter', 'assignee'])->limit(10)->get(),
             'pendingWorkflowsCount' => ApprovalWorkflow::pending()->count(),
+            'activeWorkflows' => ApprovalWorkflow::whereIn('status', ['submitted', 'pending_coordinator', 'pending_dean', 'in_progress'])->count(),
         ];
     }
 

@@ -63,6 +63,22 @@
                         <div class="card-stat-change">Year {{ $year }}</div>
                     </div>
                 </div>
+
+                <div class="card card-stat">
+                    <div class="card-body">
+                        <div class="card-stat-label">Bonus Recognitions</div>
+                        <div class="card-stat-value">{{ $totalBonusRecognitions ?? 0 }}</div>
+                        <div class="card-stat-change positive">Year {{ $year }}</div>
+                    </div>
+                </div>
+
+                <div class="card card-stat">
+                    <div class="card-body">
+                        <div class="card-stat-label">Active Workflows</div>
+                        <div class="card-stat-value">{{ $activeWorkflows ?? 0 }}</div>
+                        <div class="card-stat-change warning">{{ $pendingWorkflowsCount ?? 0 }} pending</div>
+                    </div>
+                </div>
             @elseif(auth()->user()->isResearchCoordinator() || auth()->user()->isDean())
                 <!-- Coordinator/Dean Stats -->
                 <div class="card card-stat">
