@@ -10,6 +10,9 @@ use App\Models\BonusRecognition;
 use App\Models\ApprovalWorkflow;
 use App\Services\ReportService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class HomeController
 {
@@ -43,6 +46,10 @@ class HomeController
             // Faculty stats
             $stats = $this->getFacultyStats($user, $currentYear);
         }
+
+        // Get monthly submissions and recent activities for all roles
+        $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear);
+        $stats['recentActivities'] = $this->getRecentActivities();
 
         return view('admin.index', $stats);
     }
@@ -119,5 +126,154 @@ class HomeController
             'recentPublications' => Publication::where('primary_author_id', $user->id)->latest()->limit(5)->get(),
             'recentGrants' => Grant::where('submitted_by', $user->id)->latest()->limit(5)->get(),
         ];
+    }
+
+    /**
+     * Get monthly submissions data for chart (includes publications and grants)
+     */
+    private function getMonthlySubmissions(int $year): array
+    {
+        // Get publications by month
+        $publicationsData = Publication::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        // Get grants by month
+        $grantsData = Grant::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $publicationsDataArray = [];
+        $grantsDataArray = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $pubCount = $publicationsData->has($i) ? $publicationsData->get($i)->count : 0;
+            $grantCount = $grantsData->has($i) ? $grantsData->get($i)->count : 0;
+            
+            $publicationsDataArray[] = $pubCount;
+            $grantsDataArray[] = $grantCount;
+        }
+
+        return [
+            'labels' => $labels,
+            'publications' => $publicationsDataArray,
+            'grants' => $grantsDataArray,
+        ];
+    }
+
+    /**
+     * Get recent activities from database
+     */
+    private function getRecentActivities(): array
+    {
+        $activities = [];
+
+        // Get recent approval workflows (most important)
+        $recentWorkflows = ApprovalWorkflow::with(['submitter', 'assignee'])
+            ->whereIn('status', ['submitted', 'pending_coordinator', 'pending_dean'])
+            ->latest('created_at')
+            ->limit(5)
+            ->get();
+
+        foreach ($recentWorkflows as $workflow) {
+            $submission = $workflow->submission;
+            $title = 'Unknown';
+            if ($submission) {
+                $title = $submission->title ?? ($submission->name ?? 'Untitled');
+            }
+            
+            $activities[] = [
+                'icon' => '📋',
+                'title' => ucfirst($workflow->submission_type) . ' Submission',
+                'desc' => Str::limit($title, 50),
+                'timestamp' => $workflow->created_at->timestamp,
+                'url' => null,
+            ];
+        }
+
+        // Get recent pending publications
+        $recentPublications = Publication::whereIn('status', ['submitted', 'pending'])
+            ->with('submitter')
+            ->latest('submitted_at')
+            ->limit(3)
+            ->get();
+
+        foreach ($recentPublications as $pub) {
+            $activities[] = [
+                'icon' => '📚',
+                'title' => 'Publication Submitted',
+                'desc' => Str::limit($pub->title, 50),
+                'timestamp' => ($pub->submitted_at ?? $pub->created_at)->timestamp,
+                'url' => null,
+            ];
+        }
+
+        // Get recent pending grants
+        $recentGrants = Grant::whereIn('status', ['submitted', 'pending'])
+            ->with('submitter')
+            ->latest('submitted_at')
+            ->limit(2)
+            ->get();
+
+        foreach ($recentGrants as $grant) {
+            $activities[] = [
+                'icon' => '💰',
+                'title' => 'Grant Submitted',
+                'desc' => Str::limit($grant->title, 50),
+                'timestamp' => ($grant->submitted_at ?? $grant->created_at)->timestamp,
+                'url' => null,
+            ];
+        }
+
+        // Get recent pending user registrations
+        $pendingUsers = User::where('status', 'pending')
+            ->latest()
+            ->limit(2)
+            ->get();
+
+        foreach ($pendingUsers as $user) {
+            $activities[] = [
+                'icon' => '👤',
+                'title' => 'New User Registration',
+                'desc' => $user->name . ' requested access',
+                'timestamp' => $user->created_at->timestamp,
+                'url' => null,
+            ];
+        }
+
+        // Store timestamps for sorting, then convert to diffForHumans
+        foreach ($activities as &$activity) {
+            if (isset($activity['timestamp'])) {
+                $activity['time'] = Carbon::parse($activity['timestamp'])->diffForHumans();
+            }
+        }
+        unset($activity);
+
+        // Sort by timestamp descending and limit to 10
+        usort($activities, function($a, $b) {
+            $timeA = $a['timestamp'] ?? 0;
+            $timeB = $b['timestamp'] ?? 0;
+            return $timeB <=> $timeA;
+        });
+
+        // Remove timestamp before returning
+        foreach ($activities as &$activity) {
+            unset($activity['timestamp']);
+        }
+
+        return array_slice($activities, 0, 10);
     }
 }

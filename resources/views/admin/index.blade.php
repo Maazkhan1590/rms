@@ -156,9 +156,7 @@
                     <h3 class="card-title">Monthly Submissions</h3>
                 </div>
                 <div class="card-body">
-                    <div class="chart-placeholder" style="height: 250px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: var(--radius-lg); color: var(--text-light);">
-                        Chart visualization will be implemented here
-                    </div>
+                    <canvas id="monthlySubmissionsChart" style="height: 250px;"></canvas>
                 </div>
             </div>
 
@@ -169,38 +167,22 @@
                 </div>
                 <div class="card-body">
                     <div class="activity-list">
+                        @forelse($recentActivities ?? [] as $activity)
                         <div class="activity-item">
-                            <div class="activity-icon">👤</div>
+                            <div class="activity-icon">{{ $activity['icon'] ?? '📋' }}</div>
                             <div class="activity-content">
-                                <p class="activity-title">New user registered</p>
-                                <p class="activity-desc">John Smith created an account</p>
+                                <p class="activity-title">{{ $activity['title'] ?? 'Activity' }}</p>
+                                <p class="activity-desc">{{ $activity['desc'] ?? '' }}</p>
                             </div>
-                            <div class="activity-time">2 hours ago</div>
+                            <div class="activity-time">{{ $activity['time'] ?? 'Recently' }}</div>
                         </div>
+                        @empty
                         <div class="activity-item">
-                            <div class="activity-icon">📚</div>
                             <div class="activity-content">
-                                <p class="activity-title">Publication submitted</p>
-                                <p class="activity-desc">"Machine Learning in Healthcare" by Dr. Jane</p>
+                                <p class="activity-desc" style="text-align: center; color: var(--text-light);">No recent activity</p>
                             </div>
-                            <div class="activity-time">5 hours ago</div>
                         </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">✅</div>
-                            <div class="activity-content">
-                                <p class="activity-title">Grant approved</p>
-                                <p class="activity-desc">Research Grant #2024-001 approved</p>
-                            </div>
-                            <div class="activity-time">1 day ago</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">⚙️</div>
-                            <div class="activity-content">
-                                <p class="activity-title">System maintenance</p>
-                                <p class="activity-desc">Database optimization completed</p>
-                            </div>
-                            <div class="activity-time">2 days ago</div>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -418,4 +400,91 @@
             }
         }
     </style>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Monthly Submissions Chart
+    const ctx = document.getElementById('monthlySubmissionsChart');
+    if (ctx) {
+        const monthlyData = @json($monthlySubmissions ?? []);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthlyData.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Publications',
+                        data: monthlyData.publications || [],
+                        borderColor: '#4d8bff',
+                        backgroundColor: 'rgba(77, 139, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Grants',
+                        data: monthlyData.grants || [],
+                        borderColor: '#0056b3',
+                        backgroundColor: 'rgba(0, 86, 179, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 12
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 @endsection
