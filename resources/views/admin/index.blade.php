@@ -232,61 +232,79 @@
 
     <style>
         .dashboard-grid {
-            display: grid;
-            gap: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 100%;
         }
 
         .dashboard-header {
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: 1rem;
         }
 
         .dashboard-header h2 {
-            margin-bottom: var(--spacing-sm);
-            font-size: var(--font-size-2xl);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary, #1a1a1a);
         }
 
         .dashboard-header p {
-            color: var(--text-secondary);
+            color: var(--text-secondary, #6b7280);
             margin: 0;
+            font-size: 1rem;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-stat {
+            min-height: 140px;
         }
 
         .card-stat-label {
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
+            font-size: 0.75rem;
+            color: var(--text-secondary, #6b7280);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
         }
 
         .card-stat-value {
-            font-size: var(--font-size-4xl);
-            font-weight: var(--font-weight-bold);
-            color: var(--color-primary);
-            margin-bottom: var(--spacing-md);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-primary, #0056b3);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         .card-stat-change {
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
+            font-size: 0.875rem;
+            color: var(--text-secondary, #6b7280);
         }
 
         .card-stat-change.positive {
-            color: var(--color-success);
+            color: var(--color-success, #28a745);
         }
 
         .card-stat-change.warning {
-            color: var(--color-warning);
+            color: var(--color-warning, #ffc107);
         }
 
         .dashboard-content {
             display: grid;
-            gap: var(--spacing-lg);
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .dashboard-content .card {
+            margin-bottom: 0;
         }
 
         .chart-placeholder {
@@ -296,27 +314,30 @@
         .activity-list {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-md);
+            gap: 1rem;
         }
 
         .activity-item {
             display: flex;
-            gap: var(--spacing-md);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-lg);
-            background: var(--bg-secondary);
-            transition: var(--transition-fast);
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: var(--bg-secondary, #f8f9fa);
+            transition: all 0.2s ease;
         }
 
         .activity-item:hover {
-            background: var(--color-gray-100);
+            background: var(--color-gray-100, #e9ecef);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .activity-icon {
-            font-size: var(--font-size-2xl);
+            font-size: 1.5rem;
             min-width: 40px;
             display: flex;
             align-items: center;
+            justify-content: center;
         }
 
         .activity-content {
@@ -328,48 +349,72 @@
         }
 
         .activity-title {
-            font-weight: var(--font-weight-medium);
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+            color: var(--text-primary, #1a1a1a);
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
         }
 
         .activity-desc {
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
+            font-size: 0.875rem;
+            color: var(--text-secondary, #6b7280);
         }
 
         .activity-time {
-            font-size: var(--font-size-sm);
-            color: var(--text-light);
+            font-size: 0.875rem;
+            color: var(--text-light, #9ca3af);
             white-space: nowrap;
+            align-self: flex-start;
+            padding-top: 0.25rem;
         }
 
         .quick-actions {
-            display: flex;
-            gap: var(--spacing-md);
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
         .quick-actions .btn {
-            flex: 1;
             min-width: 150px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
             }
 
             .card-stat-value {
-                font-size: var(--font-size-2xl);
+                font-size: 2rem;
+            }
+
+            .dashboard-content {
+                grid-template-columns: 1fr;
             }
 
             .quick-actions {
-                flex-direction: column;
+                grid-template-columns: 1fr;
             }
 
             .quick-actions .btn {
                 width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header h2 {
+                font-size: 1.5rem;
             }
         }
     </style>
