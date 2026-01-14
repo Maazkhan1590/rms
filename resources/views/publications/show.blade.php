@@ -16,41 +16,47 @@
                 </span>
             </div>
             <h1 style="font-size: 2.5rem; font-weight: 700; color: white; margin-bottom: 1.5rem; line-height: 1.3; font-family: 'Cormorant Garamond', serif;">
-                {{ $publication->title }}
+                {{ $publication->title ?? 'Untitled Publication' }}
             </h1>
-            @if($publication->authors && is_array($publication->authors))
+            @php
+                $authorNames = [];
+                if ($publication->authors && is_array($publication->authors)) {
+                    foreach ($publication->authors as $author) {
+                        $authorNames[] = $author['name'] ?? (is_string($author) ? $author : '');
+                    }
+                }
+                if (empty($authorNames) && $publication->submitter) {
+                    $authorNames[] = $publication->submitter->name;
+                }
+                if (empty($authorNames) && $publication->primaryAuthor) {
+                    $authorNames[] = $publication->primaryAuthor->name;
+                }
+            @endphp
+            @if(!empty($authorNames))
             <div style="display: flex; align-items: center; gap: 0.75rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 1rem; flex-wrap: wrap;">
                 <i class="fas fa-user-edit" style="font-size: 1.1rem;"></i>
                 <span style="font-size: 1.1rem;">
-                    @foreach($publication->authors as $index => $author)
-                        {{ $author['name'] ?? $author }}{{ !$loop->last ? ', ' : '' }}
-                    @endforeach
-                </span>
-            </div>
-            @elseif($publication->submitter || $publication->primaryAuthor)
-            <div style="display: flex; align-items: center; gap: 0.75rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 1rem;">
-                <i class="fas fa-user-edit" style="font-size: 1.1rem;"></i>
-                <span style="font-size: 1.1rem;">
-                    {{ $publication->submitter->name ?? '' }}
-                    @if($publication->primaryAuthor && $publication->submitter)
-                        , {{ $publication->primaryAuthor->name }}
-                    @elseif($publication->primaryAuthor)
-                        {{ $publication->primaryAuthor->name }}
-                    @endif
+                    {{ implode(', ', array_filter($authorNames)) }}
                 </span>
             </div>
             @endif
             <div style="display: flex; align-items: center; gap: 1.5rem; color: rgba(255, 255, 255, 0.8); font-size: 0.95rem; flex-wrap: wrap;">
-                @if($publication->publication_year)
+                @if($publication->publication_year || $publication->year)
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <i class="far fa-calendar"></i>
-                    <span>Published: {{ $publication->publication_year }}</span>
+                    <span>Published: {{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</span>
                 </div>
                 @endif
                 @if($publication->published_at)
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <i class="fas fa-calendar-alt"></i>
                     <span>{{ $publication->published_at->format('F d, Y') }}</span>
+                </div>
+                @endif
+                @if($publication->submitted_at)
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Submitted: {{ $publication->submitted_at->format('F d, Y') }}</span>
                 </div>
                 @endif
             </div>
@@ -65,35 +71,44 @@
             <!-- Main Content Card -->
             <div style="background: white; border-radius: 20px; padding: 3rem; box-shadow: var(--shadow-lg); margin-bottom: 2rem;">
                 <!-- Abstract Section -->
-                @if($publication->abstract)
                 <div style="margin-bottom: 3rem;">
                     <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); font-family: 'Cormorant Garamond', serif; display: flex; align-items: center; gap: 0.75rem;">
                         <i class="fas fa-file-alt" style="color: var(--accent-color);"></i>
                         Abstract
                     </h2>
+                    @if($publication->abstract)
                     <p style="color: var(--text-light); line-height: 1.9; font-size: 1.05rem; text-align: justify;">
                         {{ $publication->abstract }}
                     </p>
+                    @else
+                    <p style="color: var(--text-lighter); font-style: italic; line-height: 1.9; font-size: 1.05rem;">
+                        No abstract available for this publication.
+                    </p>
+                    @endif
                 </div>
-                @endif
 
                 <!-- Publication Details Grid -->
+                @php
+                    $hasDetails = $publication->journal_name || $publication->journal || $publication->conference_name || 
+                                  $publication->publisher || $publication->doi || $publication->isbn || $publication->status;
+                @endphp
+                @if($hasDetails)
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; padding: 2rem; background: var(--light-color); border-radius: 15px; border: 1px solid var(--border-light);">
-                    @if($publication->journal_name)
+                    @if($publication->journal_name || $publication->journal)
                     <div style="padding: 1rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
                             <i class="fas fa-book" style="color: var(--accent-color); font-size: 1.25rem;"></i>
                             <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Journal</strong>
                         </div>
-                        <p style="color: var(--text-light); margin: 0; font-size: 1rem; line-height: 1.6;">{{ $publication->journal_name }}</p>
+                        <p style="color: var(--text-light); margin: 0; font-size: 1rem; line-height: 1.6;">{{ $publication->journal_name ?? $publication->journal ?? 'N/A' }}</p>
                         @if($publication->journal_category)
                         <span style="display: inline-block; margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: var(--accent-color); color: var(--primary-color); border-radius: 15px; font-size: 0.8rem; font-weight: 600;">
-                            {{ $publication->journal_category }}
+                            {{ ucfirst(str_replace('_', ' ', $publication->journal_category)) }}
                         </span>
                         @endif
                         @if($publication->quartile)
                         <span style="display: inline-block; margin-top: 0.5rem; margin-left: 0.5rem; padding: 0.25rem 0.75rem; background: var(--primary-color); color: white; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">
-                            Q{{ $publication->quartile }}
+                            {{ $publication->quartile }}
                         </span>
                         @endif
                     </div>
@@ -150,26 +165,48 @@
                             <i class="fas fa-info-circle" style="color: var(--accent-color); font-size: 1.25rem;"></i>
                             <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Status</strong>
                         </div>
-                        <span style="display: inline-block; padding: 0.5rem 1rem; background: {{ $publication->status === 'approved' ? '#22c55e' : ($publication->status === 'pending' ? '#eab308' : '#ef4444') }}; color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">
+                        <span style="display: inline-block; padding: 0.5rem 1rem; background: {{ $publication->status === 'approved' ? '#22c55e' : ($publication->status === 'pending' || $publication->status === 'submitted' ? '#eab308' : ($publication->status === 'rejected' ? '#ef4444' : '#6b7280')) }}; color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">
                             {{ ucfirst($publication->status) }}
                         </span>
                     </div>
                     @endif
                 </div>
+                @endif
 
                 <!-- Authors Section -->
-                @if($publication->authors && is_array($publication->authors) && count($publication->authors) > 0)
+                @php
+                    $allAuthors = [];
+                    if ($publication->authors && is_array($publication->authors)) {
+                        foreach ($publication->authors as $author) {
+                            $name = $author['name'] ?? (is_string($author) ? $author : '');
+                            if ($name) $allAuthors[] = $name;
+                        }
+                    }
+                    if ($publication->co_authors && is_array($publication->co_authors)) {
+                        foreach ($publication->co_authors as $coAuthor) {
+                            $name = $coAuthor['name'] ?? (is_string($coAuthor) ? $coAuthor : '');
+                            if ($name && !in_array($name, $allAuthors)) $allAuthors[] = $name;
+                        }
+                    }
+                    if (empty($allAuthors) && $publication->submitter) {
+                        $allAuthors[] = $publication->submitter->name;
+                    }
+                    if (empty($allAuthors) && $publication->primaryAuthor) {
+                        $allAuthors[] = $publication->primaryAuthor->name;
+                    }
+                @endphp
+                @if(!empty($allAuthors))
                 <div style="margin-bottom: 3rem;">
                     <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); font-family: 'Cormorant Garamond', serif; display: flex; align-items: center; gap: 0.75rem;">
                         <i class="fas fa-users" style="color: var(--accent-color);"></i>
                         Authors
                     </h2>
                     <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-                        @foreach($publication->authors as $author)
+                        @foreach($allAuthors as $authorName)
                         <div style="background: linear-gradient(135deg, var(--light-color) 0%, #f1f5f9 100%); padding: 1rem 1.5rem; border-radius: 15px; border: 1px solid var(--border-light); display: flex; align-items: center; gap: 0.75rem; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
                             <i class="fas fa-user-circle" style="color: var(--accent-color); font-size: 1.5rem;"></i>
                             <span style="color: var(--text-color); font-weight: 500; font-size: 1rem;">
-                                {{ $author['name'] ?? $author }}
+                                {{ $authorName }}
                             </span>
                         </div>
                         @endforeach

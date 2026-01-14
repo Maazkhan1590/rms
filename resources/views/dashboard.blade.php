@@ -21,16 +21,30 @@
     <div class="dashboard-grid mb-xl">
         <div class="card col-lg-3 col-md-6">
             <div class="card-body">
-                <div class="text-muted">Publications</div>
+                <div class="text-muted">Total Publications</div>
                 <div class="card-stat-value">{{ number_format($stats['publications'] ?? 0) }}</div>
                 <div class="badge badge-success">{{ $stats['publicationsChange'] ?? '' }}</div>
             </div>
         </div>
         <div class="card col-lg-3 col-md-6">
             <div class="card-body">
-                <div class="text-muted">Grants</div>
+                <div class="text-muted">Approved Publications</div>
+                <div class="card-stat-value">{{ number_format($stats['approvedPublications'] ?? 0) }}</div>
+                <div class="badge badge-success">{{ $stats['publications'] > 0 ? round((($stats['approvedPublications'] ?? 0) / $stats['publications']) * 100, 1) : 0 }}% approved</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Total Grants</div>
                 <div class="card-stat-value">{{ number_format($stats['grants'] ?? 0) }}</div>
                 <div class="badge badge-info">{{ $stats['grantsPending'] ?? 0 }} pending</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Approved Grants</div>
+                <div class="card-stat-value">{{ number_format($stats['approvedGrants'] ?? 0) }}</div>
+                <div class="badge badge-success">{{ $stats['grants'] > 0 ? round((($stats['approvedGrants'] ?? 0) / $stats['grants']) * 100, 1) : 0 }}% approved</div>
             </div>
         </div>
         <div class="card col-lg-3 col-md-6">
@@ -42,9 +56,37 @@
         </div>
         <div class="card col-lg-3 col-md-6">
             <div class="card-body">
-                <div class="text-muted">Approvals</div>
+                <div class="text-muted">Active Users</div>
+                <div class="card-stat-value">{{ number_format($stats['activeUsers'] ?? 0) }}</div>
+                <div class="badge badge-success">{{ $stats['pendingUsers'] ?? 0 }} pending</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Pending Approvals</div>
                 <div class="card-stat-value">{{ number_format($stats['approvals'] ?? 0) }}</div>
                 <div class="badge badge-warning">{{ $stats['approvalsOverdue'] ?? 0 }} overdue</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Research Points</div>
+                <div class="card-stat-value">{{ number_format($stats['researchPoints'] ?? 0) }}</div>
+                <div class="badge badge-primary">Total allocated</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">RTN Submissions</div>
+                <div class="card-stat-value">{{ number_format($stats['rtnSubmissions'] ?? 0) }}</div>
+                <div class="badge badge-info">All time</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Bonus Recognitions</div>
+                <div class="card-stat-value">{{ number_format($stats['bonusRecognitions'] ?? 0) }}</div>
+                <div class="badge badge-success">All time</div>
             </div>
         </div>
     </div>
@@ -83,7 +125,13 @@
                                 <td>{{ $activity['item'] }}</td>
                                 <td><span class="badge badge-{{ $activity['statusClass'] }}">{{ $activity['status'] }}</span></td>
                                 <td>{{ $activity['date'] }}</td>
-                                <td><button class="btn btn-outline btn-sm">{{ $activity['action'] }}</button></td>
+                                <td>
+                                    @if(isset($activity['url']))
+                                    <a href="{{ $activity['url'] }}" class="btn btn-outline btn-sm">{{ $activity['action'] }}</a>
+                                    @else
+                                    <button class="btn btn-outline btn-sm">{{ $activity['action'] }}</button>
+                                    @endif
+                                </td>
                             </tr>
                             @empty
                             <tr>

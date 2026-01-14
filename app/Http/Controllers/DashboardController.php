@@ -6,6 +6,8 @@ use App\Models\Publication;
 use App\Models\Grant;
 use App\Models\User;
 use App\Models\ApprovalWorkflow;
+use App\Models\RtnSubmission;
+use App\Models\BonusRecognition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -71,16 +73,31 @@ class DashboardController extends Controller
             ->where('created_at', '<', now()->subDays(7))
             ->count();
 
+        // Additional statistics
+        $totalRtnSubmissions = RtnSubmission::count();
+        $totalBonusRecognitions = BonusRecognition::count();
+        $approvedPublications = Publication::where('status', 'approved')->count();
+        $totalResearchPoints = User::sum('total_research_points');
+        $activeUsers = User::where('status', 'active')->count();
+        $pendingUsers = User::where('status', 'pending')->count();
+
         // Statistics data
         $stats = [
             'publications' => $totalPublications,
             'publicationsChange' => $publicationsChangeText,
+            'approvedPublications' => $approvedPublications,
             'grants' => $totalGrants,
             'grantsPending' => $pendingGrants,
+            'approvedGrants' => $approvedGrants,
             'users' => $totalUsers,
+            'activeUsers' => $activeUsers,
+            'pendingUsers' => $pendingUsers,
             'usersChange' => $usersChangeText,
             'approvals' => $pendingApprovals,
             'approvalsOverdue' => $overdueApprovals,
+            'rtnSubmissions' => $totalRtnSubmissions,
+            'bonusRecognitions' => $totalBonusRecognitions,
+            'researchPoints' => $totalResearchPoints,
         ];
 
         // Get recent activities from database
@@ -102,6 +119,30 @@ class DashboardController extends Controller
     {
         $activities = [];
 
+        // Get recent approval workflows (most important)
+        $recentWorkflows = ApprovalWorkflow::with(['submitter', 'assignee'])
+            ->whereIn('status', ['submitted', 'pending_coordinator', 'pending_dean'])
+            ->latest('created_at')
+            ->limit(5)
+            ->get();
+
+        foreach ($recentWorkflows as $workflow) {
+            $submission = $workflow->submission;
+            $title = 'Unknown';
+            if ($submission) {
+                $title = $submission->title ?? ($submission->name ?? 'Untitled');
+            }
+            
+            $activities[] = [
+                'item' => ucfirst($workflow->submission_type) . ': ' . Str::limit($title, 45),
+                'status' => ucfirst(str_replace('_', ' ', $workflow->status)),
+                'statusClass' => $workflow->status === 'approved' ? 'success' : ($workflow->status === 'rejected' ? 'danger' : 'warning'),
+                'date' => $workflow->created_at->format('Y-m-d'),
+                'action' => 'Review',
+                'url' => route('admin.workflows.show', $workflow->id),
+            ];
+        }
+
         // Get recent pending publications
         $recentPublications = Publication::whereIn('status', ['submitted', 'pending'])
             ->with('submitter')
@@ -116,6 +157,7 @@ class DashboardController extends Controller
                 'statusClass' => $pub->status === 'approved' ? 'success' : 'warning',
                 'date' => $pub->submitted_at ? $pub->submitted_at->format('Y-m-d') : $pub->created_at->format('Y-m-d'),
                 'action' => 'Review',
+                'url' => route('admin.publications.show', $pub->id),
             ];
         }
 
@@ -133,6 +175,7 @@ class DashboardController extends Controller
                 'statusClass' => $grant->status === 'approved' ? 'success' : 'warning',
                 'date' => $grant->submitted_at ? $grant->submitted_at->format('Y-m-d') : $grant->created_at->format('Y-m-d'),
                 'action' => 'Review',
+                'url' => route('admin.grants.show', $grant->id),
             ];
         }
 
@@ -149,15 +192,16 @@ class DashboardController extends Controller
                 'statusClass' => 'info',
                 'date' => $user->created_at->format('Y-m-d'),
                 'action' => 'Approve',
+                'url' => route('admin.users.show', $user->id),
             ];
         }
 
-        // Sort by date descending and limit to 5
+        // Sort by date descending and limit to 10
         usort($activities, function($a, $b) {
             return strtotime($b['date']) - strtotime($a['date']);
         });
 
-        return array_slice($activities, 0, 5);
+        return array_slice($activities, 0, 10);
     }
 
     /**
@@ -193,11 +237,23 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get monthly submissions data for chart
+     * Get monthly submissions data for chart (includes publications and grants)
      */
     private function getMonthlySubmissions(int $year): array
     {
-        $monthlyData = Publication::select(
+        // Get publications by month
+        $publicationsData = Publication::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        // Get grants by month
+        $grantsData = Grant::select(
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('COUNT(*) as count')
             )
@@ -208,15 +264,24 @@ class DashboardController extends Controller
             ->keyBy('month');
 
         $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $data = [];
+        $publicationsDataArray = [];
+        $grantsDataArray = [];
+        $totalDataArray = [];
 
         for ($i = 1; $i <= 12; $i++) {
-            $data[] = $monthlyData->has($i) ? $monthlyData->get($i)->count : 0;
+            $pubCount = $publicationsData->has($i) ? $publicationsData->get($i)->count : 0;
+            $grantCount = $grantsData->has($i) ? $grantsData->get($i)->count : 0;
+            
+            $publicationsDataArray[] = $pubCount;
+            $grantsDataArray[] = $grantCount;
+            $totalDataArray[] = $pubCount + $grantCount;
         }
 
         return [
             'labels' => $labels,
-            'data' => $data,
+            'data' => $totalDataArray,
+            'publications' => $publicationsDataArray,
+            'grants' => $grantsDataArray,
         ];
     }
 }
