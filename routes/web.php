@@ -70,7 +70,7 @@ Route::post('email/resend', 'Auth\VerificationController@resend')->name('verific
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', 'block.students']], function () {
     Route::get('/', 'HomeController@index')->name('home');
     // Demo Dashboard view (Blade-layout based)
-    \Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionsController');
@@ -211,9 +211,7 @@ Route::group(['prefix' => 'faculty', 'as' => 'faculty.', 'namespace' => 'Faculty
 });
 
 // Dashboard route (authenticated users)
-Route::get('dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
     // Change password
