@@ -83,9 +83,11 @@
             </div>
             @endforeach
         </div>
+        @if($publications->hasPages())
         <div class="pagination">
             {{ $publications->links() }}
         </div>
+        @endif
         @else
         <div style="text-align: center; padding: 4rem; background: white; border-radius: 15px;">
             <i class="fas fa-book-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>

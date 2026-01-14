@@ -133,13 +133,20 @@ class DashboardController extends Controller
                 $title = $submission->title ?? ($submission->name ?? 'Untitled');
             }
             
+            $url = null;
+            try {
+                $url = route('admin.workflows.show', $workflow->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
             $activities[] = [
                 'item' => ucfirst($workflow->submission_type) . ': ' . Str::limit($title, 45),
                 'status' => ucfirst(str_replace('_', ' ', $workflow->status)),
                 'statusClass' => $workflow->status === 'approved' ? 'success' : ($workflow->status === 'rejected' ? 'danger' : 'warning'),
                 'date' => $workflow->created_at->format('Y-m-d'),
                 'action' => 'Review',
-                'url' => route('admin.workflows.show', $workflow->id),
+                'url' => $url,
             ];
         }
 
@@ -151,13 +158,20 @@ class DashboardController extends Controller
             ->get();
 
         foreach ($recentPublications as $pub) {
+            $url = null;
+            try {
+                $url = route('admin.publications.show', $pub->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
             $activities[] = [
                 'item' => 'Publication: ' . Str::limit($pub->title, 50),
                 'status' => ucfirst($pub->status),
                 'statusClass' => $pub->status === 'approved' ? 'success' : 'warning',
                 'date' => $pub->submitted_at ? $pub->submitted_at->format('Y-m-d') : $pub->created_at->format('Y-m-d'),
                 'action' => 'Review',
-                'url' => route('admin.publications.show', $pub->id),
+                'url' => $url,
             ];
         }
 
@@ -169,13 +183,20 @@ class DashboardController extends Controller
             ->get();
 
         foreach ($recentGrants as $grant) {
+            $url = null;
+            try {
+                $url = route('admin.grants.show', $grant->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
             $activities[] = [
                 'item' => 'Grant: ' . Str::limit($grant->title, 50),
                 'status' => ucfirst($grant->status),
                 'statusClass' => $grant->status === 'approved' ? 'success' : 'warning',
                 'date' => $grant->submitted_at ? $grant->submitted_at->format('Y-m-d') : $grant->created_at->format('Y-m-d'),
                 'action' => 'Review',
-                'url' => route('admin.grants.show', $grant->id),
+                'url' => $url,
             ];
         }
 
@@ -186,13 +207,20 @@ class DashboardController extends Controller
             ->get();
 
         foreach ($pendingUsers as $user) {
+            $url = null;
+            try {
+                $url = route('admin.users.show', $user->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
             $activities[] = [
                 'item' => 'User: ' . $user->name . ' requested access',
                 'status' => 'New',
                 'statusClass' => 'info',
                 'date' => $user->created_at->format('Y-m-d'),
                 'action' => 'Approve',
-                'url' => route('admin.users.show', $user->id),
+                'url' => $url,
             ];
         }
 
