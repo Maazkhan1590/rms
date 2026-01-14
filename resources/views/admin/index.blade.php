@@ -247,9 +247,9 @@
                     <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
                         <i class="fas fa-user-plus"></i> Add New User
                     </a>
-                    <a href="{{ route('admin.reports.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-chart-bar"></i> Generate Report
-                    </a>
+{{--                    <a href="{{ route('admin.reports.index') }}" class="btn btn-secondary">--}}
+{{--                        <i class="fas fa-chart-bar"></i> Generate Report--}}
+{{--                    </a>--}}
                     <a href="{{ route('admin.workflows.pending') }}" class="btn btn-secondary">
                         <i class="fas fa-tasks"></i> Pending Approvals
                     </a>
@@ -480,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('monthlySubmissionsChart');
     if (ctx) {
         const monthlyData = @json($monthlySubmissions ?? []);
-        
+
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const pubTypeCtx = document.getElementById('publicationsByTypeChart');
     if (pubTypeCtx) {
         const pubTypeData = @json($publicationsByType ?? []);
-        
+
         new Chart(pubTypeCtx, {
             type: 'doughnut',
             data: {
@@ -599,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const grantsStatusCtx = document.getElementById('grantsByStatusChart');
     if (grantsStatusCtx) {
         const grantsStatusData = @json($grantsByStatus ?? []);
-        
+
         new Chart(grantsStatusCtx, {
             type: 'doughnut',
             data: {
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const submissionsCtx = document.getElementById('submissionsByTypeChart');
     if (submissionsCtx) {
         const submissionsData = @json($submissionsByType ?? []);
-        
+
         new Chart(submissionsCtx, {
             type: 'bar',
             data: {

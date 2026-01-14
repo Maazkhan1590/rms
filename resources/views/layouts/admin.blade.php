@@ -116,7 +116,7 @@
                 @endcanany
 
                 @canany(['consultancy_access', 'commercialization_access', 'partnership_access', 'conference_access', 'investment_access'])
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">Research Activities</h3>
                     <ul>
                         @can('consultancy_access')
@@ -164,7 +164,7 @@
                 @endcanany
 
                 @canany(['supervision_access', 'editorial_access', 'student_access', 'internal_funding_access'])
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">Academic Activities</h3>
                     <ul>
                         @can('supervision_access')
@@ -212,7 +212,7 @@
                 @endcanany
 
                 @can('sdg_access')
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">SDG & Impact</h3>
                     <ul>
                         <li>
@@ -281,7 +281,7 @@
                 @endcan
 
                 @can('report_access')
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">Reports</h3>
                     <ul>
                         <li>
@@ -442,7 +442,7 @@
                                     Settings
                                 </a>
                                 <hr class="dropdown-divider">
-                                <a href="{{ route('logout') }}" class="dropdown-item" 
+                                <a href="{{ route('logout') }}" class="dropdown-item"
                                    onclick="event.preventDefault(); document.getElementById('logoutform').submit();">
                                     Logout
                                 </a>
