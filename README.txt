@@ -13,8 +13,10 @@ Update your .env file:
 
 APP_URL=https://gzlpro.com/rms-dev/public
 ASSET_URL=/rms-dev/public
+CLEAR_CACHE_TOKEN=your-secret-token-here
 
 (Keep /public/ in both URLs)
+(CLEAR_CACHE_TOKEN is for the cache clear route security)
 
 ═══════════════════════════════════════════════════════════════
   API CONFIGURATION
@@ -27,12 +29,26 @@ API URLs will be:
 Sanctum config updated to use APP_URL automatically.
 
 ═══════════════════════════════════════════════════════════════
-  FILES UPDATED
+  FILES UPDATED (LATEST FIX - URL GENERATION)
 ═══════════════════════════════════════════════════════════════
 
-✅ app/Providers/AppServiceProvider.php (keeps /public/ in URLs)
-✅ config/sanctum.php (fixes API redirects)
-✅ Removed parent .htaccess (not needed - using /public/ directly)
+✅ app/Providers/AppServiceProvider.php 
+   - Auto-detects subdirectory and forces root URL
+   - Fixes route() and url() helpers to include subdirectory
+   - Handles both APP_URL from .env and auto-detection
+
+✅ resources/views/layouts/public.blade.php
+   - Injects BASE_URL and ASSET_URL for JavaScript
+   - Allows JS to use correct paths in subdirectory
+
+✅ public/js/publications.js
+   - Updated to use BASE_URL instead of hardcoded paths
+   - Fixes API calls and links to work in subdirectory
+
+✅ routes/web.php
+   - Added /clear-cache route for easy cache clearing
+   - Protected with token-based security (CLEAR_CACHE_TOKEN)
+   - Clears: config, cache, route, and view caches
 
 ═══════════════════════════════════════════════════════════════
   FINAL STEPS
@@ -44,10 +60,27 @@ Sanctum config updated to use APP_URL automatically.
 
 2. Upload updated files:
    - app/Providers/AppServiceProvider.php
-   - config/sanctum.php
+   - resources/views/layouts/public.blade.php
+   - public/js/publications.js
 
-3. Delete config cache:
-   bootstrap/cache/config.php
+3. Clear all caches on server:
+   
+   Option A - Use Web Route (EASIEST):
+   Visit: https://gzlpro.com/rms-dev/public/clear-cache?token=YOUR_SECRET_TOKEN
+   
+   First, add to your .env file:
+   CLEAR_CACHE_TOKEN=your-secret-token-here
+   
+   Option B - Use Artisan Commands:
+   php artisan config:clear
+   php artisan cache:clear
+   php artisan route:clear
+   php artisan view:clear
+   
+   Option C - Delete manually:
+   - bootstrap/cache/config.php
+   - bootstrap/cache/routes.php
+   - bootstrap/cache/services.php
 
 4. Test:
    ✅ https://gzlpro.com/rms-dev/public/

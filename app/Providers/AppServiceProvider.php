@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,14 +20,27 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Auto-detect subdirectory for asset URLs (keep /public/ in URLs)
-        if (empty(config('app.asset_url'))) {
-            $request = request();
-            if ($request) {
-                $basePath = $request->getBasePath();
-                if ($basePath && $basePath !== '/') {
+        // Fix URL generation for subdirectory deployment
+        $request = request();
+        if ($request) {
+            $basePath = $request->getBasePath();
+            
+            // If we're in a subdirectory, force the root URL to include it
+            if ($basePath && $basePath !== '/') {
+                // Get the full URL including the subdirectory
+                $scheme = $request->getScheme();
+                $rootUrl = $scheme . '://' . $host . $basePath;
+                
+                // Force Laravel to use this as the root URL for all URL generation
+                URL::forceRootUrl($rootUrl);
+                
+                // Also set asset URL if not already configured
+                if (empty(config('app.asset_url'))) {
                     config(['app.asset_url' => $basePath]);
                 }
+            } elseif (env('APP_URL')) {
+                // Fallback: use APP_URL from .env if set
+                URL::forceRootUrl(env('APP_URL'));
             }
         }
     }

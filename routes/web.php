@@ -2,6 +2,44 @@
 
 
 
+// Cache Clear Route (for deployment/maintenance)
+// Usage: /clear-cache?token=YOUR_SECRET_TOKEN
+// Set CLEAR_CACHE_TOKEN in .env file for security
+Route::get('/clear-cache', function () {
+    $token = request()->query('token');
+    $expectedToken = env('CLEAR_CACHE_TOKEN', 'change-this-secret-token');
+    
+    if ($token !== $expectedToken) {
+        return response()->json([
+            'error' => 'Unauthorized. Invalid token.',
+            'message' => 'Please provide a valid token parameter.'
+        ], 401);
+    }
+    
+    try {
+        \Artisan::call('config:clear');
+        \Artisan::call('cache:clear');
+        \Artisan::call('route:clear');
+        \Artisan::call('view:clear');
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'All caches cleared successfully!',
+            'cleared' => [
+                'config' => 'Configuration cache cleared',
+                'cache' => 'Application cache cleared',
+                'route' => 'Route cache cleared',
+                'view' => 'View cache cleared'
+            ]
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => true,
+            'message' => 'Error clearing caches: ' . $e->getMessage()
+        ], 500);
+    }
+})->name('clear-cache');
+
 // Public Home Page
 Route::get('/', 'HomeController@index')->name('welcome');
 
