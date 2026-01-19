@@ -1,0 +1,74 @@
+═══════════════════════════════════════════════════════════════
+  FIXING 404 ERRORS FOR CSS/JS FILES
+═══════════════════════════════════════════════════════════════
+
+PROBLEM:
+Assets are loading from wrong path:
+❌ https://gzlpro.com/css/style.css (404 error)
+✅ Should be: https://gzlpro.com/rms-dev/public/css/style.css
+
+═══════════════════════════════════════════════════════════════
+  SOLUTION (Choose ONE method)
+═══════════════════════════════════════════════════════════════
+
+METHOD 1: Automatic Fix (EASIEST - RECOMMENDED)
+─────────────────────────────────────────────────
+✅ Already fixed in code! The AppServiceProvider now auto-detects
+   the subdirectory path.
+
+Just do this:
+1. Clear Laravel config cache:
+   - Delete: bootstrap/cache/config.php (via File Manager)
+   - OR visit: https://gzlpro.com/rms-dev/public/fix-assets.php
+     (this will also set ASSET_URL in .env)
+
+2. Refresh your website
+
+METHOD 2: Manual .env Configuration
+────────────────────────────────────
+Add this line to your .env file:
+
+ASSET_URL=/rms-dev/public
+
+Then delete: bootstrap/cache/config.php
+
+METHOD 3: Using fix-assets.php Helper
+──────────────────────────────────────
+1. Visit: https://gzlpro.com/rms-dev/public/fix-assets.php
+2. It will automatically detect and set ASSET_URL
+3. Delete bootstrap/cache/config.php via File Manager
+4. Delete fix-assets.php after use
+5. Refresh website
+
+═══════════════════════════════════════════════════════════════
+  VERIFICATION
+═══════════════════════════════════════════════════════════════
+
+After fixing, check browser console - you should see:
+✅ https://gzlpro.com/rms-dev/public/css/style.css (200 OK)
+✅ https://gzlpro.com/rms-dev/public/js/script.js (200 OK)
+
+NOT:
+❌ https://gzlpro.com/css/style.css (404)
+
+═══════════════════════════════════════════════════════════════
+  IF STILL NOT WORKING
+═══════════════════════════════════════════════════════════════
+
+1. Check .env file has:
+   APP_URL=https://gzlpro.com/rms-dev/public
+   ASSET_URL=/rms-dev/public
+
+2. Delete config cache:
+   bootstrap/cache/config.php
+
+3. Verify files exist:
+   public/css/style.css
+   public/js/script.js
+   public/css/slider.css
+   public/js/slider.js
+
+4. Check file permissions:
+   All files in public/ should be readable (644)
+
+═══════════════════════════════════════════════════════════════

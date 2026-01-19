@@ -12,7 +12,7 @@
 ═══════════════════════════════════════════════════════════════
 
 1. UPLOAD ALL FILES
-   Upload entire project folder to: /rms/ on your server
+   Upload entire project folder to: /rms-dev/ on your server
 
 2. CREATE .env FILE
    Copy .env.example to .env (or create new .env file)
@@ -23,7 +23,7 @@
    APP_ENV=production
    APP_KEY=                    ← Generate with: php artisan key:generate
    APP_DEBUG=false
-   APP_URL=https://gzlpro.com/rms/public
+   APP_URL=https://gzlpro.com/rms-dev/public
    
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
@@ -57,10 +57,10 @@
   TEST YOUR INSTALLATION
 ═══════════════════════════════════════════════════════════════
 
-1. Visit: https://gzlpro.com/rms/public/test.php
+1. Visit: https://gzlpro.com/rms-dev/public/test.php
    This will show server configuration and check requirements
 
-2. Visit: https://gzlpro.com/rms/public/
+2. Visit: https://gzlpro.com/rms-dev/public/
    Should show Laravel home page (not blank React app)
 
 3. Delete test.php after verifying

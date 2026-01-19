@@ -19,7 +19,7 @@ STEP 1: PREPARE YOUR .env FILE
    APP_URL=http://localhost
    
    ✅ TO THIS:
-   APP_URL=https://gzlpro.com/rms/public
+   APP_URL=https://gzlpro.com/rms-dev/public
    
    ❌ CHANGE DATABASE SETTINGS:
    DB_HOST=127.0.0.1
@@ -47,13 +47,13 @@ OPTION A: Using generate-key.php (EASIEST)
 ───────────────────────────────────────────
 1. Upload your .env file (with APP_KEY= empty or placeholder)
 2. Upload the generate-key.php file to public/ folder
-3. Visit: https://gzlpro.com/rms/public/generate-key.php
+3. Visit: https://gzlpro.com/rms-dev/public/generate-key.php
 4. It will automatically generate and add APP_KEY to your .env
 5. DELETE generate-key.php immediately after use!
 
 OPTION B: Manual Generation
 ─────────────────────────────
-1. Visit: https://gzlpro.com/rms/public/generate-key.php
+1. Visit: https://gzlpro.com/rms-dev/public/generate-key.php
 2. Copy the generated key
 3. Edit your .env file manually
 4. Add/update: APP_KEY=base64:YOUR_GENERATED_KEY_HERE
@@ -73,30 +73,50 @@ STEP 4: SET PERMISSIONS (via cPanel File Manager)
 ───────────────────────────────────────────────────────────────
 
 1. Go to cPanel → File Manager
-2. Navigate to /rms/ folder
+2. Navigate to /rms-dev/ folder
 3. Right-click on "storage" folder → Change Permissions → 755
 4. Right-click on "bootstrap/cache" folder → Change Permissions → 755
 5. Right-click on ".env" file → Change Permissions → 644
 
-STEP 5: TEST YOUR INSTALLATION
+STEP 5: FIX ASSET URLS (Fix 404 errors for CSS/JS)
 ───────────────────────────────────────────────────────────────
 
-1. Visit: https://gzlpro.com/rms/public/test.php
+If CSS/JS files show 404 errors, do this:
+
+1. Visit: https://gzlpro.com/rms-dev/public/fix-assets.php
+   → This will auto-detect and set ASSET_URL in .env
+
+2. Delete config cache:
+   → Go to File Manager
+   → Navigate to bootstrap/cache/
+   → Delete: config.php (if it exists)
+
+3. Refresh your website
+
+OR manually add to .env:
+ASSET_URL=/rms-dev/public
+
+STEP 6: TEST YOUR INSTALLATION
+───────────────────────────────────────────────────────────────
+
+1. Visit: https://gzlpro.com/rms-dev/public/test.php
    → Check if all requirements are met
 
-2. Visit: https://gzlpro.com/rms/public/generate-key.php
+2. Visit: https://gzlpro.com/rms-dev/public/generate-key.php
    → Generate APP_KEY (if not done yet)
    → DELETE this file after use!
 
-3. Visit: https://gzlpro.com/rms/public/
+3. Visit: https://gzlpro.com/rms-dev/public/
    → Should show Laravel home page
+   → Check browser console - no 404 errors for CSS/JS
 
-STEP 6: CLEAN UP SECURITY FILES
+STEP 7: CLEAN UP SECURITY FILES
 ───────────────────────────────────────────────────────────────
 
 DELETE these files after setup:
 ❌ public/test.php
 ❌ public/generate-key.php
+❌ public/fix-assets.php
 
 ═══════════════════════════════════════════════════════════════
   EXAMPLE .env FILE FOR PRODUCTION
@@ -106,7 +126,7 @@ APP_NAME="RMS"
 APP_ENV=production
 APP_KEY=base64:YOUR_KEY_WILL_BE_GENERATED
 APP_DEBUG=false
-APP_URL=https://gzlpro.com/rms/public
+APP_URL=https://gzlpro.com/rms-dev/public
 
 LOG_CHANNEL=stack
 LOG_LEVEL=debug

@@ -8,13 +8,13 @@ Upload all project files to your server via FTP/cPanel File Manager.
 ### 2. Set Up Domain (Choose ONE method)
 
 #### Method A: Point Domain Directly to Public Folder (RECOMMENDED)
-- Point your domain `https://gzlpro.com/rms/` to the `public` folder directly
-- This way you access: `https://gzlpro.com/rms/` (no `/public/` in URL)
+- Point your domain `https://gzlpro.com/rms-dev/` to the `public` folder directly
+- This way you access: `https://gzlpro.com/rms-dev/` (no `/public/` in URL)
 
 #### Method B: Keep Current Setup
-- If you must use `https://gzlpro.com/rms/public/`, ensure:
-  - Domain points to `/rms/` folder
-  - Access via `/rms/public/` URL
+- If you must use `https://gzlpro.com/rms-dev/public/`, ensure:
+  - Domain points to `/rms-dev/` folder
+  - Access via `/rms-dev/public/` URL
 
 ### 3. Configure Environment File
 Create `.env` file in the root directory with these settings:
@@ -24,7 +24,7 @@ APP_NAME="RMS"
 APP_ENV=production
 APP_KEY=base64:YOUR_APP_KEY_HERE
 APP_DEBUG=false
-APP_URL=https://gzlpro.com/rms/public
+APP_URL=https://gzlpro.com/rms-dev/public
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -83,7 +83,7 @@ php artisan view:clear
 ## File Structure After Deployment
 
 ```
-/rms/
+/rms-dev/
 ├── app/
 ├── bootstrap/
 ├── config/
