@@ -133,7 +133,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Use BASE_URL if available (for subdirectory deployment), otherwise use relative path
         const baseUrl = window.BASE_URL || '';
-        fetch(`${baseUrl}/publications/${id}`, {
+        const fetchUrl = `${baseUrl}/publications/${id}`;
+        
+        // Debug logging
+        console.log('=== Publication Fetch Debug (Index View) ===');
+        console.log('window.BASE_URL:', window.BASE_URL);
+        console.log('baseUrl variable:', baseUrl);
+        console.log('Full fetch URL:', fetchUrl);
+        console.log('Publication ID:', id);
+        console.log('Current location:', window.location.href);
+        console.log('===========================================');
+        
+        fetch(fetchUrl, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
