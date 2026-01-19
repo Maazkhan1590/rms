@@ -1,45 +1,26 @@
-@extends('layouts.base')
+@extends('layouts.public')
 
 @section('title', 'Submit Publication - RMS')
 
 @section('content')
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --primary: #0056b3;
-        --primary-dark: #003d82;
-        --primary-light: #4d8bff;
-        --text-primary: #1a202c;
-        --text-secondary: #4a5568;
-        --text-light: #718096;
-        --bg-white: #ffffff;
-        --bg-light: #f7fafc;
-        --bg-gray: #edf2f7;
-        --border: #e2e8f0;
-        --success: #22c55e;
-        --danger: #ef4444;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
-    }
-
     .publication-create-page {
         min-height: 100vh;
-        background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
-        padding-top: 100px;
-        padding-bottom: 4rem;
+    }
+    
+    .auth-container {
+        max-width: 1000px !important;
+        padding: 3rem !important;
     }
 
     .page-header {
         text-align: center;
         margin-bottom: 3rem;
-        padding: 0 2rem;
     }
-
+    
     .page-badge {
         display: inline-block;
-        background: var(--primary);
+        background: var(--primary-color);
         color: white;
         padding: 0.5rem 1.25rem;
         border-radius: 50px;
@@ -48,36 +29,22 @@
         margin-bottom: 1.5rem;
         letter-spacing: 0.05em;
     }
-
+    
     .page-title {
-        font-family: 'Playfair Display', serif;
-        font-size: clamp(2.25rem, 4vw, 3rem);
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-        letter-spacing: -0.02em;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
-
+    
     .page-subtitle {
-        font-size: 1.125rem;
-        color: var(--text-secondary);
+        font-size: 1.1rem;
+        color: var(--text-color);
+        font-weight: 500;
         max-width: 600px;
         margin: 0 auto;
-        line-height: 1.7;
-    }
-
-    .form-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 2rem;
-    }
-
-    .form-card {
-        background: white;
-        border-radius: 20px;
-        padding: 3rem;
-        box-shadow: var(--shadow-xl);
-        border: 1px solid var(--border);
     }
 
     /* Stepper Styles */
@@ -101,7 +68,7 @@
         left: 10%;
         right: 10%;
         height: 3px;
-        background: var(--border);
+        background: var(--border-color);
         z-index: 1;
         border-radius: 2px;
     }
@@ -111,7 +78,7 @@
         top: 30px;
         left: 10%;
         height: 3px;
-        background: var(--primary);
+        background: var(--primary-color);
         z-index: 2;
         border-radius: 2px;
         transition: width 0.3s ease;
@@ -129,24 +96,24 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background: var(--bg-gray);
-        color: var(--text-secondary);
+        background: var(--light-color);
+        color: var(--text-light);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 1rem;
         font-weight: 700;
         font-size: 1.125rem;
-        border: 3px solid var(--border);
+        border: 3px solid var(--border-color);
         transition: all 0.3s ease;
         position: relative;
     }
 
     .step-circle.active {
-        background: var(--primary);
+        background: var(--primary-color);
         color: white;
-        border-color: var(--primary);
-        box-shadow: 0 8px 20px rgba(0, 86, 179, 0.3);
+        border-color: var(--primary-color);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         transform: scale(1.1);
     }
 
@@ -170,7 +137,7 @@
     }
 
     .step-item.active .step-label {
-        color: var(--primary);
+        color: var(--primary-color);
     }
 
     .step-item.completed .step-label {
@@ -194,13 +161,12 @@
     }
 
     .step-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.875rem;
-        font-weight: 700;
+        font-size: 1.75rem;
+        font-weight: 600;
         margin-bottom: 2rem;
-        color: var(--text-primary);
+        color: var(--primary-color);
         padding-bottom: 1rem;
-        border-bottom: 2px solid var(--border);
+        border-bottom: 2px solid var(--border-color);
     }
 
     .form-group {
@@ -209,27 +175,29 @@
 
     .form-label {
         display: block;
-        margin-bottom: 0.625rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        font-size: 0.9375rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 0.95rem;
     }
 
     .form-control {
         width: 100%;
-        padding: 0.875rem 1.25rem;
-        border: 2px solid var(--border);
-        border-radius: 12px;
-        font-size: 0.9375rem;
-        transition: all 0.2s ease;
+        padding: 1rem 1.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
         font-family: 'Inter', sans-serif;
-        background: white;
+        font-size: 1rem;
+        transition: var(--transition);
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--text-color);
     }
 
     .form-control:focus {
         outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 4px rgba(100, 255, 218, 0.15);
+        background: white;
     }
 
     .form-control.is-invalid {
@@ -271,39 +239,39 @@
     }
 
     .btn-primary {
-        background: var(--primary);
+        background: var(--primary-color);
         color: white;
-        box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .btn-primary:hover {
-        background: var(--primary-dark);
+        background: var(--secondary-color);
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 86, 179, 0.4);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         color: white;
     }
 
     .btn-secondary {
         background: white;
-        color: var(--text-secondary);
-        border: 2px solid var(--border);
+        color: var(--text-color);
+        border: 2px solid var(--border-color);
     }
 
     .btn-secondary:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-        background: var(--bg-light);
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+        background: rgba(255, 255, 255, 0.9);
     }
 
     .btn-outline {
         background: transparent;
-        color: var(--primary);
-        border: 2px solid var(--primary);
+        color: var(--accent-color);
+        border: 2px solid var(--accent-color);
     }
 
     .btn-outline:hover {
-        background: var(--primary);
-        color: white;
+        background: var(--accent-color);
+        color: var(--primary-color);
     }
 
     .btn-danger {
@@ -326,27 +294,27 @@
         gap: 1rem;
         margin-top: 2.5rem;
         padding-top: 2rem;
-        border-top: 1px solid var(--border);
+        border-top: 1px solid var(--border-color);
     }
 
     /* Author Item Styles */
     .author-item {
         margin-bottom: 1.5rem;
         padding: 2rem;
-        background: var(--bg-light);
+        background: var(--light-color);
         border-radius: 16px;
-        border: 2px solid var(--border);
+        border: 2px solid var(--border-color);
         transition: all 0.3s ease;
     }
 
     .author-item:hover {
-        border-color: var(--primary);
+        border-color: var(--accent-color);
         box-shadow: var(--shadow-md);
     }
 
     .author-item.primary {
-        background: linear-gradient(135deg, rgba(0, 86, 179, 0.05) 0%, rgba(0, 86, 179, 0.02) 100%);
-        border-color: var(--primary);
+        background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(100, 255, 218, 0.05) 100%);
+        border-color: var(--accent-color);
     }
 
     .author-header {
@@ -367,7 +335,7 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        background: var(--primary);
+        background: var(--primary-color);
         color: white;
         padding: 0.5rem 1rem;
         border-radius: 8px;
@@ -386,14 +354,14 @@
     }
 
     .checkbox-wrapper:hover {
-        background: rgba(0, 86, 179, 0.05);
+        background: rgba(100, 255, 218, 0.1);
     }
 
     .checkbox-wrapper input[type="checkbox"] {
         width: 18px;
         height: 18px;
         cursor: pointer;
-        accent-color: var(--primary);
+        accent-color: var(--accent-color);
     }
 
     /* Responsive */
@@ -427,19 +395,18 @@
     }
 </style>
 
-<div class="publication-create-page">
-    <div class="page-header">
-        <span class="page-badge">
-            <i class="fas fa-book"></i> Publication Submission
-        </span>
-        <h1 class="page-title">Submit Your Publication</h1>
-        <p class="page-subtitle">
-            Share your research work with the academic community. Fill out the form below to submit your publication.
-        </p>
-    </div>
-
-    <div class="form-container">
-        <div class="form-card">
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-container">
+            <div class="page-header">
+                <span class="page-badge">
+                    <i class="fas fa-book"></i> Publication Submission
+                </span>
+                <h1 class="page-title">Submit Your Publication</h1>
+                <p class="page-subtitle">
+                    Share your research work with the academic community. Fill out the form below to submit your publication.
+                </p>
+            </div>
             <form id="publicationForm" method="POST" action="{{ route('publications.store') }}">
                 @csrf
 
@@ -671,7 +638,7 @@
             </form>
         </div>
     </div>
-</div>
+</section>
 
 <script>
     let currentStep = 1;

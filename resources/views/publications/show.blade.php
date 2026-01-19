@@ -3,21 +3,21 @@
 @section('title', $publication->title . ' | Academic Research Portal')
 
 @section('content')
-<!-- Publication Detail Header -->
-<section class="publication-detail-hero" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 4rem 0 3rem; margin-top: 80px;">
+<section class="auth-section">
     <div class="container">
-        <div style="max-width: 900px; margin: 0 auto;">
-            <a href="{{ route('publications.index') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; margin-bottom: 2rem; opacity: 0.9; transition: opacity 0.3s;">
-                <i class="fas fa-arrow-left"></i> Back to Publications
-            </a>
-            <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 0.75rem 1.5rem; border-radius: 30px; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-                <span style="color: white; font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">
-                    {{ strtoupper(str_replace('_', ' ', $publication->publication_type ?? 'Publication')) }}
-                </span>
-            </div>
-            <h1 style="font-size: 2.5rem; font-weight: 700; color: white; margin-bottom: 1.5rem; line-height: 1.3; font-family: 'Cormorant Garamond', serif;">
-                {{ $publication->title ?? 'Untitled Publication' }}
-            </h1>
+        <div class="auth-container" style="max-width: 900px;">
+            <div class="auth-header">
+                <a href="{{ route('publications.index') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-color); text-decoration: none; margin-bottom: 2rem; opacity: 0.9; transition: opacity 0.3s; font-weight: 500;">
+                    <i class="fas fa-arrow-left"></i> Back to Publications
+                </a>
+                <div style="background: rgba(100, 255, 218, 0.1); padding: 0.75rem 1.5rem; border-radius: 30px; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(100, 255, 218, 0.3);">
+                    <span style="color: var(--accent-color); font-weight: 600; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;">
+                        {{ strtoupper(str_replace('_', ' ', $publication->publication_type ?? 'Publication')) }}
+                    </span>
+                </div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.3;">
+                    {{ $publication->title ?? 'Untitled Publication' }}
+                </h1>
             @php
                 $authorNames = [];
                 if ($publication->authors && is_array($publication->authors)) {
@@ -32,15 +32,15 @@
                     $authorNames[] = $publication->primaryAuthor->name;
                 }
             @endphp
-            @if(!empty($authorNames))
-            <div style="display: flex; align-items: center; gap: 0.75rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 1rem; flex-wrap: wrap;">
-                <i class="fas fa-user-edit" style="font-size: 1.1rem;"></i>
-                <span style="font-size: 1.1rem;">
-                    {{ implode(', ', array_filter($authorNames)) }}
-                </span>
-            </div>
-            @endif
-            <div style="display: flex; align-items: center; gap: 1.5rem; color: rgba(255, 255, 255, 0.8); font-size: 0.95rem; flex-wrap: wrap;">
+                @if(!empty($authorNames))
+                <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-color); margin-bottom: 1rem; flex-wrap: wrap;">
+                    <i class="fas fa-user-edit" style="font-size: 1.1rem; color: var(--accent-color);"></i>
+                    <span style="font-size: 1.1rem; font-weight: 500;">
+                        {{ implode(', ', array_filter($authorNames)) }}
+                    </span>
+                </div>
+                @endif
+                <div style="display: flex; align-items: center; gap: 1.5rem; color: var(--text-light); font-size: 0.95rem; flex-wrap: wrap; margin-bottom: 2rem;">
                 @if($publication->publication_year || $publication->year)
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <i class="far fa-calendar"></i>
@@ -60,28 +60,21 @@
                 </div>
                 @endif
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Publication Detail Content -->
-<section class="publication-detail-content" style="padding: 3rem 0; background: var(--light-color); min-height: 60vh;">
-    <div class="container">
-        <div style="max-width: 900px; margin: 0 auto;">
-            <!-- Main Content Card -->
-            <div style="background: white; border-radius: 20px; padding: 3rem; box-shadow: var(--shadow-lg); margin-bottom: 2rem;">
+            
+            <!-- Main Content -->
+            <div style="margin-top: 2rem;">
                 <!-- Abstract Section -->
                 <div style="margin-bottom: 3rem;">
-                    <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); font-family: 'Cormorant Garamond', serif; display: flex; align-items: center; gap: 0.75rem;">
+                    <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.75rem;">
                         <i class="fas fa-file-alt" style="color: var(--accent-color);"></i>
                         Abstract
                     </h2>
                     @if($publication->abstract)
-                    <p style="color: var(--text-light); line-height: 1.9; font-size: 1.05rem; text-align: justify;">
+                    <p style="color: var(--text-color); line-height: 1.9; font-size: 1.05rem; text-align: justify;">
                         {{ $publication->abstract }}
                     </p>
                     @else
-                    <p style="color: var(--text-lighter); font-style: italic; line-height: 1.9; font-size: 1.05rem;">
+                    <p style="color: var(--text-light); font-style: italic; line-height: 1.9; font-size: 1.05rem;">
                         No abstract available for this publication.
                     </p>
                     @endif
@@ -93,7 +86,7 @@
                                   $publication->publisher || $publication->doi || $publication->isbn || $publication->status;
                 @endphp
                 @if($hasDetails)
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; padding: 2rem; background: var(--light-color); border-radius: 15px; border: 1px solid var(--border-light);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; padding: 2rem; background: var(--light-color); border-radius: 15px; border: 1px solid var(--border-color);">
                     @if($publication->journal_name || $publication->journal)
                     <div style="padding: 1rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
@@ -197,13 +190,13 @@
                 @endphp
                 @if(!empty($allAuthors))
                 <div style="margin-bottom: 3rem;">
-                    <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); font-family: 'Cormorant Garamond', serif; display: flex; align-items: center; gap: 0.75rem;">
+                    <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.75rem;">
                         <i class="fas fa-users" style="color: var(--accent-color);"></i>
                         Authors
                     </h2>
                     <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
                         @foreach($allAuthors as $authorName)
-                        <div style="background: linear-gradient(135deg, var(--light-color) 0%, #f1f5f9 100%); padding: 1rem 1.5rem; border-radius: 15px; border: 1px solid var(--border-light); display: flex; align-items: center; gap: 0.75rem; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                        <div style="background: var(--light-color); padding: 1rem 1.5rem; border-radius: 15px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
                             <i class="fas fa-user-circle" style="color: var(--accent-color); font-size: 1.5rem;"></i>
                             <span style="color: var(--text-color); font-weight: 500; font-size: 1rem;">
                                 {{ $authorName }}
@@ -232,7 +225,7 @@
 
                 <!-- Action Buttons -->
                 @if($publication->published_link || $publication->proceedings_link)
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; padding-top: 2rem; border-top: 2px solid var(--border-color);">
                     @if($publication->published_link)
                     <a href="{{ $publication->published_link }}" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: var(--primary-color); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.3s; box-shadow: var(--shadow-sm);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
                         <i class="fas fa-external-link-alt"></i>
@@ -240,21 +233,20 @@
                     </a>
                     @endif
                     @if($publication->proceedings_link)
-                    <a href="{{ $publication->proceedings_link }}" target="_blank" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: transparent; color: var(--primary-color); text-decoration: none; border: 2px solid var(--primary-color); border-radius: 10px; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='var(--primary-color)'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='var(--primary-color)';">
+                    <a href="{{ $publication->proceedings_link }}" target="_blank" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: transparent; color: var(--accent-color); text-decoration: none; border: 2px solid var(--accent-color); border-radius: 10px; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='var(--accent-color)'; this.style.color='var(--primary-color)';" onmouseout="this.style.background='transparent'; this.style.color='var(--accent-color)';">
                         <i class="fas fa-file-pdf"></i>
                         View Proceedings
                     </a>
                     @endif
                 </div>
                 @endif
-            </div>
-
-            <!-- Additional Info Card -->
-            @if($publication->college || $publication->department || $publication->points_allocated)
-            <div style="background: white; border-radius: 20px; padding: 2rem; box-shadow: var(--shadow-lg);">
-                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); font-family: 'Cormorant Garamond', serif;">
-                    Additional Information
-                </h3>
+                
+                <!-- Additional Info -->
+                @if($publication->college || $publication->department || $publication->points_allocated)
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color);">
+                        Additional Information
+                    </h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
                     @if($publication->college)
                     <div>
@@ -275,28 +267,24 @@
                     </div>
                     @endif
                 </div>
+                @endif
             </div>
-            @endif
         </div>
     </div>
 </section>
 
 @push('styles')
 <style>
-    .publication-detail-hero a:hover {
+    .auth-container a:hover {
         opacity: 1;
     }
     
     @media (max-width: 768px) {
-        .publication-detail-hero h1 {
+        .auth-container h1 {
             font-size: 1.75rem !important;
         }
         
-        .publication-detail-content {
-            padding: 2rem 0 !important;
-        }
-        
-        .publication-detail-content > .container > div {
+        .auth-container {
             padding: 2rem !important;
         }
     }
