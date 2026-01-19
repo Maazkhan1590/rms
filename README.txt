@@ -45,6 +45,10 @@ Sanctum config updated to use APP_URL automatically.
    - Updated to use BASE_URL instead of hardcoded paths
    - Fixes API calls and links to work in subdirectory
 
+✅ resources/views/publications/index.blade.php
+   - Fixed hardcoded URLs in JavaScript
+   - Now uses BASE_URL for all fetch calls and links
+
 ✅ routes/web.php
    - Added /clear-cache route for easy cache clearing
    - Protected with token-based security (CLEAR_CACHE_TOKEN)
@@ -54,14 +58,22 @@ Sanctum config updated to use APP_URL automatically.
   FINAL STEPS
 ═══════════════════════════════════════════════════════════════
 
-1. Update .env:
+1. Update .env (CRITICAL - MUST BE SET CORRECTLY):
    APP_URL=https://gzlpro.com/rms-dev/public
    ASSET_URL=/rms-dev/public
+   CLEAR_CACHE_TOKEN=your-secret-token-here
+   
+   ⚠️ IMPORTANT NOTES:
+   - APP_URL MUST include the full path: https://gzlpro.com/rms-dev/public
+   - Do NOT use trailing slash in APP_URL
+   - ASSET_URL should be: /rms-dev/public (with leading slash, no trailing)
+   - After updating .env, ALWAYS clear caches (see step 3)
 
 2. Upload updated files:
    - app/Providers/AppServiceProvider.php
    - resources/views/layouts/public.blade.php
    - public/js/publications.js
+   - resources/views/publications/index.blade.php
 
 3. Clear all caches on server:
    
