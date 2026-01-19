@@ -9,7 +9,7 @@
     <title>@yield('title', 'Research Management System')</title>
     
     <!-- Stylesheets -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
     @yield('styles')
 </head>
 <body>
@@ -17,6 +17,9 @@
         @yield('content')
     </div>
     
+    <!-- Custom Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     @yield('scripts')
 </body>
 </html>

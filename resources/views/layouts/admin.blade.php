@@ -9,7 +9,8 @@
 
     <title>@yield('title', trans('panel.site_title'))</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Custom Admin Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
     <!-- DataTables core + extensions (vanilla theme) -->
     <link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet" />
@@ -1083,6 +1084,9 @@
             }
         </script>
 
+        <!-- Custom Admin Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="{{ asset('js/app.js') }}"></script>
         @yield('scripts')
 </body>
 </html>
