@@ -1,50 +1,11 @@
 @extends('layouts.public')
 
-@section('title', 'Submit Publication - RMS')
+@section('title', 'Submit Publication | Academic Research Portal')
 
 @section('content')
 <style>
-    .publication-create-page {
-        min-height: 100vh;
-    }
-    
     .auth-container {
-        max-width: 1000px !important;
-        padding: 3rem !important;
-    }
-
-    .page-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-    
-    .page-badge {
-        display: inline-block;
-        background: var(--primary-color);
-        color: white;
-        padding: 0.5rem 1.25rem;
-        border-radius: 50px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        letter-spacing: 0.05em;
-    }
-    
-    .page-title {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .page-subtitle {
-        font-size: 1.1rem;
-        color: var(--text-color);
-        font-weight: 500;
-        max-width: 600px;
-        margin: 0 auto;
+        max-width: 900px !important;
     }
 
     /* Stepper Styles */
@@ -161,47 +122,10 @@
     }
 
     .step-title {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 2rem;
-        color: var(--primary-color);
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--border-color);
-    }
-
-    .form-group {
-        margin-bottom: 1.75rem;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 0.75rem;
         color: var(--text-color);
-        font-weight: 500;
-        font-size: 0.95rem;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 1rem 1.5rem;
-        border: 2px solid var(--border-color);
-        border-radius: var(--border-radius);
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        transition: var(--transition);
-        background: rgba(255, 255, 255, 0.95);
-        color: var(--text-color);
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 4px rgba(100, 255, 218, 0.15);
-        background: white;
-    }
-
-    .form-control.is-invalid {
-        border-color: var(--danger);
     }
 
     textarea.form-control {
@@ -221,71 +145,6 @@
     .form-error::before {
         content: '⚠';
         font-size: 1rem;
-    }
-
-    /* Button Styles */
-    .btn {
-        padding: 0.875rem 2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.9375rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-    }
-
-    .btn-primary {
-        background: var(--primary-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-primary:hover {
-        background: var(--secondary-color);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: white;
-        color: var(--text-color);
-        border: 2px solid var(--border-color);
-    }
-
-    .btn-secondary:hover {
-        border-color: var(--accent-color);
-        color: var(--accent-color);
-        background: rgba(255, 255, 255, 0.9);
-    }
-
-    .btn-outline {
-        background: transparent;
-        color: var(--accent-color);
-        border: 2px solid var(--accent-color);
-    }
-
-    .btn-outline:hover {
-        background: var(--accent-color);
-        color: var(--primary-color);
-    }
-
-    .btn-danger {
-        background: var(--danger);
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #dc2626;
-    }
-
-    .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.8125rem;
     }
 
     .form-actions {
@@ -398,17 +257,23 @@
 <section class="auth-section">
     <div class="container">
         <div class="auth-container">
-            <div class="page-header">
-                <span class="page-badge">
-                    <i class="fas fa-book"></i> Publication Submission
-                </span>
-                <h1 class="page-title">Submit Your Publication</h1>
-                <p class="page-subtitle">
-                    Share your research work with the academic community. Fill out the form below to submit your publication.
-                </p>
+            <div class="auth-header">
+                <h1>Submit Your Publication</h1>
+                <p>Share your research work with the academic community</p>
             </div>
-            <form id="publicationForm" method="POST" action="{{ route('publications.store') }}">
+            <form id="publicationForm" method="POST" action="{{ route('publications.store') }}" class="auth-form">
                 @csrf
+
+                @if ($errors->any())
+                    <div style="background: #fee; color: #c33; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #c33;">
+                        <strong>Please fix the following errors:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <!-- Stepper Progress -->
                 <div class="stepper-container">
@@ -434,7 +299,7 @@
                     <h2 class="step-title">Basic Information</h2>
                     
                     <div class="form-group">
-                        <label class="form-label" for="title">
+                        <label for="title">
                             Publication Title <span style="color: var(--danger);">*</span>
                         </label>
                         <input type="text" class="form-control" id="title" name="title" required 
@@ -446,7 +311,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="publication_type">
+                        <label for="publication_type">
                             Publication Type <span style="color: var(--danger);">*</span>
                         </label>
                         <select class="form-control" id="publication_type" name="publication_type" required>
@@ -464,7 +329,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="publication_year">
+                        <label for="publication_year">
                             Publication Year <span style="color: var(--danger);">*</span>
                         </label>
                         <input type="number" class="form-control" id="publication_year" name="publication_year" 
@@ -476,7 +341,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="abstract">Abstract</label>
+                        <label for="abstract">Abstract</label>
                         <textarea class="form-control" id="abstract" name="abstract" rows="6" 
                                   placeholder="Provide a brief summary of your publication...">{{ old('abstract') }}</textarea>
                         @error('abstract')
@@ -486,7 +351,7 @@
 
                     <div class="form-actions">
                         <div></div>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()">
+                        <button type="button" class="btn btn-primary btn-block" onclick="nextStep()">
                             Next Step <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -498,7 +363,7 @@
                     
                     <div id="journal_fields" style="display: none;">
                         <div class="form-group">
-                            <label class="form-label" for="journal_name">Journal Name</label>
+                            <label for="journal_name">Journal Name</label>
                             <input type="text" class="form-control" id="journal_name" name="journal_name" 
                                    placeholder="Enter journal name"
                                    value="{{ old('journal_name') }}">
@@ -510,7 +375,7 @@
 
                     <div id="conference_fields" style="display: none;">
                         <div class="form-group">
-                            <label class="form-label" for="conference_name">Conference Name</label>
+                            <label for="conference_name">Conference Name</label>
                             <input type="text" class="form-control" id="conference_name" name="conference_name" 
                                    placeholder="Enter conference name"
                                    value="{{ old('conference_name') }}">
@@ -522,7 +387,7 @@
 
                     <div id="book_fields" style="display: none;">
                         <div class="form-group">
-                            <label class="form-label" for="publisher">Publisher</label>
+                            <label for="publisher">Publisher</label>
                             <input type="text" class="form-control" id="publisher" name="publisher" 
                                    placeholder="Enter publisher name"
                                    value="{{ old('publisher') }}">
@@ -533,7 +398,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="doi">DOI (Digital Object Identifier)</label>
+                        <label for="doi">DOI (Digital Object Identifier)</label>
                         <input type="text" class="form-control" id="doi" name="doi" 
                                placeholder="10.xxxx/xxxxx"
                                value="{{ old('doi') }}">
@@ -543,7 +408,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="isbn">ISBN</label>
+                        <label for="isbn">ISBN</label>
                         <input type="text" class="form-control" id="isbn" name="isbn" 
                                placeholder="Enter ISBN"
                                value="{{ old('isbn') }}">
@@ -553,7 +418,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="published_link">Publication Link</label>
+                        <label for="published_link">Publication Link</label>
                         <input type="url" class="form-control" id="published_link" name="published_link" 
                                placeholder="https://..."
                                value="{{ old('published_link') }}">
@@ -563,7 +428,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="proceedings_link">Proceedings Link</label>
+                        <label for="proceedings_link">Proceedings Link</label>
                         <input type="url" class="form-control" id="proceedings_link" name="proceedings_link" 
                                placeholder="https://..."
                                value="{{ old('proceedings_link') }}">
@@ -576,7 +441,7 @@
                         <button type="button" class="btn btn-secondary" onclick="prevStep()">
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()">
+                        <button type="button" class="btn btn-primary btn-block" onclick="nextStep()">
                             Next Step <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -594,7 +459,7 @@
                             <div class="author-header">
                                 <div style="flex: 1;">
                                     <div class="form-group">
-                                        <label class="form-label">
+                                        <label>
                                             Author Name <span style="color: var(--danger);">*</span>
                                         </label>
                                         <input type="text" class="form-control author-name" 
@@ -602,7 +467,7 @@
                                                placeholder="Enter author full name">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Email (Optional)</label>
+                                        <label>Email (Optional)</label>
                                         <input type="email" class="form-control author-email" 
                                                name="authors[0][email]" 
                                                placeholder="author@example.com">
@@ -630,7 +495,7 @@
                         <button type="button" class="btn btn-secondary" onclick="prevStep()">
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary btn-block">
                             <i class="fas fa-paper-plane"></i> Submit Publication
                         </button>
                     </div>
