@@ -57,16 +57,6 @@
         window.BASE_URL = '{{ url("/") }}';
         window.ASSET_URL = '{{ asset("") }}';
         
-        // Debug logging
-        console.log('=== URL DEBUG ===');
-        console.log('window.BASE_URL:', window.BASE_URL);
-        console.log('window.ASSET_URL:', window.ASSET_URL);
-        console.log('Laravel route(publications.index):', '{{ route("publications.index") }}');
-        console.log('Laravel url(/publications):', '{{ url("/publications") }}');
-        console.log('Current location:', window.location.href);
-        console.log('Current pathname:', window.location.pathname);
-        console.log('==================');
-        
         // Auto-hide success/error messages
         setTimeout(() => {
             const messages = document.querySelectorAll('[style*="position: fixed"]');

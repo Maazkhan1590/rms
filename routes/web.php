@@ -2,34 +2,6 @@
 
 
 
-// Debug Route - Shows URL generation info
-Route::get('/debug-urls', function () {
-    $data = [
-        'env_app_url' => env('APP_URL'),
-        'config_app_url' => config('app.url'),
-        'config_asset_url' => config('app.asset_url'),
-        'url_root' => url('/'),
-        'request_base_path' => request()->getBasePath(),
-        'request_root' => request()->root(),
-        'request_uri' => request()->getRequestUri(),
-        'request_path' => request()->getPathInfo(),
-        'request_scheme' => request()->getScheme(),
-        'request_host' => request()->getHttpHost(),
-        'test_routes' => [
-            'publications.index' => route('publications.index', [], false),
-            'url_publications' => url('/publications'),
-            'url_root' => url('/'),
-            'asset_css' => asset('css/style.css'),
-        ],
-        'javascript_vars' => [
-            'base_url' => url('/'),
-            'asset_url' => asset(''),
-        ],
-    ];
-    
-    return response()->json($data, 200, [], JSON_PRETTY_PRINT);
-})->name('debug-urls');
-
 // Cache Clear Route (for deployment/maintenance)
 // Usage: /clear-cache?token=YOUR_SECRET_TOKEN
 // Set CLEAR_CACHE_TOKEN in .env file for security
