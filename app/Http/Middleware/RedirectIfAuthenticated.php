@@ -22,7 +22,13 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 $user = Auth::guard($guard)->user();
-                // All authenticated users should go to admin dashboard
+                
+                // Faculty members go to public homepage
+                if ($user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
+                    return redirect()->route('welcome');
+                }
+                
+                // Admin, Coordinator, and Dean go to admin dashboard
                 return redirect()->route('admin.home');
             }
         }

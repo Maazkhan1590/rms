@@ -4,9 +4,10 @@
 
 @section('content')
 @auth
+@if(auth()->user()->isAdmin || auth()->user()->isResearchCoordinator() || auth()->user()->isDean())
 <meta http-equiv="refresh" content="0;url={{ route('admin.home') }}">
 <script>
-    // IMMEDIATE redirect authenticated users to admin dashboard - no delay
+    // IMMEDIATE redirect admin/coordinator/dean to admin dashboard - no delay
     // Use replace() instead of href to prevent back button issues
     window.location.replace("{{ route('admin.home') }}");
 </script>
@@ -14,6 +15,7 @@
     <p>Redirecting to dashboard...</p>
     <p><a href="{{ route('admin.home') }}">Click here if you are not redirected</a></p>
 </div>
+@endif
 @endauth
 <!-- Hero Section -->
 <header class="hero">

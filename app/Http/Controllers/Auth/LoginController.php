@@ -92,13 +92,20 @@ class LoginController extends Controller
      */
     protected function redirectPath()
     {
-        // Always redirect to admin dashboard
+        $user = auth()->user();
+        
+        // Faculty members go to public homepage
+        if ($user && $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
+            return '/';
+        }
+        
+        // Admin, Coordinator, and Dean go to admin dashboard
         return '/admin';
     }
 
     /**
      * Send the response after the user was authenticated.
-     * This overrides the trait method to ensure redirect to admin dashboard.
+     * This overrides the trait method to redirect based on user role.
      * This is the FINAL method called by Laravel's AuthenticatesUsers trait.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -116,13 +123,21 @@ class LoginController extends Controller
         // Clear again AFTER regeneration to be absolutely sure
         $request->session()->forget('url.intended');
         
-        // Force redirect to admin dashboard - DO NOT use redirect()->intended()
-        // Use direct redirect() to bypass any intended URL logic
+        $user = auth()->user();
+        
+        // Determine redirect based on user role
+        if ($user && $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
+            // Faculty members go to public homepage
+            if ($request->wantsJson()) {
+                return response()->json(['redirect' => route('welcome')]);
+            }
+            return redirect()->route('welcome');
+        }
+        
+        // Admin, Coordinator, and Dean go to admin dashboard
         if ($request->wantsJson()) {
             return response()->json(['redirect' => route('admin.home')]);
         }
-
-        // Always redirect directly to admin dashboard - never use intended()
         return redirect()->route('admin.home');
     }
 

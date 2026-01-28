@@ -14,13 +14,20 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        // CRITICAL: Redirect authenticated users to admin dashboard immediately
-        // This prevents any authenticated user from viewing the public welcome page
+        // Faculty members can access the public homepage
+        // Admin, Coordinator, and Dean are redirected to admin dashboard
         if (auth()->check()) {
-            // Clear any intended URL that might cause issues
-            $request->session()->forget('url.intended');
-            // Force immediate redirect - use send() to execute immediately
-            return redirect()->route('admin.home');
+            $user = auth()->user();
+            
+            // Only redirect non-faculty users (Admin, Coordinator, Dean) to admin dashboard
+            if ($user->isAdmin || $user->isResearchCoordinator() || $user->isDean()) {
+                // Clear any intended URL that might cause issues
+                $request->session()->forget('url.intended');
+                // Force immediate redirect - use send() to execute immediately
+                return redirect()->route('admin.home');
+            }
+            
+            // Faculty members can stay on the homepage
         }
         
         $query = Publication::with(['submitter', 'primaryAuthor'])
