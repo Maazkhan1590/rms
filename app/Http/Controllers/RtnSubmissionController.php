@@ -4,19 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\RtnSubmission;
 use App\Models\ApprovalWorkflow;
+use App\Models\EvidenceFile;
 use App\Services\WorkflowService;
 use App\Services\LoggingService;
+use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 
 class RtnSubmissionController extends Controller
 {
     protected WorkflowService $workflowService;
     protected LoggingService $loggingService;
+    protected FileUploadService $fileUploadService;
 
-    public function __construct(WorkflowService $workflowService, LoggingService $loggingService)
+    public function __construct(WorkflowService $workflowService, LoggingService $loggingService, FileUploadService $fileUploadService)
     {
         $this->workflowService = $workflowService;
         $this->loggingService = $loggingService;
+        $this->fileUploadService = $fileUploadService;
     }
 
     /**
@@ -40,12 +44,20 @@ class RtnSubmissionController extends Controller
             return redirect()->route('login')->with('error', 'Please login to submit RTN submissions.');
         }
 
+        $user = auth()->user();
+        
         $validated = $request->validate([
             'rtn_type' => 'required|in:RTN-3,RTN-4',
             'title' => 'required|string|max:500',
             'description' => 'nullable|string',
             'year' => 'required|integer|min:1900|max:' . date('Y'),
             'evidence_description' => 'nullable|string|max:1000',
+            'units' => 'nullable|integer|min:0',
+            'amount_omr' => 'nullable|numeric|min:0',
+            'evidence_files' => 'nullable|array',
+            'evidence_files.*' => 'file|mimes:pdf,jpg,jpeg,png,gif|max:10240',
+            'evidence_urls' => 'nullable|array',
+            'evidence_urls.*' => 'nullable|url|max:500',
         ]);
 
         $rtn = RtnSubmission::create([
@@ -57,8 +69,43 @@ class RtnSubmissionController extends Controller
             'user_id' => auth()->id(),
             'status' => 'draft',
             'evidence_description' => $validated['evidence_description'] ?? null,
+            'units' => $validated['units'] ?? null,
+            'amount_omr' => $validated['amount_omr'] ?? null,
+            'faculty' => $user->college->name ?? null,
             'submitted_at' => now(),
         ]);
+
+        // Handle evidence file uploads
+        if ($request->hasFile('evidence_files')) {
+            foreach ($request->file('evidence_files') as $file) {
+                $this->fileUploadService->uploadEvidenceFile(
+                    $file,
+                    'rtn',
+                    $rtn->id,
+                    auth()->id(),
+                    'other'
+                );
+            }
+        }
+
+        // Handle evidence URLs
+        if ($request->has('evidence_urls') && is_array($request->evidence_urls)) {
+            foreach ($request->evidence_urls as $url) {
+                if (!empty($url)) {
+                    EvidenceFile::create([
+                        'submission_type' => 'rtn',
+                        'submission_id' => $rtn->id,
+                        'file_path' => $url,
+                        'file_name' => 'URL: ' . $url,
+                        'file_type' => 'text/url',
+                        'file_size' => 0,
+                        'file_category' => 'other',
+                        'uploaded_by' => auth()->id(),
+                        'uploaded_at' => now(),
+                    ]);
+                }
+            }
+        }
 
         // Create workflow
         $this->workflowService->createWorkflow('rtn', $rtn->id, auth()->user());

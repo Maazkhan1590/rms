@@ -115,16 +115,32 @@ class HomeController
     private function getFacultyStats(User $user, int $year): array
     {
         return [
-            'myPublications' => Publication::where('primary_author_id', $user->id)->where('year', $year)->count(),
-            'approvedPublications' => Publication::where('primary_author_id', $user->id)->where('year', $year)->where('status', 'approved')->count(),
-            'pendingPublications' => Publication::where('primary_author_id', $user->id)->where('status', 'submitted')->count(),
+            'myPublications' => Publication::where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            })->where('year', $year)->count(),
+            'approvedPublications' => Publication::where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            })->where('year', $year)->where('status', 'approved')->count(),
+            'pendingPublications' => Publication::where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            })->where('status', 'submitted')->count(),
             'myGrants' => Grant::where('submitted_by', $user->id)->where('award_year', $year)->count(),
             'myRtnSubmissions' => RtnSubmission::where('user_id', $user->id)->where('year', $year)->count(),
             'myBonusRecognitions' => BonusRecognition::where('user_id', $user->id)->where('year', $year)->count(),
             'totalPoints' => $user->total_research_points,
             'year' => $year,
-            'recentPublications' => Publication::where('primary_author_id', $user->id)->latest()->limit(5)->get(),
+            'recentPublications' => Publication::where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            })->latest()->limit(5)->get(),
             'recentGrants' => Grant::where('submitted_by', $user->id)->latest()->limit(5)->get(),
+            'allPublications' => Publication::where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            })->with(['submitter', 'primaryAuthor', 'workflow'])->latest()->paginate(10),
         ];
     }
 

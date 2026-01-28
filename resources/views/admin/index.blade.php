@@ -237,6 +237,107 @@
             </div>
         </div>
 
+        <!-- Faculty Publications Listing -->
+        @if(!auth()->user()->isAdmin && !auth()->user()->isResearchCoordinator() && !auth()->user()->isDean())
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">My Publications</h3>
+                    <a href="{{ route('publications.create') }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Submit New Paper
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if(isset($allPublications) && $allPublications->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Year</th>
+                                <th>Status</th>
+                                <th>Points</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($allPublications as $publication)
+                            <tr>
+                                <td>
+                                    <a href="{{ route('publications.show', $publication->id) }}" style="color: inherit; text-decoration: none;">
+                                        {{ \Illuminate\Support\Str::limit($publication->title, 50) }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $publication->publication_type ?? 'N/A')) }}</span>
+                                </td>
+                                <td>{{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</td>
+                                <td>
+                                    @if($publication->status == 'approved')
+                                        <span class="badge badge-success">Approved</span>
+                                    @elseif($publication->status == 'submitted')
+                                        <span class="badge badge-warning">Submitted</span>
+                                    @elseif($publication->status == 'rejected')
+                                        <span class="badge badge-danger">Rejected</span>
+                                    @else
+                                        <span class="badge badge-secondary">{{ ucfirst($publication->status) }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($publication->points_allocated)
+                                        <strong style="color: var(--primary);">{{ number_format($publication->points_allocated, 2) }}</strong>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('publications.show', $publication->id) }}" class="btn btn-sm btn-info" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if($publication->status == 'draft')
+                                            <form action="{{ route('publications.submit', $publication->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success" title="Submit for Approval" onclick="return confirm('Submit this publication for approval?');">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @can('publication_approve')
+                                        @if(in_array($publication->status, ['submitted', 'pending', 'pending_coordinator', 'pending_dean']))
+                                            <form action="{{ route('admin.publications.approve', $publication->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success" title="Approve" onclick="return confirm('Approve this publication?');">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('admin.publications.reject', $publication->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Reject" onclick="return confirm('Reject this publication?');">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    {{ $allPublications->links() }}
+                </div>
+                @else
+                <p class="text-muted text-center py-4">No publications found. <a href="{{ route('publications.create') }}">Submit your first paper</a></p>
+                @endif
+            </div>
+        </div>
+        @endif
+
         <!-- Quick Actions -->
         <div class="card">
             <div class="card-header">
@@ -244,24 +345,30 @@
             </div>
             <div class="card-body">
                 <div class="quick-actions">
+                    @if(auth()->user()->isAdmin)
                     <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
                         <i class="fas fa-user-plus"></i> Add New User
                     </a>
-{{--                    <a href="{{ route('admin.reports.index') }}" class="btn btn-secondary">--}}
-{{--                        <i class="fas fa-chart-bar"></i> Generate Report--}}
-{{--                    </a>--}}
+                    @endif
                     <a href="{{ route('admin.workflows.pending') }}" class="btn btn-secondary">
                         <i class="fas fa-tasks"></i> Pending Approvals
                     </a>
+                    @if(auth()->user()->isAdmin)
                     <a href="{{ route('admin.audit-logs.index') }}" class="btn btn-secondary">
                         <i class="fas fa-clipboard-list"></i> Audit Logs
                     </a>
+                    @endif
                     <a href="{{ route('admin.publications.index') }}" class="btn btn-secondary">
                         <i class="fas fa-book"></i> All Publications
                     </a>
                     <a href="{{ route('admin.grants.index') }}" class="btn btn-secondary">
                         <i class="fas fa-money-bill-wave"></i> All Grants
                     </a>
+                    @if(!auth()->user()->isAdmin && !auth()->user()->isResearchCoordinator() && !auth()->user()->isDean())
+                    <a href="{{ route('publications.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Submit Paper
+                    </a>
+                    @endif
                 </div>
             </div>
         </div>
