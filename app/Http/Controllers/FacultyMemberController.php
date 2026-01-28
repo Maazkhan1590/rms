@@ -13,9 +13,9 @@ class FacultyMemberController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all users who have submitted publications (Faculty or Student roles)
+        // Get all users who have submitted publications (Faculty role)
         $query = User::whereHas('roles', function($q) {
-            $q->whereIn('title', ['Faculty', 'Student']);
+            $q->where('title', 'Faculty');
         })->where(function($q) {
             $q->whereHas('publications')
               ->orWhereHas('primaryAuthorPublications');
@@ -54,7 +54,7 @@ class FacultyMemberController extends Controller
     {
         $user = User::with(['roles', 'college', 'department'])
             ->whereHas('roles', function($q) {
-                $q->whereIn('title', ['Faculty', 'Student']);
+                $q->where('title', 'Faculty');
             })
             ->findOrFail($id);
 

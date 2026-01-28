@@ -83,17 +83,17 @@ class RegisterController extends Controller
             'status'        => 'pending', // Requires admin approval
         ]);
 
-        // Assign Student role if exists
-        $studentRole = \App\Models\Role::where('title', 'Student')->orWhere('title', 'student')->first();
-        if ($studentRole) {
-            $user->roles()->attach($studentRole->id);
+        // Assign Faculty role (students are treated as faculty)
+        $facultyRole = \App\Models\Role::where('title', 'Faculty')->orWhere('title', 'faculty')->first();
+        if ($facultyRole) {
+            $user->roles()->attach($facultyRole->id);
         } else {
-            // Fallback: try to find any role or create Student role
-            $studentRole = \App\Models\Role::firstOrCreate(
-                ['title' => 'Student'],
-                ['title' => 'Student']
+            // Fallback: try to find any role or create Faculty role
+            $facultyRole = \App\Models\Role::firstOrCreate(
+                ['title' => 'Faculty'],
+                ['title' => 'Faculty']
             );
-            $user->roles()->attach($studentRole->id);
+            $user->roles()->attach($facultyRole->id);
         }
 
         return $user;

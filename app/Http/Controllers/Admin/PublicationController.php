@@ -231,22 +231,22 @@ class PublicationController extends Controller
 
     /**
      * Show the form for creating a new publication
-     * Admin cannot create publications - only students can submit
+     * Admin cannot create publications - only faculty can submit
      */
     public function create()
     {
         return redirect()->route('publications.create')
-            ->with('info', 'Please use the public publication submission form. Only students can submit publications.');
+            ->with('info', 'Please use the public publication submission form. Only faculty can submit publications.');
     }
 
     /**
      * Store a newly created publication
-     * Admin cannot create publications - only students can submit
+     * Admin cannot create publications - only faculty can submit
      */
     public function store(Request $request)
     {
         return redirect()->route('publications.create')
-            ->with('info', 'Please use the public publication submission form. Only students can submit publications.');
+            ->with('info', 'Please use the public publication submission form. Only faculty can submit publications.');
     }
 
     /**

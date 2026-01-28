@@ -3,6 +3,18 @@
 @section('title', 'Academic Research Portal | Home')
 
 @section('content')
+@auth
+<meta http-equiv="refresh" content="0;url={{ route('admin.home') }}">
+<script>
+    // IMMEDIATE redirect authenticated users to admin dashboard - no delay
+    // Use replace() instead of href to prevent back button issues
+    window.location.replace("{{ route('admin.home') }}");
+</script>
+<div style="text-align: center; padding: 2rem;">
+    <p>Redirecting to dashboard...</p>
+    <p><a href="{{ route('admin.home') }}">Click here if you are not redirected</a></p>
+</div>
+@endauth
 <!-- Hero Section -->
 <header class="hero">
     <div class="slider-container">
@@ -258,7 +270,7 @@
                     <i class="fas fa-paper-plane"></i> Submit Your Paper
                 </a>
                 @else
-                @if(auth()->user()->hasAnyRole(['Student', 'Faculty']))
+                @if(auth()->user()->hasRole('Faculty'))
                 <a href="{{ route('publications.create') }}" class="btn btn-primary">
                     <i class="fas fa-paper-plane"></i> Submit Your Paper
                 </a>

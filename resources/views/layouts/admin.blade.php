@@ -365,19 +365,19 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('faculty.grants.index') }}" class="nav-link {{ request()->routeIs('faculty.grants.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.grants.index') }}" class="nav-link {{ request()->routeIs('admin.grants.*') ? 'active' : '' }}">
                                 <span class="nav-icon">💰</span>
                                 <span class="nav-label">My Grants</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('faculty.rtn-submissions.index') }}" class="nav-link {{ request()->routeIs('faculty.rtn-submissions.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.rtn-submissions.index') }}" class="nav-link {{ request()->routeIs('admin.rtn-submissions.*') ? 'active' : '' }}">
                                 <span class="nav-icon">📖</span>
                                 <span class="nav-label">My RTN</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('faculty.bonus-recognitions.index') }}" class="nav-link {{ request()->routeIs('faculty.bonus-recognitions.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.bonus-recognitions.index') }}" class="nav-link {{ request()->routeIs('admin.bonus-recognitions.*') ? 'active' : '' }}">
                                 <span class="nav-icon">🏆</span>
                                 <span class="nav-label">My Recognitions</span>
                             </a>

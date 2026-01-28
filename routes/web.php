@@ -78,7 +78,7 @@ Route::get('/home', function () {
     if (auth()->check()) {
         $user = auth()->user();
         
-        // Student role is treated as Faculty role - redirect to admin dashboard
+        // Faculty users redirect to admin dashboard
         if (session('status')) {
             return redirect()->route('admin.home')->with('status', session('status'));
         }

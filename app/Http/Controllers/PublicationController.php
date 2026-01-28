@@ -187,7 +187,7 @@ class PublicationController extends Controller
 
     /**
      * Show publication submission form (stepper)
-     * Only accessible to authenticated users with Student role
+     * Only accessible to authenticated users with Faculty role
      */
     public function create()
     {
@@ -196,8 +196,8 @@ class PublicationController extends Controller
             return redirect()->route('login')->with('error', 'Please login to submit publications.');
         }
 
-        // Check if user has Student or Faculty role (Student role is treated as Faculty)
-        if (!auth()->user()->hasAnyRole(['Student', 'Faculty'])) {
+        // Check if user has Faculty role
+        if (!auth()->user()->hasRole('Faculty')) {
             return redirect()->route('welcome')->with('error', 'Please login with a valid account to submit publications.');
         }
 
@@ -206,7 +206,7 @@ class PublicationController extends Controller
 
     /**
      * Store publication submission
-     * Only accessible to authenticated users with Student role
+     * Only accessible to authenticated users with Faculty role
      */
     public function store(Request $request)
     {
@@ -215,8 +215,8 @@ class PublicationController extends Controller
             return redirect()->route('login')->with('error', 'Please login to submit publications.');
         }
 
-        // Check if user has Student or Faculty role (Student role is treated as Faculty)
-        if (!auth()->user()->hasAnyRole(['Student', 'Faculty'])) {
+        // Check if user has Faculty role
+        if (!auth()->user()->hasRole('Faculty')) {
             return redirect()->route('welcome')->with('error', 'Please login with a valid account to submit publications.');
         }
 
@@ -242,7 +242,7 @@ class PublicationController extends Controller
             'evidence_urls.*' => 'nullable|url|max:500',
         ]);
 
-        // User is authenticated and has Student role (already checked above)
+        // User is authenticated and has Faculty role (already checked above)
         $submittedBy = auth()->id();
 
         $publication = Publication::create([
@@ -261,7 +261,7 @@ class PublicationController extends Controller
             'published_link' => $validated['published_link'] ?? null,
             'proceedings_link' => $validated['proceedings_link'] ?? null,
             'submitted_by' => $submittedBy,
-            'status' => 'draft', // Students submit as draft initially
+            'status' => 'draft', // Faculty submit as draft initially
             'authors' => $validated['authors'],
             'primary_author_id' => $submittedBy,
             'submitted_at' => now(),

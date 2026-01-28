@@ -28,7 +28,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected $redirectTo = '/admin';
     protected LoggingService $loggingService;
 
     /**
@@ -42,14 +42,25 @@ class LoginController extends Controller
         $this->loggingService = $loggingService;
     }
 
+    /**
+     * The user has been authenticated.
+     * This method is called by Laravel's AuthenticatesUsers trait after successful login.
+     * We clear url.intended here to prevent redirect to public pages.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return void
+     */
     protected function authenticated(Request $request, $user)
     {
         if ($user->status !== 'active') {
             auth()->logout();
 
-            return redirect()->route('login')->withErrors([
+            // Return early with error - this will prevent sendLoginResponse from being called
+            redirect()->route('login')->withErrors([
                 'email' => 'Your account is currently ' . $user->status . '. Please contact an administrator.',
-            ]);
+            ])->send();
+            exit;
         }
 
         $user->forceFill([
@@ -65,17 +76,53 @@ class LoginController extends Controller
             $user->id
         );
 
-        // Redirect based on user role
-        // Student role is treated as Faculty role - redirect to admin dashboard
-        // Check if there's an intended URL first
-        $intended = $request->session()->pull('url.intended');
+        // CRITICAL: Clear url.intended BEFORE sendLoginResponse is called
+        // This prevents Laravel from redirecting to public pages
+        $request->session()->forget('url.intended');
         
-        // If intended URL is set and it's not the login page, use it
-        if ($intended && $intended !== route('login') && $intended !== route('welcome')) {
-            return redirect($intended);
+        // Don't return redirect here - let sendLoginResponse handle it
+        // This ensures sendLoginResponse is always called and handles the redirect
+    }
+
+    /**
+     * Get the post-login redirect path.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return string
+     */
+    protected function redirectPath()
+    {
+        // Always redirect to admin dashboard
+        return '/admin';
+    }
+
+    /**
+     * Send the response after the user was authenticated.
+     * This overrides the trait method to ensure redirect to admin dashboard.
+     * This is the FINAL method called by Laravel's AuthenticatesUsers trait.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+        // CRITICAL: Clear url.intended BEFORE session regeneration
+        // Session regeneration might copy old session data
+        $request->session()->forget('url.intended');
+        
+        // Regenerate session for security
+        $request->session()->regenerate();
+        
+        // Clear again AFTER regeneration to be absolutely sure
+        $request->session()->forget('url.intended');
+        
+        // Force redirect to admin dashboard - DO NOT use redirect()->intended()
+        // Use direct redirect() to bypass any intended URL logic
+        if ($request->wantsJson()) {
+            return response()->json(['redirect' => route('admin.home')]);
         }
-        
-        // All authenticated users (Faculty, Student, Admin, Coordinator, Dean) go to admin dashboard
+
+        // Always redirect directly to admin dashboard - never use intended()
         return redirect()->route('admin.home');
     }
 

@@ -14,8 +14,12 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        // Redirect authenticated users to admin dashboard
+        // CRITICAL: Redirect authenticated users to admin dashboard immediately
+        // This prevents any authenticated user from viewing the public welcome page
         if (auth()->check()) {
+            // Clear any intended URL that might cause issues
+            $request->session()->forget('url.intended');
+            // Force immediate redirect - use send() to execute immediately
             return redirect()->route('admin.home');
         }
         

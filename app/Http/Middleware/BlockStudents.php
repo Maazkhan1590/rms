@@ -10,13 +10,13 @@ class BlockStudents
 {
     /**
      * Handle an incoming request.
-     * Student role is treated as Faculty role - they have access to admin routes
+     * Faculty users have access to admin routes
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Student role is treated as Faculty role, so no blocking needed
+        // Faculty users have access to admin routes, so no blocking needed
         return $next($request);
     }
 }

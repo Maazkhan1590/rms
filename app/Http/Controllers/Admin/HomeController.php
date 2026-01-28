@@ -27,7 +27,7 @@ class HomeController
     {
         $user = auth()->user();
         
-        // Student role is treated as Faculty role - they have access to admin dashboard
+        // Faculty users have access to admin dashboard
 
         $currentYear = $request->get('year', now()->year);
 
