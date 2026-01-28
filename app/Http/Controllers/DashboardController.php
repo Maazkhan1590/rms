@@ -1,0 +1,315 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Publication;
+use App\Models\Grant;
+use App\Models\User;
+use App\Models\ApprovalWorkflow;
+use App\Models\RtnSubmission;
+use App\Models\BonusRecognition;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+
+class DashboardController extends Controller
+{
+    /**
+     * Show the dashboard with real database statistics
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        $currentYear = now()->year;
+        $currentMonth = now()->month;
+        $lastMonth = $currentMonth - 1;
+        $lastMonthYear = $lastMonth <= 0 ? $currentYear - 1 : $currentYear;
+
+        // Calculate publications statistics
+        $totalPublications = Publication::count();
+        $approvedPublications = Publication::where('status', 'approved')->count();
+        $pendingPublications = Publication::whereIn('status', ['submitted', 'pending'])->count();
+        
+        // Calculate publications change vs last month
+        $publicationsThisMonth = Publication::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->count();
+        $publicationsLastMonth = Publication::whereYear('created_at', $lastMonthYear)
+            ->whereMonth('created_at', $lastMonth <= 0 ? 12 : $lastMonth)
+            ->count();
+        $publicationsChange = $publicationsLastMonth > 0 
+            ? round((($publicationsThisMonth - $publicationsLastMonth) / $publicationsLastMonth) * 100, 1)
+            : 0;
+        $publicationsChangeText = $publicationsChange >= 0 
+            ? '+' . $publicationsChange . '% vs last month' 
+            : $publicationsChange . '% vs last month';
+
+        // Calculate grants statistics
+        $totalGrants = Grant::count();
+        $approvedGrants = Grant::where('status', 'approved')->count();
+        $pendingGrants = Grant::whereIn('status', ['submitted', 'pending'])->count();
+
+        // Calculate users statistics (replacing citations)
+        $totalUsers = User::count();
+        $activeUsers = User::where('status', 'active')->count();
+        $usersThisMonth = User::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->count();
+        $usersLastMonth = User::whereYear('created_at', $lastMonthYear)
+            ->whereMonth('created_at', $lastMonth <= 0 ? 12 : $lastMonth)
+            ->count();
+        $usersChange = $usersLastMonth > 0 
+            ? round((($usersThisMonth - $usersLastMonth) / $usersLastMonth) * 100, 1)
+            : 0;
+        $usersChangeText = $usersChange >= 0 
+            ? '+' . $usersChange . '% vs last month' 
+            : $usersChange . '% vs last month';
+
+        // Calculate approvals statistics
+        $pendingApprovals = ApprovalWorkflow::pending()->count();
+        $overdueApprovals = ApprovalWorkflow::pending()
+            ->where('created_at', '<', now()->subDays(7))
+            ->count();
+
+        // Additional statistics
+        $totalRtnSubmissions = RtnSubmission::count();
+        $totalBonusRecognitions = BonusRecognition::count();
+        $approvedPublications = Publication::where('status', 'approved')->count();
+        $totalResearchPoints = User::sum('total_research_points');
+        $activeUsers = User::where('status', 'active')->count();
+        $pendingUsers = User::where('status', 'pending')->count();
+
+        // Statistics data
+        $stats = [
+            'publications' => $totalPublications,
+            'publicationsChange' => $publicationsChangeText,
+            'approvedPublications' => $approvedPublications,
+            'grants' => $totalGrants,
+            'grantsPending' => $pendingGrants,
+            'approvedGrants' => $approvedGrants,
+            'users' => $totalUsers,
+            'activeUsers' => $activeUsers,
+            'pendingUsers' => $pendingUsers,
+            'usersChange' => $usersChangeText,
+            'approvals' => $pendingApprovals,
+            'approvalsOverdue' => $overdueApprovals,
+            'rtnSubmissions' => $totalRtnSubmissions,
+            'bonusRecognitions' => $totalBonusRecognitions,
+            'researchPoints' => $totalResearchPoints,
+        ];
+
+        // Get recent activities from database
+        $recentActivities = $this->getRecentActivities();
+
+        // Chart data for Publications by Type
+        $publicationsByType = $this->getPublicationsByType();
+
+        // Chart data for Monthly Submissions
+        $monthlySubmissions = $this->getMonthlySubmissions($currentYear);
+
+        return view('dashboard', compact('stats', 'recentActivities', 'publicationsByType', 'monthlySubmissions'));
+    }
+
+    /**
+     * Get recent activities from database
+     */
+    private function getRecentActivities(): array
+    {
+        $activities = [];
+
+        // Get recent approval workflows (most important)
+        $recentWorkflows = ApprovalWorkflow::with(['submitter', 'assignee'])
+            ->whereIn('status', ['submitted', 'pending_coordinator', 'pending_dean'])
+            ->latest('created_at')
+            ->limit(5)
+            ->get();
+
+        foreach ($recentWorkflows as $workflow) {
+            $submission = $workflow->submission;
+            $title = 'Unknown';
+            if ($submission) {
+                $title = $submission->title ?? ($submission->name ?? 'Untitled');
+            }
+            
+            $url = null;
+            try {
+                $url = route('admin.workflows.show', $workflow->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
+            $activities[] = [
+                'item' => ucfirst($workflow->submission_type) . ': ' . Str::limit($title, 45),
+                'status' => ucfirst(str_replace('_', ' ', $workflow->status)),
+                'statusClass' => $workflow->status === 'approved' ? 'success' : ($workflow->status === 'rejected' ? 'danger' : 'warning'),
+                'date' => $workflow->created_at->format('Y-m-d'),
+                'action' => 'Review',
+                'url' => $url,
+            ];
+        }
+
+        // Get recent pending publications
+        $recentPublications = Publication::whereIn('status', ['submitted', 'pending'])
+            ->with('submitter')
+            ->latest('submitted_at')
+            ->limit(3)
+            ->get();
+
+        foreach ($recentPublications as $pub) {
+            $url = null;
+            try {
+                $url = route('admin.publications.show', $pub->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
+            $activities[] = [
+                'item' => 'Publication: ' . Str::limit($pub->title, 50),
+                'status' => ucfirst($pub->status),
+                'statusClass' => $pub->status === 'approved' ? 'success' : 'warning',
+                'date' => $pub->submitted_at ? $pub->submitted_at->format('Y-m-d') : $pub->created_at->format('Y-m-d'),
+                'action' => 'Review',
+                'url' => $url,
+            ];
+        }
+
+        // Get recent pending grants
+        $recentGrants = Grant::whereIn('status', ['submitted', 'pending'])
+            ->with('submitter')
+            ->latest('submitted_at')
+            ->limit(2)
+            ->get();
+
+        foreach ($recentGrants as $grant) {
+            $url = null;
+            try {
+                $url = route('admin.grants.show', $grant->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
+            $activities[] = [
+                'item' => 'Grant: ' . Str::limit($grant->title, 50),
+                'status' => ucfirst($grant->status),
+                'statusClass' => $grant->status === 'approved' ? 'success' : 'warning',
+                'date' => $grant->submitted_at ? $grant->submitted_at->format('Y-m-d') : $grant->created_at->format('Y-m-d'),
+                'action' => 'Review',
+                'url' => $url,
+            ];
+        }
+
+        // Get recent pending user approvals
+        $pendingUsers = User::where('status', 'pending')
+            ->latest()
+            ->limit(2)
+            ->get();
+
+        foreach ($pendingUsers as $user) {
+            $url = null;
+            try {
+                $url = route('admin.users.show', $user->id);
+            } catch (\Exception $e) {
+                // Route doesn't exist, skip URL
+            }
+            
+            $activities[] = [
+                'item' => 'User: ' . $user->name . ' requested access',
+                'status' => 'New',
+                'statusClass' => 'info',
+                'date' => $user->created_at->format('Y-m-d'),
+                'action' => 'Approve',
+                'url' => $url,
+            ];
+        }
+
+        // Sort by date descending and limit to 10
+        usort($activities, function($a, $b) {
+            return strtotime($b['date']) - strtotime($a['date']);
+        });
+
+        return array_slice($activities, 0, 10);
+    }
+
+    /**
+     * Get publications grouped by type for chart
+     */
+    private function getPublicationsByType(): array
+    {
+        $publicationsByType = Publication::select('publication_type', DB::raw('count(*) as count'))
+            ->whereNotNull('publication_type')
+            ->groupBy('publication_type')
+            ->get();
+
+        $labels = [];
+        $data = [];
+        $colors = ['#4d8bff', '#0056b3', '#9ca3af', '#28a745', '#ffc107'];
+
+        foreach ($publicationsByType as $index => $type) {
+            $labels[] = ucfirst($type->publication_type ?? 'Other');
+            $data[] = $type->count;
+        }
+
+        // If no data, provide defaults
+        if (empty($labels)) {
+            $labels = ['Journal', 'Conference', 'Book'];
+            $data = [0, 0, 0];
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data,
+            'colors' => array_slice($colors, 0, count($labels)),
+        ];
+    }
+
+    /**
+     * Get monthly submissions data for chart (includes publications and grants)
+     */
+    private function getMonthlySubmissions(int $year): array
+    {
+        // Get publications by month
+        $publicationsData = Publication::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        // Get grants by month
+        $grantsData = Grant::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $publicationsDataArray = [];
+        $grantsDataArray = [];
+        $totalDataArray = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $pubCount = $publicationsData->has($i) ? $publicationsData->get($i)->count : 0;
+            $grantCount = $grantsData->has($i) ? $grantsData->get($i)->count : 0;
+            
+            $publicationsDataArray[] = $pubCount;
+            $grantsDataArray[] = $grantCount;
+            $totalDataArray[] = $pubCount + $grantCount;
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $totalDataArray,
+            'publications' => $publicationsDataArray,
+            'grants' => $grantsDataArray,
+        ];
+    }
+}

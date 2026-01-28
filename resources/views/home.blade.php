@@ -310,7 +310,9 @@ function loadPublicationModal(id) {
         </div>
     `;
 
-    fetch(`/publications/${id}`, {
+    // Use BASE_URL if available (for subdirectory deployment), otherwise use relative path
+    const baseUrl = window.BASE_URL || '';
+    fetch(`${baseUrl}/publications/${id}`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
@@ -367,7 +369,7 @@ function loadPublicationModal(id) {
                         <div class="publication-detail-actions">
                             ${pub.published_link ? `<a href="${pub.published_link}" target="_blank" class="btn btn-primary"><i class="fas fa-external-link-alt"></i> View Publication</a>` : ''}
                             ${pub.proceedings_link ? `<a href="${pub.proceedings_link}" target="_blank" class="btn btn-outline"><i class="fas fa-file-pdf"></i> View Proceedings</a>` : ''}
-                            <a href="/publications/${pub.id}" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> Full Page View</a>
+                            <a href="${window.BASE_URL || ''}/publications/${pub.id}" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> Full Page View</a>
                         </div>
                     </div>
                 `;

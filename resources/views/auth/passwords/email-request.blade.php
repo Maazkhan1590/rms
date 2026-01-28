@@ -1,93 +1,104 @@
-@extends('layouts.auth')
+@extends('layouts.public')
 
-@section('title', 'Forgot Password - RMS')
+@section('title', 'Forgot Password | Academic Research Portal')
 
 @section('content')
-<div class="auth-container">
-    <div class="auth-card">
-        <!-- Header -->
-        <div class="auth-header text-center mb-4">
-            <div class="su-logo mb-3">
-                <img src="{{ asset('images/su-logo.png') }}" alt="RMS Logo" class="img-fluid" style="max-width: 60px;"
-                     onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%230056b3%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2230%22 font-weight=%22bold%22>SU</text></svg>';">
+<!-- Forgot Password Section -->
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-container" style="max-width: 500px;">
+            <div class="auth-header">
+                <h1>Forgot Password?</h1>
+                <p>Enter your email address and we'll send you a link to reset your password.</p>
             </div>
-            <h4 class="fw-bold text-primary mb-2">Forgot Password?</h4>
-            <p class="text-muted small">Enter your email address and we'll send you a link to reset your password.</p>
-        </div>
+            <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm" class="auth-form">
+                @csrf
 
-        <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm">
-            @csrf
+                @if (session('success') || session('status'))
+                    <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #28a745; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="font-size: 1.25rem;"></i>
+                        <div>
+                            <strong>Success!</strong>
+                            <p style="margin: 0.25rem 0 0 0;">{{ session('success') ?? session('status') }}</p>
+                        </div>
+                    </div>
+                @endif
 
-            <!-- Success Message -->
-            @if (session('success') || session('status'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle me-2"></i>{{ session('success') ?? session('status') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                @if ($errors->any())
+                    <div style="background: #fee; color: #c33; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #c33;">
+                        <strong style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Please fix the following errors:
+                        </strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <div class="form-group">
+                    <label for="email">Email Address <span style="color: #ef4444;">*</span></label>
+                    <div style="position: relative;">
+                        <i class="fas fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-lighter); z-index: 1;"></i>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               class="form-control" 
+                               placeholder="Enter your email address" 
+                               value="{{ old('email') }}"
+                               required 
+                               autofocus
+                               style="padding-left: 2.75rem;">
+                    </div>
+                    <div class="form-error" id="email-error"></div>
                 </div>
-            @endif
 
-            <!-- Error Messages -->
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    @foreach ($errors->all() as $error)
-                        {{ $error }}<br>
-                    @endforeach
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i> Send Reset Link
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>
+                    <a href="{{ route('login') }}" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-arrow-left"></i> Back to Login
+                    </a>
+                </p>
+            </div>
+
+            <!-- Info Box -->
+            <div style="background: linear-gradient(135deg, #e3f2fd 0%, #f0f4ff 100%); padding: 1.25rem; border-radius: 12px; margin-top: 1.5rem; border-left: 4px solid var(--accent-color);">
+                <div style="display: flex; align-items: start; gap: 0.75rem;">
+                    <i class="fas fa-info-circle" style="color: var(--accent-color); font-size: 1.25rem; margin-top: 0.125rem;"></i>
+                    <div>
+                        <strong style="color: var(--primary-color); display: block; margin-bottom: 0.5rem;">Note:</strong>
+                        <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; line-height: 1.6;">
+                            The password reset link will expire in 60 minutes. If you don't receive an email, please check your spam folder or contact support.
+                        </p>
+                    </div>
                 </div>
-            @endif
-
-            <!-- Email Field -->
-            <div class="form-floating mb-4">
-                <input type="email" 
-                       class="form-control @error('email') is-invalid @enderror" 
-                       id="email" 
-                       name="email" 
-                       placeholder="name@example.com" 
-                       value="{{ old('email') }}"
-                       required 
-                       autofocus>
-                <label for="email"><i class="bi bi-envelope me-2"></i>Email Address</label>
-                @error('email')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
             </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 py-2 mb-3" id="submitBtn">
-                <i class="bi bi-send me-2"></i>Send Reset Link
-            </button>
-
-            <!-- Back to Login -->
-            <div class="text-center">
-                <a href="{{ route('login') }}" class="text-decoration-none">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Login
-                </a>
-            </div>
-        </form>
-
-        <!-- Info Box -->
-        <div class="alert alert-info mt-4 small" role="alert">
-            <i class="bi bi-info-circle me-2"></i>
-            <strong>Note:</strong> The password reset link will expire in 60 minutes. If you don't receive an email, check your spam folder or contact support.
         </div>
     </div>
-</div>
+</section>
 
 @push('scripts')
 <script>
 document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 });
 
-// Auto-hide alerts after 8 seconds
+// Auto-hide success messages after 8 seconds
 setTimeout(() => {
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        const bsAlert = new bootstrap.Alert(alert);
-        bsAlert.close();
+    const successMessages = document.querySelectorAll('[style*="background: #d4edda"]');
+    successMessages.forEach(msg => {
+        msg.style.opacity = '0';
+        msg.style.transition = 'opacity 0.5s';
+        setTimeout(() => msg.remove(), 500);
     });
 }, 8000);
 </script>

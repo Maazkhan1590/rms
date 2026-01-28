@@ -1,3 +1,6 @@
+# Backup of public/.htaccess - DO NOT DELETE
+# This is the standard Laravel .htaccess file
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

@@ -53,6 +53,10 @@
     @stack('scripts')
     
     <script>
+        // Set base URL for JavaScript (handles subdirectory deployment)
+        window.BASE_URL = '{{ url("/") }}';
+        window.ASSET_URL = '{{ asset("") }}';
+        
         // Auto-hide success/error messages
         setTimeout(() => {
             const messages = document.querySelectorAll('[style*="position: fixed"]');

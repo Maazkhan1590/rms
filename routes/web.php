@@ -2,11 +2,50 @@
 
 
 
+// Cache Clear Route (for deployment/maintenance)
+// Usage: /clear-cache?token=YOUR_SECRET_TOKEN
+// Set CLEAR_CACHE_TOKEN in .env file for security
+Route::get('/clear-cache', function () {
+    $token = request()->query('token');
+    $expectedToken = env('CLEAR_CACHE_TOKEN', 'change-this-secret-token');
+    
+    if ($token !== $expectedToken) {
+        return response()->json([
+            'error' => 'Unauthorized. Invalid token.',
+            'message' => 'Please provide a valid token parameter.'
+        ], 401);
+    }
+    
+    try {
+        \Artisan::call('config:clear');
+        \Artisan::call('cache:clear');
+        \Artisan::call('route:clear');
+        \Artisan::call('view:clear');
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'All caches cleared successfully!',
+            'cleared' => [
+                'config' => 'Configuration cache cleared',
+                'cache' => 'Application cache cleared',
+                'route' => 'Route cache cleared',
+                'view' => 'View cache cleared'
+            ]
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => true,
+            'message' => 'Error clearing caches: ' . $e->getMessage()
+        ], 500);
+    }
+})->name('clear-cache');
+
 // Public Home Page
 Route::get('/', 'HomeController@index')->name('welcome');
 
 // Public Publications Routes
 Route::get('publications', 'PublicationController@index')->name('publications.index');
+Route::get('publications/load-more', 'PublicationController@loadMore')->name('publications.load-more');
 Route::get('publications/create', 'PublicationController@create')->name('publications.create');
 Route::post('publications', 'PublicationController@store')->name('publications.store');
 Route::get('publications/{id}', 'PublicationController@show')->name('publications.show');
@@ -70,7 +109,7 @@ Route::post('email/resend', 'Auth\VerificationController@resend')->name('verific
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', 'block.students']], function () {
     Route::get('/', 'HomeController@index')->name('home');
     // Demo Dashboard view (Blade-layout based)
-    \Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionsController');
@@ -211,9 +250,7 @@ Route::group(['prefix' => 'faculty', 'as' => 'faculty.', 'namespace' => 'Faculty
 });
 
 // Dashboard route (authenticated users)
-Route::get('dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
     // Change password

@@ -9,7 +9,8 @@
 
     <title>@yield('title', trans('panel.site_title'))</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Custom Admin Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
     <!-- DataTables core + extensions (vanilla theme) -->
     <link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet" />
@@ -116,7 +117,7 @@
                 @endcanany
 
                 @canany(['consultancy_access', 'commercialization_access', 'partnership_access', 'conference_access', 'investment_access'])
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">Research Activities</h3>
                     <ul>
                         @can('consultancy_access')
@@ -164,7 +165,7 @@
                 @endcanany
 
                 @canany(['supervision_access', 'editorial_access', 'student_access', 'internal_funding_access'])
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">Academic Activities</h3>
                     <ul>
                         @can('supervision_access')
@@ -212,7 +213,7 @@
                 @endcanany
 
                 @can('sdg_access')
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">SDG & Impact</h3>
                     <ul>
                         <li>
@@ -281,7 +282,7 @@
                 @endcan
 
                 @can('report_access')
-                <div class="nav-section">
+                <div class="nav-section" style="display: none">
                     <h3 class="nav-section-title">Reports</h3>
                     <ul>
                         <li>
@@ -442,7 +443,7 @@
                                     Settings
                                 </a>
                                 <hr class="dropdown-divider">
-                                <a href="{{ route('logout') }}" class="dropdown-item" 
+                                <a href="{{ route('logout') }}" class="dropdown-item"
                                    onclick="event.preventDefault(); document.getElementById('logoutform').submit();">
                                     Logout
                                 </a>
@@ -1083,6 +1084,9 @@
             }
         </script>
 
+        <!-- Custom Admin Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="{{ asset('js/app.js') }}"></script>
         @yield('scripts')
 </body>
 </html>

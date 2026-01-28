@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'RMS') }} - @yield('title', 'Dashboard')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Custom Admin Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
     <!-- Charts CDN (lightweight for demo) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
     <!-- Bootstrap Icons (for simple icons without setup) -->
@@ -32,5 +33,9 @@
             </div>
         </div>
     </footer>
+    <!-- Custom Admin Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    @stack('scripts')
 </body>
 </html>

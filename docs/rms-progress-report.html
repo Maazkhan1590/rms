@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RMS Development Progress</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    body {
+      margin: 24px;
+      color: #1f2933;
+      background: #f7f9fb;
+    }
+    header {
+      border-bottom: 2px solid #2f5d62;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0; font-size: 24px; color: #1b4332; }
+    .subtitle { color: #52616b; margin-top: 6px; }
+    section { margin-bottom: 24px; }
+    h2 { font-size: 18px; margin-bottom: 10px; color: #1b4332; }
+    p { margin: 6px 0; line-height: 1.5; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th {
+      background: #e8f4f2;
+      text-align: left;
+      color: #0f3d3e;
+    }
+    .status {
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      color: #0f3d3e;
+    }
+    .done { background: #d1fae5; color: #065f46; }
+    .partial { background: #fff3cd; color: #7c4a03; }
+    .pending { background: #fee2e2; color: #991b1b; }
+    .notes { color: #374151; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RMS Development Progress</h1>
+    <div class="subtitle">
+      Updated: January 21, 2026 
+    </div>
+  </header>
+
+  <section>
+    <h2>Highlights</h2>
+    <ul>
+      <li>Core data model, migrations, and services for scoring, workflows, and evidence are implemented.</li>
+      <li>Admin portal delivered: policies, publications, grants, workflows, users, and reporting views are available.</li>
+      <li>Faculty publication submission flows and layout are present; additional faculty modules remain.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Task Status (Plan vs. Implementation)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 26%;">Plan Item</th>
+          <th style="width: 12%;">Status</th>
+          <th>Evidence / Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Phase 1: Database schema (policies, workflows, evidence, enhanced publications/grants, RTN/bonus, audit)</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">Migrations present for scoring policies/rules, policy versions, approvals, workflows, evidence files, colleges/departments, RTN submissions, bonus recognition, audit/activity logs, and enhanced publication/grant tables.</td>
+        </tr>
+        <tr>
+          <td>Phase 2: Models & services (ScoringService, WorkflowService, FileUploadService, PolicyService, ReportService)</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">Models exist for all planned entities; service classes implemented under <code>app/Services</code> with scoring, workflow, file upload, policy, and reporting logic.</td>
+        </tr>
+        <tr>
+          <td>Phase 3: Admin portal design & features (layout, dashboard, policy, publication, grant, workflow, users, reports)</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">Modern admin layout and menu; blades for dashboard, policies, policy versions, publications, grants, workflows, workflow assignments, users, colleges/departments, logs, and reports are available.</td>
+        </tr>
+        <tr>
+          <td>Phase 4.1–4.4: Faculty portal layout, dashboard, publication submission</td>
+          <td><span class="status partial">Partially done</span></td>
+          <td class="notes">Faculty layout and publication submission/dashboard views exist; faculty routes primarily handle publications. Additional faculty modules below remain.</td>
+        </tr>
+        <tr>
+          <td>Phase 4.5: Faculty grant submission</td>
+          <td><span class="status pending">Pending</span></td>
+          <td class="notes">No dedicated faculty grant controller or views under <code>resources/views/faculty/grants</code>; faculty routes do not expose grant submission.</td>
+        </tr>
+        <tr>
+          <td>Phase 4.6: Faculty RTN & bonuses submission</td>
+          <td><span class="status pending">Pending</span></td>
+          <td class="notes">RTN/bonus controllers exist for admin/public flows, but faculty-specific submission views/routes are not present.</td>
+        </tr>
+        <tr>
+          <td>Phase 4.7: Faculty profile</td>
+          <td><span class="status pending">Pending</span></td>
+          <td class="notes">No profile controller/views under <code>resources/views/faculty/profile</code>.</td>
+        </tr>
+        <tr>
+          <td>Phase 4.8: Public/Faculty publication browsing</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">Public publication list/detail blades and routes are in place; faculty publication list/show/edit implemented.</td>
+        </tr>
+        <tr>
+          <td>Phase 5: Approval workflow system</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">Workflow models, services, admin controllers, and views (pending/review) exist; routes include approve/reject/return actions.</td>
+        </tr>
+        <tr>
+          <td>Phase 6: Dynamic scoring engine</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes"><code>ScoringService</code> implements publication/grant/RTN/bonus calculations with policy versioning and caps; scoring policies and rules are modeled and routable.</td>
+        </tr>
+        <tr>
+          <td>Phase 7: File upload & evidence management</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">EvidenceFile model and migration exist; <code>FileUploadService</code> handles validation/storage; evidence tables added to publications/grants.</td>
+        </tr>
+        <tr>
+          <td>Phase 8: Reporting system (CV, summaries, exports)</td>
+          <td><span class="status partial">Partially done</span></td>
+          <td class="notes">ReportService present; admin report blades for index/CV exist. Export (Excel/Word) integrations and analytics dashboards need completion.</td>
+        </tr>
+        <tr>
+          <td>Phase 9: Routes & middleware</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">Routes organized for admin, faculty, and public areas with role checks; middleware such as student blocking is configured.</td>
+        </tr>
+        <tr>
+          <td>Phase 10: Testing, validation, polish</td>
+          <td><span class="status partial">Partially done</span></td>
+          <td class="notes">Request classes exist for several forms, but comprehensive validation coverage, UI polish, and automated tests are still limited.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Next Priority Items</h2>
+    <ul>
+      <li>Deliver faculty grant, RTN, bonus, and profile modules with views/routes.</li>
+      <li>Finalize reporting exports (PDF/Excel/Word) and analytics dashboards.</li>
+      <li>Expand form validations, error handling pages, and automated test coverage.</li>
+    </ul>
+  </section>
+</body>
+</html>

@@ -45,30 +45,30 @@
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Submission Guidelines</a></li>
                 </ul>
             </div>
-            <div class="footer-col">
-                <h3 class="footer-title">Resources</h3>
-                <ul class="footer-links">
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Author Resources</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Reviewer Guidelines</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Editorial Board</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Publication Ethics</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Research Tools</a></li>
-                </ul>
-            </div>
+{{--            <div class="footer-col">--}}
+{{--                <h3 class="footer-title">Resources</h3>--}}
+{{--                <ul class="footer-links">--}}
+{{--                    <li><a href="#"><i class="fas fa-chevron-right"></i> Author Resources</a></li>--}}
+{{--                    <li><a href="#"><i class="fas fa-chevron-right"></i> Reviewer Guidelines</a></li>--}}
+{{--                    <li><a href="#"><i class="fas fa-chevron-right"></i> Editorial Board</a></li>--}}
+{{--                    <li><a href="#"><i class="fas fa-chevron-right"></i> Publication Ethics</a></li>--}}
+{{--                    <li><a href="#"><i class="fas fa-chevron-right"></i> Research Tools</a></li>--}}
+{{--                </ul>--}}
+{{--            </div>--}}
             <div class="footer-col">
                 <h3 class="footer-title">Contact Us</h3>
                 <ul class="footer-contact">
                     <li>
                         <i class="fas fa-map-marker-alt"></i>
-                        <span>123 Research Avenue<br>Academic City, AC 12345</span>
+                        <span>123 Research Avenue<br>ABCDSSSSS</span>
                     </li>
                     <li>
                         <i class="fas fa-phone"></i>
-                        <span>+1 (555) 123-4567</span>
+                        <span>+14545454545</span>
                     </li>
                     <li>
                         <i class="fas fa-envelope"></i>
-                        <span>contact@researchportal.edu</span>
+                        <span>test@researchportal.edu</span>
                     </li>
                     <li>
                         <i class="fas fa-clock"></i>

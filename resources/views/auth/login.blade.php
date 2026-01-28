@@ -57,17 +57,6 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Sign In</button>
             </form>
-            <div class="auth-divider">
-                <span>Or continue with</span>
-            </div>
-            <div class="social-auth">
-                <button type="button" class="btn-social google">
-                    <i class="fab fa-google"></i> Google
-                </button>
-                <button type="button" class="btn-social orcid">
-                    <i class="fab fa-orcid"></i> ORCID
-                </button>
-            </div>
             <div class="auth-footer">
                 <p>Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
             </div>

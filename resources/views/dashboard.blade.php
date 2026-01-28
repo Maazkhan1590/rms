@@ -21,30 +21,72 @@
     <div class="dashboard-grid mb-xl">
         <div class="card col-lg-3 col-md-6">
             <div class="card-body">
-                <div class="text-muted">Publications</div>
-                <div class="card-stat-value">128</div>
-                <div class="badge badge-success">+12% vs last month</div>
+                <div class="text-muted">Total Publications</div>
+                <div class="card-stat-value">{{ number_format($stats['publications'] ?? 0) }}</div>
+                <div class="badge badge-success">{{ $stats['publicationsChange'] ?? '' }}</div>
             </div>
         </div>
         <div class="card col-lg-3 col-md-6">
             <div class="card-body">
-                <div class="text-muted">Grants</div>
-                <div class="card-stat-value">34</div>
-                <div class="badge badge-info">5 pending</div>
+                <div class="text-muted">Approved Publications</div>
+                <div class="card-stat-value">{{ number_format($stats['approvedPublications'] ?? 0) }}</div>
+                <div class="badge badge-success">{{ $stats['publications'] > 0 ? round((($stats['approvedPublications'] ?? 0) / $stats['publications']) * 100, 1) : 0 }}% approved</div>
             </div>
         </div>
         <div class="card col-lg-3 col-md-6">
             <div class="card-body">
-                <div class="text-muted">Citations</div>
-                <div class="card-stat-value">2,476</div>
-                <div class="badge badge-primary">+184 this month</div>
+                <div class="text-muted">Total Grants</div>
+                <div class="card-stat-value">{{ number_format($stats['grants'] ?? 0) }}</div>
+                <div class="badge badge-info">{{ $stats['grantsPending'] ?? 0 }} pending</div>
             </div>
         </div>
         <div class="card col-lg-3 col-md-6">
             <div class="card-body">
-                <div class="text-muted">Approvals</div>
-                <div class="card-stat-value">9</div>
-                <div class="badge badge-warning">3 overdue</div>
+                <div class="text-muted">Approved Grants</div>
+                <div class="card-stat-value">{{ number_format($stats['approvedGrants'] ?? 0) }}</div>
+                <div class="badge badge-success">{{ $stats['grants'] > 0 ? round((($stats['approvedGrants'] ?? 0) / $stats['grants']) * 100, 1) : 0 }}% approved</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Total Users</div>
+                <div class="card-stat-value">{{ number_format($stats['users'] ?? 0) }}</div>
+                <div class="badge badge-primary">{{ $stats['usersChange'] ?? '' }}</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Active Users</div>
+                <div class="card-stat-value">{{ number_format($stats['activeUsers'] ?? 0) }}</div>
+                <div class="badge badge-success">{{ $stats['pendingUsers'] ?? 0 }} pending</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Pending Approvals</div>
+                <div class="card-stat-value">{{ number_format($stats['approvals'] ?? 0) }}</div>
+                <div class="badge badge-warning">{{ $stats['approvalsOverdue'] ?? 0 }} overdue</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Research Points</div>
+                <div class="card-stat-value">{{ number_format($stats['researchPoints'] ?? 0) }}</div>
+                <div class="badge badge-primary">Total allocated</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">RTN Submissions</div>
+                <div class="card-stat-value">{{ number_format($stats['rtnSubmissions'] ?? 0) }}</div>
+                <div class="badge badge-info">All time</div>
+            </div>
+        </div>
+        <div class="card col-lg-3 col-md-6">
+            <div class="card-body">
+                <div class="text-muted">Bonus Recognitions</div>
+                <div class="card-stat-value">{{ number_format($stats['bonusRecognitions'] ?? 0) }}</div>
+                <div class="badge badge-success">All time</div>
             </div>
         </div>
     </div>
@@ -78,24 +120,24 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($recentActivities ?? [] as $activity)
                             <tr>
-                                <td>Publication: Deep Learning in Healthcare</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                                <td>2026-01-02</td>
-                                <td><button class="btn btn-outline btn-sm">Review</button></td>
+                                <td>{{ $activity['item'] }}</td>
+                                <td><span class="badge badge-{{ $activity['statusClass'] }}">{{ $activity['status'] }}</span></td>
+                                <td>{{ $activity['date'] }}</td>
+                                <td>
+                                    @if(isset($activity['url']))
+                                    <a href="{{ $activity['url'] }}" class="btn btn-outline btn-sm">{{ $activity['action'] }}</a>
+                                    @else
+                                    <button class="btn btn-outline btn-sm">{{ $activity['action'] }}</button>
+                                    @endif
+                                </td>
                             </tr>
+                            @empty
                             <tr>
-                                <td>Grant: AI for Diagnostics</td>
-                                <td><span class="badge badge-success">Approved</span></td>
-                                <td>2026-01-01</td>
-                                <td><button class="btn btn-outline btn-sm">Open</button></td>
+                                <td colspan="4" class="text-center text-muted">No recent activity</td>
                             </tr>
-                            <tr>
-                                <td>User: Jane Doe requested access</td>
-                                <td><span class="badge badge-info">New</span></td>
-                                <td>2025-12-30</td>
-                                <td><button class="btn btn-outline btn-sm">Approve</button></td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -120,4 +162,103 @@
     </div>
 
   </div>
+
+  @push('scripts')
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Wait for Chart.js to be available
+          function initCharts() {
+              if (typeof Chart === 'undefined') {
+                  setTimeout(initCharts, 100);
+                  return;
+              }
+
+              // Publications by Type Chart
+              const pubCanvas = document.getElementById('chartPublications');
+              if (pubCanvas) {
+                  const pubCtx = pubCanvas.getContext('2d');
+                  new Chart(pubCtx, {
+                      type: 'doughnut',
+                      data: {
+                          labels: @json($publicationsByType['labels'] ?? ['Journal', 'Conference', 'Book']),
+                          datasets: [{
+                              data: @json($publicationsByType['data'] ?? [52, 36, 12]),
+                              backgroundColor: @json($publicationsByType['colors'] ?? ['#4d8bff', '#0056b3', '#9ca3af'])
+                          }]
+                      },
+                      options: {
+                          responsive: true,
+                          maintainAspectRatio: true,
+                          plugins: {
+                              legend: {
+                                  position: 'bottom'
+                              }
+                          }
+                      }
+                  });
+              }
+
+              // Monthly Submissions Chart
+              const subCanvas = document.getElementById('chartSubmissions');
+              if (subCanvas) {
+                  const subCtx = subCanvas.getContext('2d');
+                  const monthlyData = @json($monthlySubmissions ?? []);
+                  
+                  const datasets = [{
+                      label: 'Total Submissions',
+                      data: monthlyData.data || [],
+                      borderColor: '#0056b3',
+                      backgroundColor: 'rgba(0,86,179,0.1)',
+                      tension: 0.3,
+                      fill: true
+                  }];
+                  
+                  // Add separate lines for publications and grants if available
+                  if (monthlyData.publications && monthlyData.grants) {
+                      datasets.push({
+                          label: 'Publications',
+                          data: monthlyData.publications,
+                          borderColor: '#28a745',
+                          backgroundColor: 'rgba(40,167,69,0.1)',
+                          tension: 0.3,
+                          fill: false
+                      });
+                      datasets.push({
+                          label: 'Grants',
+                          data: monthlyData.grants,
+                          borderColor: '#ffc107',
+                          backgroundColor: 'rgba(255,193,7,0.1)',
+                          tension: 0.3,
+                          fill: false
+                      });
+                  }
+                  
+                  new Chart(subCtx, {
+                      type: 'line',
+                      data: {
+                          labels: monthlyData.labels || ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                          datasets: datasets
+                      },
+                      options: {
+                          responsive: true,
+                          maintainAspectRatio: true,
+                          scales: {
+                              y: {
+                                  beginAtZero: true
+                              }
+                          },
+                          plugins: {
+                              legend: {
+                                  position: 'bottom'
+                              }
+                          }
+                      }
+                  });
+              }
+          }
+
+          initCharts();
+      });
+  </script>
+  @endpush
 @endsection

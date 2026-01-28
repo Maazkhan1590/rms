@@ -1,219 +1,251 @@
-@extends('layouts.auth')
+@extends('layouts.public')
 
-@section('title', 'Reset Password - RMS')
+@section('title', 'Reset Password | Academic Research Portal')
 
 @section('content')
-<div class="auth-container">
-    <div class="auth-card">
-        <!-- Header -->
-        <div class="auth-header text-center mb-4">
-            <div class="su-logo mb-3">
-                <img src="{{ asset('images/su-logo.png') }}" alt="RMS Logo" class="img-fluid" style="max-width: 60px;"
-                     onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%230056b3%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2230%22 font-weight=%22bold%22>SU</text></svg>';">
+<!-- Reset Password Section -->
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-container" style="max-width: 550px;">
+            <div class="auth-header">
+                <h1>Reset Your Password</h1>
+                <p>Create a new secure password for your account</p>
             </div>
-            <h4 class="fw-bold text-primary mb-2">Reset Your Password</h4>
-            <p class="text-muted small">Create a new secure password for your account</p>
-        </div>
+            <form method="POST" action="{{ route('password.update') }}" id="resetPasswordForm" class="auth-form">
+                @csrf
+                <input type="hidden" name="token" value="{{ $token }}">
 
-        <form method="POST" action="{{ route('password.update') }}" id="resetPasswordForm">
-            @csrf
-            <input type="hidden" name="token" value="{{ $token }}">
-
-            <!-- Error Messages -->
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    @foreach ($errors->all() as $error)
-                        {{ $error }}<br>
-                    @endforeach
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            <!-- Email Field -->
-            <div class="form-floating mb-3">
-                <input type="email" 
-                       class="form-control @error('email') is-invalid @enderror" 
-                       id="email" 
-                       name="email" 
-                       placeholder="name@example.com" 
-                       value="{{ $email ?? old('email') }}"
-                       required 
-                       readonly>
-                <label for="email"><i class="bi bi-envelope me-2"></i>Email Address</label>
-                @error('email')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <!-- New Password Field -->
-            <div class="mb-3">
-                <label for="password" class="form-label fw-semibold">
-                    <i class="bi bi-lock me-2"></i>New Password
-                </label>
-                <input type="password" 
-                       class="form-control @error('password') is-invalid @enderror" 
-                       id="password" 
-                       name="password"
-                       required>
-                
-                <!-- Password Strength Meter -->
-                <div class="password-strength mt-2">
-                    <div class="progress" style="height: 5px;">
-                        <div class="progress-bar" id="passwordStrength" role="progressbar"></div>
+                @if ($errors->any())
+                    <div style="background: #fee; color: #c33; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #c33;">
+                        <strong style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Please fix the following errors:
+                        </strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="d-flex justify-content-between mt-1">
-                        <small class="text-muted" id="strengthText">Password strength</small>
-                        <button type="button" class="btn btn-sm btn-link p-0 text-muted" onclick="togglePassword('password')">
-                            <i class="bi bi-eye" id="toggleIcon1"></i>
+                @endif
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-lighter); z-index: 1;"></i>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               class="form-control" 
+                               placeholder="Enter your email address" 
+                               value="{{ $email ?? old('email') }}"
+                               required 
+                               readonly
+                               style="padding-left: 2.75rem; background: var(--light-color);">
+                    </div>
+                    <div class="form-error" id="email-error"></div>
+                </div>
+
+                <!-- New Password Field -->
+                <div class="form-group">
+                    <label for="password">New Password <span style="color: #ef4444;">*</span></label>
+                    <div style="position: relative;">
+                        <i class="fas fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-lighter); z-index: 1;"></i>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               class="form-control" 
+                               placeholder="Enter your new password" 
+                               required
+                               style="padding-left: 2.75rem; padding-right: 3rem;">
+                        <button type="button" class="toggle-password" id="toggle-password" onclick="togglePasswordVisibility('password', 'toggle-password-icon')" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-lighter); cursor: pointer; z-index: 1;">
+                            <i class="fas fa-eye" id="toggle-password-icon"></i>
                         </button>
                     </div>
+                    
+                    <!-- Password Strength Indicator -->
+                    <div id="password-strength" style="margin-top: 0.5rem; display: none;">
+                        <div style="height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; margin-bottom: 0.5rem;">
+                            <div id="strength-bar" style="height: 100%; width: 0%; transition: all 0.3s; border-radius: 2px;"></div>
+                        </div>
+                        <small id="strength-text" style="color: var(--text-lighter); font-size: 0.85rem;"></small>
+                    </div>
+
+                    <!-- Password Requirements -->
+                    <div id="password-requirements" style="margin-top: 0.75rem; padding: 0.75rem; background: var(--light-color); border-radius: 8px; display: none;">
+                        <small style="color: var(--text-light); font-weight: 600; display: block; margin-bottom: 0.5rem;">Password must contain:</small>
+                        <ul style="margin: 0; padding-left: 1.25rem; list-style: none;">
+                            <li id="req-length" style="color: var(--text-lighter); font-size: 0.85rem; margin-bottom: 0.25rem;">
+                                <i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> At least 8 characters
+                            </li>
+                            <li id="req-uppercase" style="color: var(--text-lighter); font-size: 0.85rem; margin-bottom: 0.25rem;">
+                                <i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> One uppercase letter
+                            </li>
+                            <li id="req-lowercase" style="color: var(--text-lighter); font-size: 0.85rem; margin-bottom: 0.25rem;">
+                                <i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> One lowercase letter
+                            </li>
+                            <li id="req-number" style="color: var(--text-lighter); font-size: 0.85rem; margin-bottom: 0.25rem;">
+                                <i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> One number
+                            </li>
+                            <li id="req-special" style="color: var(--text-lighter); font-size: 0.85rem;">
+                                <i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> One special character
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-error" id="password-error"></div>
                 </div>
 
-                <!-- Password Requirements -->
-                <ul class="list-unstyled small text-muted mt-2 mb-0">
-                    <li id="req-length"><i class="bi bi-circle"></i> At least 8 characters</li>
-                    <li id="req-uppercase"><i class="bi bi-circle"></i> One uppercase letter</li>
-                    <li id="req-lowercase"><i class="bi bi-circle"></i> One lowercase letter</li>
-                    <li id="req-number"><i class="bi bi-circle"></i> One number</li>
-                    <li id="req-special"><i class="bi bi-circle"></i> One special character</li>
-                </ul>
-
-                @error('password')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <!-- Confirm Password Field -->
-            <div class="mb-4">
-                <label for="password_confirmation" class="form-label fw-semibold">
-                    <i class="bi bi-lock-fill me-2"></i>Confirm New Password
-                </label>
-                <div class="position-relative">
-                    <input type="password" 
-                           class="form-control @error('password_confirmation') is-invalid @enderror" 
-                           id="password_confirmation" 
-                           name="password_confirmation"
-                           required>
-                    <button type="button" class="btn btn-sm btn-link password-toggle" onclick="togglePassword('password_confirmation')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-                        <i class="bi bi-eye" id="toggleIcon2"></i>
-                    </button>
+                <!-- Confirm Password Field -->
+                <div class="form-group">
+                    <label for="password_confirmation">Confirm New Password <span style="color: #ef4444;">*</span></label>
+                    <div style="position: relative;">
+                        <i class="fas fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-lighter); z-index: 1;"></i>
+                        <input type="password" 
+                               id="password_confirmation" 
+                               name="password_confirmation" 
+                               class="form-control" 
+                               placeholder="Confirm your new password" 
+                               required
+                               style="padding-left: 2.75rem; padding-right: 3rem;">
+                        <button type="button" class="toggle-password" id="toggle-password-confirm" onclick="togglePasswordVisibility('password_confirmation', 'toggle-password-confirm-icon')" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-lighter); cursor: pointer; z-index: 1;">
+                            <i class="fas fa-eye" id="toggle-password-confirm-icon"></i>
+                        </button>
+                    </div>
+                    <div id="password-match" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+                    <div class="form-error" id="password-confirmation-error"></div>
                 </div>
-                <div id="passwordMatch" class="small mt-1"></div>
-                @error('password_confirmation')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                @enderror
-            </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 py-2 mb-3" id="submitBtn">
-                <i class="bi bi-check-circle me-2"></i>Reset Password
-            </button>
-
-            <!-- Back to Login -->
-            <div class="text-center">
-                <a href="{{ route('login') }}" class="text-decoration-none">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Login
-                </a>
+                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                    <i class="fas fa-check-circle"></i> Reset Password
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>
+                    <a href="{{ route('login') }}" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-arrow-left"></i> Back to Login
+                    </a>
+                </p>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+</section>
 
 @push('scripts')
 <script>
 // Toggle password visibility
-function togglePassword(fieldId) {
+function togglePasswordVisibility(fieldId, iconId) {
     const input = document.getElementById(fieldId);
-    const icon = document.getElementById(fieldId === 'password' ? 'toggleIcon1' : 'toggleIcon2');
+    const icon = document.getElementById(iconId);
     
     if (input.type === 'password') {
         input.type = 'text';
-        icon.classList.remove('bi-eye');
-        icon.classList.add('bi-eye-slash');
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
     } else {
         input.type = 'password';
-        icon.classList.remove('bi-eye-slash');
-        icon.classList.add('bi-eye');
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
     }
 }
 
-// Password strength meter and requirements checker
-document.getElementById('password').addEventListener('input', function(e) {
+// Password strength checker
+const passwordInput = document.getElementById('password');
+const passwordStrength = document.getElementById('password-strength');
+const strengthBar = document.getElementById('strength-bar');
+const strengthText = document.getElementById('strength-text');
+const passwordRequirements = document.getElementById('password-requirements');
+
+passwordInput.addEventListener('input', function(e) {
     const password = e.target.value;
-    let strength = 0;
     
-    // Check requirements
+    if (password.length > 0) {
+        passwordStrength.style.display = 'block';
+        passwordRequirements.style.display = 'block';
+    } else {
+        passwordStrength.style.display = 'none';
+        passwordRequirements.style.display = 'none';
+        return;
+    }
+    
+    let strength = 0;
     const requirements = {
         'req-length': password.length >= 8,
         'req-uppercase': /[A-Z]/.test(password),
         'req-lowercase': /[a-z]/.test(password),
         'req-number': /[0-9]/.test(password),
-        'req-special': /[$@#&!]/.test(password)
+        'req-special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
     };
     
     // Update requirement indicators
     Object.keys(requirements).forEach(req => {
         const element = document.getElementById(req);
+        const icon = element.querySelector('i');
         if (requirements[req]) {
-            element.innerHTML = element.innerHTML.replace('bi-circle', 'bi-check-circle-fill text-success');
+            element.style.color = '#22c55e';
+            icon.classList.remove('fa-circle');
+            icon.classList.add('fa-check-circle');
             strength += 20;
         } else {
-            element.innerHTML = element.innerHTML.replace('bi-check-circle-fill text-success', 'bi-circle');
+            element.style.color = 'var(--text-lighter)';
+            icon.classList.remove('fa-check-circle');
+            icon.classList.add('fa-circle');
         }
     });
     
     // Update strength bar
-    const bar = document.getElementById('passwordStrength');
-    const text = document.getElementById('strengthText');
-    
-    bar.style.width = strength + '%';
+    strengthBar.style.width = strength + '%';
     
     if (strength < 40) {
-        bar.className = 'progress-bar bg-danger';
-        text.textContent = 'Weak password';
+        strengthBar.style.background = '#ef4444';
+        strengthText.textContent = 'Weak password';
+        strengthText.style.color = '#ef4444';
     } else if (strength < 80) {
-        bar.className = 'progress-bar bg-warning';
-        text.textContent = 'Fair password';
+        strengthBar.style.background = '#eab308';
+        strengthText.textContent = 'Fair password';
+        strengthText.style.color = '#eab308';
     } else {
-        bar.className = 'progress-bar bg-success';
-        text.textContent = 'Strong password';
+        strengthBar.style.background = '#22c55e';
+        strengthText.textContent = 'Strong password';
+        strengthText.style.color = '#22c55e';
     }
 });
 
 // Password match checker
-document.getElementById('password_confirmation').addEventListener('input', function(e) {
-    const password = document.getElementById('password').value;
+const passwordConfirmInput = document.getElementById('password_confirmation');
+const passwordMatchDiv = document.getElementById('password-match');
+
+passwordConfirmInput.addEventListener('input', function(e) {
+    const password = passwordInput.value;
     const confirm = e.target.value;
-    const matchDiv = document.getElementById('passwordMatch');
     
     if (confirm.length > 0) {
         if (password === confirm) {
-            matchDiv.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i>Passwords match';
-            matchDiv.className = 'small mt-1 text-success';
+            passwordMatchDiv.innerHTML = '<i class="fas fa-check-circle" style="color: #22c55e; margin-right: 0.5rem;"></i><span style="color: #22c55e;">Passwords match</span>';
         } else {
-            matchDiv.innerHTML = '<i class="bi bi-x-circle-fill text-danger me-1"></i>Passwords do not match';
-            matchDiv.className = 'small mt-1 text-danger';
+            passwordMatchDiv.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444; margin-right: 0.5rem;"></i><span style="color: #ef4444;">Passwords do not match</span>';
         }
     } else {
-        matchDiv.innerHTML = '';
+        passwordMatchDiv.innerHTML = '';
     }
 });
 
 // Form submission
 document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
-    const password = document.getElementById('password').value;
-    const confirm = document.getElementById('password_confirmation').value;
+    const password = passwordInput.value;
+    const confirm = passwordConfirmInput.value;
     
     if (password !== confirm) {
         e.preventDefault();
-        alert('Passwords do not match!');
+        passwordMatchDiv.innerHTML = '<span style="color: #ef4444;">Passwords do not match!</span>';
+        passwordConfirmInput.focus();
         return false;
     }
     
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Resetting Password...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting Password...';
 });
 </script>
 @endpush

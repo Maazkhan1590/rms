@@ -1,83 +1,11 @@
-@extends('layouts.base')
+@extends('layouts.public')
 
-@section('title', 'Submit Publication - RMS')
+@section('title', 'Submit Publication | Academic Research Portal')
 
 @section('content')
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --primary: #0056b3;
-        --primary-dark: #003d82;
-        --primary-light: #4d8bff;
-        --text-primary: #1a202c;
-        --text-secondary: #4a5568;
-        --text-light: #718096;
-        --bg-white: #ffffff;
-        --bg-light: #f7fafc;
-        --bg-gray: #edf2f7;
-        --border: #e2e8f0;
-        --success: #22c55e;
-        --danger: #ef4444;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
-    }
-
-    .publication-create-page {
-        min-height: 100vh;
-        background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
-        padding-top: 100px;
-        padding-bottom: 4rem;
-    }
-
-    .page-header {
-        text-align: center;
-        margin-bottom: 3rem;
-        padding: 0 2rem;
-    }
-
-    .page-badge {
-        display: inline-block;
-        background: var(--primary);
-        color: white;
-        padding: 0.5rem 1.25rem;
-        border-radius: 50px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        letter-spacing: 0.05em;
-    }
-
-    .page-title {
-        font-family: 'Playfair Display', serif;
-        font-size: clamp(2.25rem, 4vw, 3rem);
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-        letter-spacing: -0.02em;
-    }
-
-    .page-subtitle {
-        font-size: 1.125rem;
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.7;
-    }
-
-    .form-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 2rem;
-    }
-
-    .form-card {
-        background: white;
-        border-radius: 20px;
-        padding: 3rem;
-        box-shadow: var(--shadow-xl);
-        border: 1px solid var(--border);
+    .auth-container {
+        max-width: 900px !important;
     }
 
     /* Stepper Styles */
@@ -101,7 +29,7 @@
         left: 10%;
         right: 10%;
         height: 3px;
-        background: var(--border);
+        background: var(--border-color);
         z-index: 1;
         border-radius: 2px;
     }
@@ -111,7 +39,7 @@
         top: 30px;
         left: 10%;
         height: 3px;
-        background: var(--primary);
+        background: var(--primary-color);
         z-index: 2;
         border-radius: 2px;
         transition: width 0.3s ease;
@@ -129,24 +57,24 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background: var(--bg-gray);
-        color: var(--text-secondary);
+        background: var(--light-color);
+        color: var(--text-light);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 1rem;
         font-weight: 700;
         font-size: 1.125rem;
-        border: 3px solid var(--border);
+        border: 3px solid var(--border-color);
         transition: all 0.3s ease;
         position: relative;
     }
 
     .step-circle.active {
-        background: var(--primary);
+        background: var(--primary-color);
         color: white;
-        border-color: var(--primary);
-        box-shadow: 0 8px 20px rgba(0, 86, 179, 0.3);
+        border-color: var(--primary-color);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         transform: scale(1.1);
     }
 
@@ -170,7 +98,7 @@
     }
 
     .step-item.active .step-label {
-        color: var(--primary);
+        color: var(--primary-color);
     }
 
     .step-item.completed .step-label {
@@ -194,46 +122,10 @@
     }
 
     .step-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.875rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-        color: var(--text-primary);
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--border);
-    }
-
-    .form-group {
-        margin-bottom: 1.75rem;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 0.625rem;
+        font-size: 1.5rem;
         font-weight: 600;
-        color: var(--text-primary);
-        font-size: 0.9375rem;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.875rem 1.25rem;
-        border: 2px solid var(--border);
-        border-radius: 12px;
-        font-size: 0.9375rem;
-        transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
-        background: white;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
-    }
-
-    .form-control.is-invalid {
-        border-color: var(--danger);
+        margin-bottom: 2rem;
+        color: var(--text-color);
     }
 
     textarea.form-control {
@@ -255,98 +147,33 @@
         font-size: 1rem;
     }
 
-    /* Button Styles */
-    .btn {
-        padding: 0.875rem 2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.9375rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-    }
-
-    .btn-primary {
-        background: var(--primary);
-        color: white;
-        box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
-    }
-
-    .btn-primary:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 86, 179, 0.4);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: white;
-        color: var(--text-secondary);
-        border: 2px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-        background: var(--bg-light);
-    }
-
-    .btn-outline {
-        background: transparent;
-        color: var(--primary);
-        border: 2px solid var(--primary);
-    }
-
-    .btn-outline:hover {
-        background: var(--primary);
-        color: white;
-    }
-
-    .btn-danger {
-        background: var(--danger);
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #dc2626;
-    }
-
-    .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.8125rem;
-    }
-
     .form-actions {
         display: flex;
         justify-content: space-between;
         gap: 1rem;
         margin-top: 2.5rem;
         padding-top: 2rem;
-        border-top: 1px solid var(--border);
+        border-top: 1px solid var(--border-color);
     }
 
     /* Author Item Styles */
     .author-item {
         margin-bottom: 1.5rem;
         padding: 2rem;
-        background: var(--bg-light);
+        background: var(--light-color);
         border-radius: 16px;
-        border: 2px solid var(--border);
+        border: 2px solid var(--border-color);
         transition: all 0.3s ease;
     }
 
     .author-item:hover {
-        border-color: var(--primary);
+        border-color: var(--accent-color);
         box-shadow: var(--shadow-md);
     }
 
     .author-item.primary {
-        background: linear-gradient(135deg, rgba(0, 86, 179, 0.05) 0%, rgba(0, 86, 179, 0.02) 100%);
-        border-color: var(--primary);
+        background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(100, 255, 218, 0.05) 100%);
+        border-color: var(--accent-color);
     }
 
     .author-header {
@@ -367,7 +194,7 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        background: var(--primary);
+        background: var(--primary-color);
         color: white;
         padding: 0.5rem 1rem;
         border-radius: 8px;
@@ -386,14 +213,14 @@
     }
 
     .checkbox-wrapper:hover {
-        background: rgba(0, 86, 179, 0.05);
+        background: rgba(100, 255, 218, 0.1);
     }
 
     .checkbox-wrapper input[type="checkbox"] {
         width: 18px;
         height: 18px;
         cursor: pointer;
-        accent-color: var(--primary);
+        accent-color: var(--accent-color);
     }
 
     /* Responsive */
@@ -427,21 +254,26 @@
     }
 </style>
 
-<div class="publication-create-page">
-    <div class="page-header">
-        <span class="page-badge">
-            <i class="fas fa-book"></i> Publication Submission
-        </span>
-        <h1 class="page-title">Submit Your Publication</h1>
-        <p class="page-subtitle">
-            Share your research work with the academic community. Fill out the form below to submit your publication.
-        </p>
-    </div>
-
-    <div class="form-container">
-        <div class="form-card">
-            <form id="publicationForm" method="POST" action="{{ route('publications.store') }}">
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Submit Your Publication</h1>
+                <p>Share your research work with the academic community</p>
+            </div>
+            <form id="publicationForm" method="POST" action="{{ route('publications.store') }}" class="auth-form">
                 @csrf
+
+                @if ($errors->any())
+                    <div style="background: #fee; color: #c33; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #c33;">
+                        <strong>Please fix the following errors:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <!-- Stepper Progress -->
                 <div class="stepper-container">
@@ -467,7 +299,7 @@
                     <h2 class="step-title">Basic Information</h2>
                     
                     <div class="form-group">
-                        <label class="form-label" for="title">
+                        <label for="title">
                             Publication Title <span style="color: var(--danger);">*</span>
                         </label>
                         <input type="text" class="form-control" id="title" name="title" required 
@@ -479,7 +311,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="publication_type">
+                        <label for="publication_type">
                             Publication Type <span style="color: var(--danger);">*</span>
                         </label>
                         <select class="form-control" id="publication_type" name="publication_type" required>
@@ -497,7 +329,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="publication_year">
+                        <label for="publication_year">
                             Publication Year <span style="color: var(--danger);">*</span>
                         </label>
                         <input type="number" class="form-control" id="publication_year" name="publication_year" 
@@ -509,7 +341,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="abstract">Abstract</label>
+                        <label for="abstract">Abstract</label>
                         <textarea class="form-control" id="abstract" name="abstract" rows="6" 
                                   placeholder="Provide a brief summary of your publication...">{{ old('abstract') }}</textarea>
                         @error('abstract')
@@ -519,7 +351,7 @@
 
                     <div class="form-actions">
                         <div></div>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()">
+                        <button type="button" class="btn btn-primary btn-block" onclick="nextStep()">
                             Next Step <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -531,7 +363,7 @@
                     
                     <div id="journal_fields" style="display: none;">
                         <div class="form-group">
-                            <label class="form-label" for="journal_name">Journal Name</label>
+                            <label for="journal_name">Journal Name</label>
                             <input type="text" class="form-control" id="journal_name" name="journal_name" 
                                    placeholder="Enter journal name"
                                    value="{{ old('journal_name') }}">
@@ -543,7 +375,7 @@
 
                     <div id="conference_fields" style="display: none;">
                         <div class="form-group">
-                            <label class="form-label" for="conference_name">Conference Name</label>
+                            <label for="conference_name">Conference Name</label>
                             <input type="text" class="form-control" id="conference_name" name="conference_name" 
                                    placeholder="Enter conference name"
                                    value="{{ old('conference_name') }}">
@@ -555,7 +387,7 @@
 
                     <div id="book_fields" style="display: none;">
                         <div class="form-group">
-                            <label class="form-label" for="publisher">Publisher</label>
+                            <label for="publisher">Publisher</label>
                             <input type="text" class="form-control" id="publisher" name="publisher" 
                                    placeholder="Enter publisher name"
                                    value="{{ old('publisher') }}">
@@ -566,7 +398,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="doi">DOI (Digital Object Identifier)</label>
+                        <label for="doi">DOI (Digital Object Identifier)</label>
                         <input type="text" class="form-control" id="doi" name="doi" 
                                placeholder="10.xxxx/xxxxx"
                                value="{{ old('doi') }}">
@@ -576,7 +408,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="isbn">ISBN</label>
+                        <label for="isbn">ISBN</label>
                         <input type="text" class="form-control" id="isbn" name="isbn" 
                                placeholder="Enter ISBN"
                                value="{{ old('isbn') }}">
@@ -586,7 +418,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="published_link">Publication Link</label>
+                        <label for="published_link">Publication Link</label>
                         <input type="url" class="form-control" id="published_link" name="published_link" 
                                placeholder="https://..."
                                value="{{ old('published_link') }}">
@@ -596,7 +428,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="proceedings_link">Proceedings Link</label>
+                        <label for="proceedings_link">Proceedings Link</label>
                         <input type="url" class="form-control" id="proceedings_link" name="proceedings_link" 
                                placeholder="https://..."
                                value="{{ old('proceedings_link') }}">
@@ -609,7 +441,7 @@
                         <button type="button" class="btn btn-secondary" onclick="prevStep()">
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()">
+                        <button type="button" class="btn btn-primary btn-block" onclick="nextStep()">
                             Next Step <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -627,7 +459,7 @@
                             <div class="author-header">
                                 <div style="flex: 1;">
                                     <div class="form-group">
-                                        <label class="form-label">
+                                        <label>
                                             Author Name <span style="color: var(--danger);">*</span>
                                         </label>
                                         <input type="text" class="form-control author-name" 
@@ -635,7 +467,7 @@
                                                placeholder="Enter author full name">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Email (Optional)</label>
+                                        <label>Email (Optional)</label>
                                         <input type="email" class="form-control author-email" 
                                                name="authors[0][email]" 
                                                placeholder="author@example.com">
@@ -663,7 +495,7 @@
                         <button type="button" class="btn btn-secondary" onclick="prevStep()">
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary btn-block">
                             <i class="fas fa-paper-plane"></i> Submit Publication
                         </button>
                     </div>
@@ -671,7 +503,7 @@
             </form>
         </div>
     </div>
-</div>
+</section>
 
 <script>
     let currentStep = 1;
