@@ -342,7 +342,7 @@
                 @endcan
 
                 <!-- Faculty Portal Links -->
-                @if(auth()->user()->hasRole('faculty') || auth()->user()->hasRole('user'))
+                @can('research_access')
                 <div class="nav-section">
                     <h3 class="nav-section-title">My Research</h3>
                     <ul>
@@ -408,7 +408,7 @@
                         </li>
                     </ul>
                 </div>
-                @endif
+                @endcan
             </nav>
 
             <div class="sidebar-footer">

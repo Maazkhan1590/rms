@@ -542,6 +542,11 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => 128,
                 'title' => 'audit_read',
             ],
+            // My Research Access (for faculty dashboard)
+            [
+                'id'    => 129,
+                'title' => 'research_access',
+            ],
         ];
 
         // Use updateOrCreate to avoid duplicate key errors

@@ -204,6 +204,7 @@ class PermissionRoleTableSeeder extends Seeder
             $reportCrud,
             $collegePermissions,
             $auditPermissions,
+            ['research_access'], // My Research section access
             $selfService
         );
 
@@ -211,6 +212,7 @@ class PermissionRoleTableSeeder extends Seeder
         $coordinatorPermissions = array_merge(
             $managementReadOnly,
             [
+                'research_access', // My Research section access
                 'publication_access',
                 'publication_create',
                 'publication_read',
@@ -265,65 +267,15 @@ class PermissionRoleTableSeeder extends Seeder
         // Faculty gets create/read access to their own submissions
         $facultyPermissions = array_merge(
             [
-                'publication_access',
-                'publication_create',
-                'publication_read',
-                'publication_update',
-                'grant_access',
-                'grant_create',
-                'grant_read',
-                'rtn_access',
-                'rtn_create',
-                'rtn_read',
-                'rtn_update',
-                'bonus_access',
-                'bonus_create',
-                'bonus_read',
-                'consultancy_access',
-                'consultancy_create',
-                'consultancy_read',
-                'consultancy_update',
-                'commercialization_access',
-                'commercialization_create',
-                'commercialization_read',
-                'commercialization_update',
-                'conference_access',
-                'conference_create',
-                'conference_read',
-                'conference_update',
-                'investment_access',
-                'investment_read',
-                'supervision_access',
-                'supervision_read',
-                'editorial_access',
-                'editorial_read',
-                'student_access',
-                'student_read',
-                'internal_funding_access',
-                'internal_funding_read',
-                'block_funding_access',
-                'block_funding_read',
-                'sdg_access',
-                'sdg_read',
-                'workflow_access',
-                'workflow_read',
-                'report_access',
-                'report_read',
+                'research_access', // My Research section access
+
             ],
             $selfService
         );
 
-        // Student gets limited access - can view and submit publications only
-        $studentPermissions = [
-            'publication_access',
-            'publication_create',
-            'publication_read',
-        ];
-
         $this->syncRolePermissions('Dean', $permissions, $deanPermissions);
         $this->syncRolePermissions('Coordinator', $permissions, $coordinatorPermissions);
         $this->syncRolePermissions('Faculty', $permissions, $facultyPermissions);
-        $this->syncRolePermissions('Student', $permissions, $studentPermissions);
     }
 
     protected function syncRolePermissions(string $roleTitle, $permissions, array $permissionTitles): void

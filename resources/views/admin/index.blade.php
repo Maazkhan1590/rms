@@ -114,6 +114,7 @@
                 </div>
             @else
                 <!-- Faculty Stats -->
+                @can('research_access')
                 <div class="card card-stat">
                     <div class="card-body">
                         <div class="card-stat-label">My Publications ({{ $year }})</div>
@@ -161,6 +162,7 @@
                         <div class="card-stat-change">Year {{ $year }}</div>
                     </div>
                 </div>
+                @endcan
             @endif
         </div>
 
@@ -239,6 +241,7 @@
         </div>
         @else
         <!-- Faculty Charts - Only Their Data -->
+        @can('research_access')
         <div class="dashboard-content">
             <!-- Chart Section -->
             <div class="card">
@@ -310,10 +313,11 @@
                 </div>
             </div>
         </div>
+        @endcan
         @endif
 
         <!-- Faculty Dashboard Tabs -->
-        @if(!auth()->user()->isAdmin && !auth()->user()->isResearchCoordinator() && !auth()->user()->isDean())
+        @can('research_access')
         <style>
             .dashboard-tabs {
                 display: flex;
@@ -680,7 +684,7 @@
                 event.target.closest('.dashboard-tab').classList.add('active');
             }
         </script>
-        @endif
+        @endcan
 
         <!-- Quick Actions -->
         <div class="card">
