@@ -120,8 +120,27 @@ class WorkflowController extends Controller
 
         // Get the submission
         $submission = $workflow->submission;
+        
+        // Get eligible users for reassignment based on current workflow step
+        $eligibleUsers = [];
+        if ($workflow->current_step == 2) {
+            // Coordinator step - get coordinators and admins
+            $eligibleUsers = \App\Models\User::whereHas('roles', function($q) {
+                $q->whereIn('title', ['Coordinator', 'Admin']);
+            })->pluck('name', 'id');
+        } elseif ($workflow->current_step == 3) {
+            // Dean step - get deans and admins
+            $eligibleUsers = \App\Models\User::whereHas('roles', function($q) {
+                $q->whereIn('title', ['Dean', 'Admin']);
+            })->pluck('name', 'id');
+        } else {
+            // Default - get all coordinators, deans, and admins
+            $eligibleUsers = \App\Models\User::whereHas('roles', function($q) {
+                $q->whereIn('title', ['Coordinator', 'Dean', 'Admin']);
+            })->pluck('name', 'id');
+        }
 
-        return view('admin.workflows.show', compact('workflow', 'submission'));
+        return view('admin.workflows.show', compact('workflow', 'submission', 'eligibleUsers'));
     }
 
     /**
@@ -284,6 +303,57 @@ class WorkflowController extends Controller
             
             return redirect()->back()
                 ->with('error', 'Error returning workflow: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Manually reassign workflow to a different user (Admin only)
+     * 
+     * Allows admins to reassign workflows when approvers are unavailable
+     */
+    public function reassign(Request $request, ApprovalWorkflow $workflow)
+    {
+        abort_if(Gate::denies('workflow_update'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $request->validate([
+            'assigned_to' => 'required|exists:users,id',
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $newAssignee = \App\Models\User::findOrFail($request->assigned_to);
+            
+            // Verify user has appropriate role for the current workflow step
+            $currentStep = $workflow->current_step;
+            $isValidAssignee = false;
+            
+            if ($currentStep == 2 && ($newAssignee->isResearchCoordinator() || $newAssignee->isAdmin())) {
+                $isValidAssignee = true;
+            } elseif ($currentStep == 3 && ($newAssignee->isDean() || $newAssignee->isAdmin())) {
+                $isValidAssignee = true;
+            } elseif ($newAssignee->isAdmin()) {
+                $isValidAssignee = true; // Admin can always be assigned
+            }
+            
+            if (!$isValidAssignee) {
+                return redirect()->back()
+                    ->with('error', 'Selected user does not have the appropriate role for this workflow step.');
+            }
+
+            $this->workflowService->reassignWorkflow(
+                $workflow,
+                $newAssignee,
+                auth()->user(),
+                $request->reason ?? 'Manually reassigned by admin'
+            );
+
+            return redirect()->route('admin.workflows.show', $workflow->id)
+                ->with('success', 'Workflow reassigned successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error reassigning workflow: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->with('error', 'Error reassigning workflow: ' . $e->getMessage());
         }
     }
 }

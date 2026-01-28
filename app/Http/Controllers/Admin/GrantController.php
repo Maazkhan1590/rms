@@ -163,16 +163,21 @@ class GrantController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Find workflow - MUST exist for approval
+            // Find workflow - create default if doesn't exist
             $workflow = ApprovalWorkflow::where('submission_type', 'grant')
                 ->where('submission_id', $grant->id)
                 ->first();
 
-            // STRICT WORKFLOW: Workflow must exist - no admin bypass
+            // If no workflow exists, create a default one and submit it
+            // This handles cases where grant was submitted before workflow was created
             if (!$workflow) {
-                \DB::rollBack();
-                return redirect()->back()
-                    ->with('error', 'No workflow found for this grant. The grant must be submitted through the proper workflow process.');
+                // Create workflow in draft status
+                $workflow = $this->workflowService->createWorkflow('grant', $grant->id, $grant->submitter ?? auth()->user());
+                
+                // If grant is already submitted (not draft), submit the workflow
+                if (in_array($grant->status, ['submitted', 'pending_coordinator', 'pending_dean'])) {
+                    $workflow = $this->workflowService->submitWorkflow($workflow);
+                }
             }
 
             // Check if user can approve this workflow step (STRICT - NO ADMIN BYPASS)

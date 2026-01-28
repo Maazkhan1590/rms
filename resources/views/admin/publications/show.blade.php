@@ -157,6 +157,17 @@
         @endphp
         
         @if($workflow)
+        <div class="alert alert-info" style="margin-bottom: 20px;">
+            <h5><i class="fas fa-info-circle"></i> Workflow Process:</h5>
+            <p style="margin: 0;">
+                <strong>Default Workflow:</strong> Faculty → Research Coordinator → Dean → Approved<br>
+                @if($workflow->fallback_used)
+                    <strong>Current Status:</strong> <span class="badge badge-warning">Fallback Workflow Active</span> (Coordinator skipped, going directly to Dean)
+                @else
+                    <strong>Current Status:</strong> Following default workflow path
+                @endif
+            </p>
+        </div>
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
@@ -259,6 +270,16 @@
                     </div>
                 </div>
             </div>
+        </div>
+        @else
+        <!-- No Workflow Found -->
+        <div class="alert alert-warning" style="margin-top: 20px;">
+            <h5><i class="fas fa-exclamation-triangle"></i> No Workflow Found</h5>
+            <p style="margin: 0;">
+                This publication does not have a workflow yet. When you approve it, a default workflow will be automatically created.<br>
+                <strong>Workflow Process:</strong> Faculty → Research Coordinator → Dean → Approved<br>
+                <small>If no Coordinator is assigned, it will skip directly to Dean (Fallback Workflow).</small>
+            </p>
         </div>
         @endif
         

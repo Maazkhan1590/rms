@@ -349,16 +349,21 @@ class PublicationController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Find workflow - MUST exist for approval
+            // Find workflow - create default if doesn't exist
             $workflow = ApprovalWorkflow::where('submission_type', 'publication')
                 ->where('submission_id', $publication->id)
                 ->first();
 
-            // STRICT WORKFLOW: Workflow must exist - no admin bypass
+            // If no workflow exists, create a default one and submit it
+            // This handles cases where publication was submitted before workflow was created
             if (!$workflow) {
-                \DB::rollBack();
-                return redirect()->back()
-                    ->with('error', 'No workflow found for this publication. The publication must be submitted through the proper workflow process.');
+                // Create workflow in draft status
+                $workflow = $this->workflowService->createWorkflow('publication', $publication->id, $publication->submitter ?? auth()->user());
+                
+                // If publication is already submitted (not draft), submit the workflow
+                if (in_array($publication->status, ['submitted', 'pending_coordinator', 'pending_dean'])) {
+                    $workflow = $this->workflowService->submitWorkflow($workflow);
+                }
             }
 
             // Check if user can approve this workflow step (STRICT - NO ADMIN BYPASS)
@@ -418,10 +423,13 @@ class PublicationController extends Controller
                     }
                 } else {
                     // Workflow still in progress - update status based on workflow status
-                    $publication->update([
-                        'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
-                                   ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
-                    ]);
+                    // Status should already be updated by approveWorkflow, but ensure sync
+                    $publication->refresh();
+                    if ($publication->status !== $workflow->status && in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted'])) {
+                        $publication->update([
+                            'status' => $workflow->status,
+                        ]);
+                    }
                 }
             }
 

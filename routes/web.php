@@ -195,6 +195,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('workflows/{workflow}/approve', 'WorkflowController@approve')->name('workflows.approve');
     Route::post('workflows/{workflow}/reject', 'WorkflowController@reject')->name('workflows.reject');
     Route::post('workflows/{workflow}/return', 'WorkflowController@return')->name('workflows.return');
+    Route::post('workflows/{workflow}/reassign', 'WorkflowController@reassign')->name('workflows.reassign');
     Route::resource('workflows', 'WorkflowController');
 
     // Scoring Policies

@@ -9,6 +9,30 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Workflow Service
+ * 
+ * Approval Workflow Configuration:
+ * 
+ * Default Workflow: Faculty → Research Coordinator → Dean → Approved
+ * - Step 1: Faculty submits (draft)
+ * - Step 2: Coordinator reviews (pending_coordinator)
+ * - Step 3: Dean reviews (pending_dean)
+ * - Step 4: Approved
+ * 
+ * Fallback Workflow: Faculty → Dean → Approved (if no coordinator assigned)
+ * - If no Research Coordinator is found, workflow skips to Dean
+ * - fallback_used flag is set to true
+ * 
+ * Auto-escalation: If approver unavailable, workflows can be manually reassigned by Admin
+ * - Admins can use reassignWorkflow() method to manually assign workflows
+ * - Auto-escalation runs after 7 days of pending status
+ * 
+ * Scope: Assignments can be college/department-specific or global (leave empty for all)
+ * - NULL college/department = Global scope (applies to all)
+ * - Specific college/department = Only applies to that scope
+ * - Priority: Specific assignments > College-level > Global assignments
+ */
 class WorkflowService
 {
     /**
@@ -36,6 +60,9 @@ class WorkflowService
 
     /**
      * Submit a workflow for approval
+     * 
+     * Default Workflow: Faculty → Research Coordinator → Dean → Approved
+     * Fallback Workflow: Faculty → Dean → Approved (if no coordinator assigned)
      *
      * @param ApprovalWorkflow $workflow
      * @return ApprovalWorkflow
@@ -46,25 +73,37 @@ class WorkflowService
             $workflow->status = 'submitted';
             $workflow->current_step = 1;
             
-            // Find coordinator
+            // STEP 1: Try to find Research Coordinator
+            // Priority: Specific assignment > College-level > Global assignment
             $coordinator = $this->findCoordinator($workflow);
             
             if ($coordinator) {
+                // DEFAULT WORKFLOW: Coordinator found → Assign to Coordinator (Step 2)
                 $workflow->assigned_to = $coordinator->id;
                 $workflow->status = 'pending_coordinator';
                 $workflow->current_step = 2;
             } else {
-                // No coordinator found, skip to dean
+                // FALLBACK WORKFLOW: No Coordinator → Skip to Dean (Step 3)
                 $dean = $this->findDean($workflow);
                 if ($dean) {
                     $workflow->assigned_to = $dean->id;
                     $workflow->status = 'pending_dean';
                     $workflow->current_step = 3;
-                    $workflow->fallback_used = true;
+                    $workflow->fallback_used = true; // Mark that coordinator step was skipped
+                } else {
+                    // No Dean found either - keep as submitted (will need manual assignment)
+                    $workflow->status = 'submitted';
                 }
             }
             
             $workflow->save();
+            
+            // Update submission status to match workflow status
+            $submission = $workflow->submission;
+            if ($submission) {
+                $submission->status = $workflow->status;
+                $submission->save();
+            }
             
             // Log submission
             $this->logAction($workflow, 'submitted', $workflow->submitter, 'Workflow submitted');
@@ -85,9 +124,16 @@ class WorkflowService
     {
         DB::transaction(function () use ($workflow, $approver, $comments) {
             $previousStatus = $workflow->status;
+            $submission = $workflow->submission;
             
             if ($workflow->current_step == 2) {
                 // Coordinator approved, move to dean
+                // Update publication status and store coordinator as approver (intermediate)
+                if ($submission) {
+                    $submission->status = 'pending_dean';
+                    $submission->save();
+                }
+                
                 $dean = $this->findDean($workflow);
                 if ($dean) {
                     $workflow->assigned_to = $dean->id;
@@ -97,11 +143,26 @@ class WorkflowService
                     // No dean found, auto-approve
                     $workflow->status = 'approved';
                     $workflow->assigned_to = null;
+                    // Final approval - store approver_id
+                    if ($submission) {
+                        $submission->status = 'approved';
+                        $submission->approved_at = now();
+                        $submission->approver_id = $approver->id; // Store the approver (coordinator in this case)
+                        $submission->save();
+                    }
                 }
             } elseif ($workflow->current_step == 3) {
                 // Dean approved, workflow complete
                 $workflow->status = 'approved';
                 $workflow->assigned_to = null;
+                
+                // Final approval - store approver_id (Dean)
+                if ($submission) {
+                    $submission->status = 'approved';
+                    $submission->approved_at = now();
+                    $submission->approver_id = $approver->id; // Store the Dean as final approver
+                    $submission->save();
+                }
             }
             
             $workflow->save();
@@ -109,9 +170,9 @@ class WorkflowService
             // Log approval
             $this->logAction($workflow, 'approved', $approver, $comments, $previousStatus, $workflow->status);
             
-            // If fully approved, update the submission
+            // If fully approved, finalize (lock points, etc.)
             if ($workflow->status === 'approved') {
-                $this->finalizeApproval($workflow);
+                $this->finalizeApproval($workflow, $approver);
             }
         });
 
@@ -165,44 +226,111 @@ class WorkflowService
 
     /**
      * Find coordinator for a workflow
+     * 
+     * Workflow Assignment Logic:
+     * - NULL college/department = Global scope (applies to all)
+     * - Specific college/department = Only applies to that scope
+     * - Priority: Specific assignments > Global assignments
      *
      * @param ApprovalWorkflow $workflow
      * @return User|null
      */
     private function findCoordinator(ApprovalWorkflow $workflow): ?User
     {
-        $assignment = WorkflowAssignment::active()
+        // First try to find specific assignment (college + department match)
+        $specificAssignment = WorkflowAssignment::active()
             ->forRole('research_coordinator')
-            ->where(function ($query) use ($workflow) {
-                $query->whereNull('college')
-                    ->orWhere('college', $workflow->college);
-            })
-            ->where(function ($query) use ($workflow) {
-                $query->whereNull('department')
-                    ->orWhere('department', $workflow->department);
-            })
+            ->where('college', $workflow->college)
+            ->where('department', $workflow->department)
+            ->first();
+        
+        if ($specificAssignment) {
+            return $specificAssignment->user;
+        }
+        
+        // Then try college-level assignment (department is NULL = all departments in college)
+        $collegeAssignment = WorkflowAssignment::active()
+            ->forRole('research_coordinator')
+            ->where('college', $workflow->college)
+            ->whereNull('department')
+            ->first();
+        
+        if ($collegeAssignment) {
+            return $collegeAssignment->user;
+        }
+        
+        // Finally try global assignment (both college and department are NULL = all)
+        $globalAssignment = WorkflowAssignment::active()
+            ->forRole('research_coordinator')
+            ->whereNull('college')
+            ->whereNull('department')
             ->first();
 
-        return $assignment ? $assignment->user : null;
+        return $globalAssignment ? $globalAssignment->user : null;
     }
 
     /**
      * Find dean for a workflow
+     * 
+     * Workflow Assignment Logic:
+     * - NULL college = Global scope (applies to all colleges)
+     * - Specific college = Only applies to that college
+     * - Priority: Specific assignments > Global assignments
      *
      * @param ApprovalWorkflow $workflow
      * @return User|null
      */
     private function findDean(ApprovalWorkflow $workflow): ?User
     {
-        $assignment = WorkflowAssignment::active()
+        // First try to find college-specific assignment
+        $collegeAssignment = WorkflowAssignment::active()
             ->forRole('dean')
-            ->where(function ($query) use ($workflow) {
-                $query->whereNull('college')
-                    ->orWhere('college', $workflow->college);
-            })
+            ->where('college', $workflow->college)
+            ->first();
+        
+        if ($collegeAssignment) {
+            return $collegeAssignment->user;
+        }
+        
+        // Then try global assignment (college is NULL = all colleges)
+        $globalAssignment = WorkflowAssignment::active()
+            ->forRole('dean')
+            ->whereNull('college')
             ->first();
 
-        return $assignment ? $assignment->user : null;
+        return $globalAssignment ? $globalAssignment->user : null;
+    }
+    
+    /**
+     * Manually reassign a workflow to a specific user (Admin only)
+     * 
+     * This allows admins to reassign workflows when approvers are unavailable
+     *
+     * @param ApprovalWorkflow $workflow
+     * @param User $newAssignee
+     * @param User $reassigner The admin performing the reassignment
+     * @param string|null $reason Reason for reassignment
+     * @return ApprovalWorkflow
+     */
+    public function reassignWorkflow(ApprovalWorkflow $workflow, User $newAssignee, User $reassigner, ?string $reason = null): ApprovalWorkflow
+    {
+        DB::transaction(function () use ($workflow, $newAssignee, $reassigner, $reason) {
+            $previousAssignee = $workflow->assignee;
+            $workflow->assigned_to = $newAssignee->id;
+            $workflow->save();
+            
+            // Log reassignment
+            $comments = $reason ?? 'Workflow manually reassigned by admin';
+            if ($previousAssignee) {
+                $comments .= sprintf(' (from %s to %s)', $previousAssignee->name, $newAssignee->name);
+            } else {
+                $comments .= sprintf(' (assigned to %s)', $newAssignee->name);
+            }
+            
+            $this->logAction($workflow, 'reassigned', $reassigner, $comments);
+        });
+
+        return $workflow->fresh();
     }
 
     /**
@@ -240,23 +368,32 @@ class WorkflowService
      * Finalize approval - update the submission model
      *
      * @param ApprovalWorkflow $workflow
+     * @param User $approver The user who approved (final approver)
      * @return void
      */
-    private function finalizeApproval(ApprovalWorkflow $workflow): void
+    private function finalizeApproval(ApprovalWorkflow $workflow, User $approver): void
     {
         $submission = $workflow->submission;
         
         if ($submission) {
-            $submission->status = 'approved';
-            $submission->approved_at = now();
-            $submission->approver_id = $workflow->assignee->id ?? null;
-            $submission->save();
+            // Status and approver_id should already be set in approveWorkflow
+            // But ensure they're set correctly
+            if ($submission->status !== 'approved') {
+                $submission->status = 'approved';
+            }
+            if (!$submission->approved_at) {
+                $submission->approved_at = now();
+            }
+            if (!$submission->approver_id) {
+                $submission->approver_id = $approver->id;
+            }
             
             // Lock points if applicable
-            if (method_exists($submission, 'update')) {
+            if (property_exists($submission, 'points_locked')) {
                 $submission->points_locked = true;
-                $submission->save();
             }
+            
+            $submission->save();
         }
     }
 

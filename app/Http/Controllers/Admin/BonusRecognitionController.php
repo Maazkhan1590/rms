@@ -154,16 +154,21 @@ class BonusRecognitionController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Find workflow - MUST exist for approval
+            // Find workflow - create default if doesn't exist
             $workflow = ApprovalWorkflow::where('submission_type', 'bonus')
                 ->where('submission_id', $bonusRecognition->id)
                 ->first();
 
-            // STRICT WORKFLOW: Workflow must exist - no admin bypass
+            // If no workflow exists, create a default one and submit it
+            // This handles cases where bonus recognition was submitted before workflow was created
             if (!$workflow) {
-                \DB::rollBack();
-                return redirect()->back()
-                    ->with('error', 'No workflow found for this bonus recognition. The recognition must be submitted through the proper workflow process.');
+                // Create workflow in draft status
+                $workflow = $this->workflowService->createWorkflow('bonus', $bonusRecognition->id, $bonusRecognition->user ?? auth()->user());
+                
+                // If bonus recognition is already submitted (not draft), submit the workflow
+                if (in_array($bonusRecognition->status, ['submitted', 'pending_coordinator', 'pending_dean'])) {
+                    $workflow = $this->workflowService->submitWorkflow($workflow);
+                }
             }
 
             // Check if user can approve this workflow step (STRICT - NO ADMIN BYPASS)

@@ -215,6 +215,11 @@
                 <button type="button" class="btn btn-warning" onclick="showReturnModal()">
                     <i class="fas fa-undo"></i> Return for Revision
                 </button>
+                @can('workflow_update')
+                <button type="button" class="btn btn-info" onclick="showReassignModal()">
+                    <i class="fas fa-user-edit"></i> Reassign Workflow
+                </button>
+                @endcan
             @endif
         </div>
     </div>
@@ -276,6 +281,61 @@
     </div>
 </div>
 
+<!-- Reassign Modal -->
+@can('workflow_update')
+<div class="modal fade" id="reassignModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reassign Workflow</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form action="{{ route('admin.workflows.reassign', $workflow->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Current Assignee:</strong> 
+                        {{ $workflow->assignee ? $workflow->assignee->name . ' (' . $workflow->assignee->email . ')' : 'Unassigned' }}
+                    </div>
+                    <div class="form-group">
+                        <label for="reassign_user">Assign To <span class="text-danger">*</span></label>
+                        <select class="form-control" id="reassign_user" name="assigned_to" required>
+                            <option value="">Select User</option>
+                            @foreach($eligibleUsers ?? [] as $userId => $userName)
+                                <option value="{{ $userId }}" {{ $workflow->assigned_to == $userId ? 'selected' : '' }}>
+                                    {{ $userName }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small class="form-text text-muted">
+                            @if($workflow->current_step == 2)
+                                Select a Research Coordinator or Admin for this step.
+                            @elseif($workflow->current_step == 3)
+                                Select a Dean or Admin for this step.
+                            @else
+                                Select an appropriate approver for this workflow step.
+                            @endif
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="reassign_reason">Reason (Optional)</label>
+                        <textarea class="form-control" id="reassign_reason" name="reason" rows="3" 
+                                  placeholder="Enter reason for reassignment..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info">Reassign Workflow</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcan
+
 <script>
     function showRejectModal() {
         $('#rejectModal').modal('show');
@@ -284,5 +344,11 @@
     function showReturnModal() {
         $('#returnModal').modal('show');
     }
+    
+    @can('workflow_update')
+    function showReassignModal() {
+        $('#reassignModal').modal('show');
+    }
+    @endcan
 </script>
 @endsection
