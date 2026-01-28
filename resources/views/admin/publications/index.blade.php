@@ -198,9 +198,33 @@
                 { data: 'type', name: 'type', orderable: false },
                 { data: 'author', name: 'author' },
                 { data: 'year', name: 'year' },
-                { data: 'status', name: 'status', orderable: false },
-                { data: 'workflow', name: 'workflow', orderable: false },
-                { data: 'points', name: 'points', orderable: false },
+                { 
+                    data: 'status', 
+                    name: 'status', 
+                    orderable: false,
+                    render: function(data, type, row) {
+                        return data; // HTML is already escaped in controller
+                    }
+                },
+                { 
+                    data: 'workflow', 
+                    name: 'workflow', 
+                    orderable: false,
+                    render: function(data, type, row) {
+                        if (type === 'display' || type === 'type') {
+                            return data || '<span class="badge badge-secondary">No Workflow</span>';
+                        }
+                        return data || '';
+                    }
+                },
+                { 
+                    data: 'points', 
+                    name: 'points', 
+                    orderable: false,
+                    render: function(data, type, row) {
+                        return data || '<span class="text-muted">-</span>';
+                    }
+                },
                 { data: 'submitted', name: 'submitted' },
                 { data: 'actions', name: 'actions', orderable: false, searchable: false }
             ],
@@ -224,7 +248,27 @@
                     previous: "Previous"
                 }
             },
-            responsive: true
+            responsive: true,
+            columnDefs: [
+                {
+                    targets: [6], // Workflow column (0-indexed)
+                    render: function(data, type, row) {
+                        if (type === 'display' || type === 'type') {
+                            return data || '<span class="badge badge-secondary">No Workflow</span>';
+                        }
+                        return data || '';
+                    }
+                },
+                {
+                    targets: [5, 7], // Status and Points columns
+                    render: function(data, type, row) {
+                        if (type === 'display' || type === 'type') {
+                            return data || '';
+                        }
+                        return data || '';
+                    }
+                }
+            ]
         });
 
     });

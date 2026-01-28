@@ -398,6 +398,7 @@
                                     <th>Type</th>
                                     <th>Year</th>
                                     <th>Status</th>
+                                    <th>Workflow</th>
                                     <th>Points</th>
                                     <th>Actions</th>
                                 </tr>
@@ -417,12 +418,50 @@
                                     <td>
                                         @if($publication->status == 'approved')
                                             <span class="badge badge-success">Approved</span>
-                                        @elseif($publication->status == 'submitted')
+                                        @elseif($publication->status == 'submitted' || $publication->status == 'pending_coordinator' || $publication->status == 'pending_dean')
                                             <span class="badge badge-warning">Submitted</span>
                                         @elseif($publication->status == 'rejected')
                                             <span class="badge badge-danger">Rejected</span>
+                                        @elseif($publication->status == 'draft')
+                                            <span class="badge badge-secondary">Draft</span>
                                         @else
                                             <span class="badge badge-secondary">{{ ucfirst($publication->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            $workflow = $publication->workflow;
+                                        @endphp
+                                        @if($workflow)
+                                            @if($workflow->status == 'pending_coordinator')
+                                                <span class="badge badge-warning" title="Pending Coordinator Approval">
+                                                    <i class="fas fa-user-tie"></i> Coordinator
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'pending_dean')
+                                                <span class="badge badge-info" title="Pending Dean Approval">
+                                                    <i class="fas fa-user-graduate"></i> Dean
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'submitted')
+                                                <span class="badge badge-secondary"><i class="fas fa-clock"></i> Submitted</span>
+                                            @elseif($workflow->status == 'approved')
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
+                                            @elseif($workflow->status == 'rejected')
+                                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>
+                                            @else
+                                                <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $workflow->status)) }}</span>
+                                            @endif
+                                        @else
+                                            <span class="badge badge-secondary">No Workflow</span>
                                         @endif
                                     </td>
                                     <td>
@@ -472,6 +511,7 @@
                                     <th>Amount (OMR)</th>
                                     <th>Year</th>
                                     <th>Status</th>
+                                    <th>Workflow</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -497,6 +537,42 @@
                                             <span class="badge badge-danger">Rejected</span>
                                         @else
                                             <span class="badge badge-secondary">{{ ucfirst($grant->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            $workflow = $grant->workflow;
+                                        @endphp
+                                        @if($workflow)
+                                            @if($workflow->status == 'pending_coordinator')
+                                                <span class="badge badge-warning" title="Pending Coordinator Approval">
+                                                    <i class="fas fa-user-tie"></i> Coordinator
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'pending_dean')
+                                                <span class="badge badge-info" title="Pending Dean Approval">
+                                                    <i class="fas fa-user-graduate"></i> Dean
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'submitted')
+                                                <span class="badge badge-secondary"><i class="fas fa-clock"></i> Submitted</span>
+                                            @elseif($workflow->status == 'approved')
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
+                                            @elseif($workflow->status == 'rejected')
+                                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>
+                                            @else
+                                                <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $workflow->status)) }}</span>
+                                            @endif
+                                        @else
+                                            <span class="badge badge-secondary">No Workflow</span>
                                         @endif
                                     </td>
                                     <td>
@@ -536,6 +612,7 @@
                                     <th>RTN Type</th>
                                     <th>Year</th>
                                     <th>Status</th>
+                                    <th>Workflow</th>
                                     <th>Points</th>
                                     <th>Actions</th>
                                 </tr>
@@ -561,6 +638,42 @@
                                             <span class="badge badge-danger">Rejected</span>
                                         @else
                                             <span class="badge badge-secondary">{{ ucfirst($rtn->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            $workflow = $rtn->workflow;
+                                        @endphp
+                                        @if($workflow)
+                                            @if($workflow->status == 'pending_coordinator')
+                                                <span class="badge badge-warning" title="Pending Coordinator Approval">
+                                                    <i class="fas fa-user-tie"></i> Coordinator
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'pending_dean')
+                                                <span class="badge badge-info" title="Pending Dean Approval">
+                                                    <i class="fas fa-user-graduate"></i> Dean
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'submitted')
+                                                <span class="badge badge-secondary"><i class="fas fa-clock"></i> Submitted</span>
+                                            @elseif($workflow->status == 'approved')
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
+                                            @elseif($workflow->status == 'rejected')
+                                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>
+                                            @else
+                                                <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $workflow->status)) }}</span>
+                                            @endif
+                                        @else
+                                            <span class="badge badge-secondary">No Workflow</span>
                                         @endif
                                     </td>
                                     <td>
@@ -607,6 +720,7 @@
                                     <th>Recognition Type</th>
                                     <th>Year</th>
                                     <th>Status</th>
+                                    <th>Workflow</th>
                                     <th>Points</th>
                                     <th>Actions</th>
                                 </tr>
@@ -632,6 +746,42 @@
                                             <span class="badge badge-danger">Rejected</span>
                                         @else
                                             <span class="badge badge-secondary">{{ ucfirst($bonus->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            $workflow = $bonus->workflow;
+                                        @endphp
+                                        @if($workflow)
+                                            @if($workflow->status == 'pending_coordinator')
+                                                <span class="badge badge-warning" title="Pending Coordinator Approval">
+                                                    <i class="fas fa-user-tie"></i> Coordinator
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'pending_dean')
+                                                <span class="badge badge-info" title="Pending Dean Approval">
+                                                    <i class="fas fa-user-graduate"></i> Dean
+                                                </span>
+                                                @if($workflow->assignee)
+                                                    <br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> {{ $workflow->assignee->name }}</small>
+                                                @else
+                                                    <br><small style="color: #999; font-size: 0.85em;">Unassigned</small>
+                                                @endif
+                                            @elseif($workflow->status == 'submitted')
+                                                <span class="badge badge-secondary"><i class="fas fa-clock"></i> Submitted</span>
+                                            @elseif($workflow->status == 'approved')
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
+                                            @elseif($workflow->status == 'rejected')
+                                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>
+                                            @else
+                                                <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $workflow->status)) }}</span>
+                                            @endif
+                                        @else
+                                            <span class="badge badge-secondary">No Workflow</span>
                                         @endif
                                     </td>
                                     <td>

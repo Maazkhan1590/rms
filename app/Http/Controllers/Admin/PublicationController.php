@@ -115,34 +115,60 @@ class PublicationController extends Controller
 
         // Format data for DataTables
         $data = $publications->map(function($publication) {
+            // Load workflow with assignee relationship
             $workflow = \App\Models\ApprovalWorkflow::where('submission_type', 'publication')
                 ->where('submission_id', $publication->id)
+                ->with('assignee')
                 ->first();
             
-            $workflowStatus = 'No Workflow';
             $workflowBadge = '<span class="badge badge-secondary">No Workflow</span>';
             
             if ($workflow) {
                 $workflowStatus = ucfirst(str_replace('_', ' ', $workflow->status));
+                
+                // Build workflow badge with status and assigned user info
                 if ($workflow->status == 'pending_coordinator') {
-                    $workflowBadge = '<span class="badge badge-warning"><i class="fas fa-user-tie"></i> Coordinator</span>';
+                    $assignedUser = $workflow->assignee ? $workflow->assignee->name : 'Unassigned';
+                    $workflowBadge = '<span class="badge badge-warning" title="Pending Coordinator Approval - Assigned to: ' . htmlspecialchars($assignedUser) . '"><i class="fas fa-user-tie"></i> Coordinator</span>';
+                    if ($workflow->assignee) {
+                        $workflowBadge .= '<br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> ' . htmlspecialchars($workflow->assignee->name) . '</small>';
+                    } else {
+                        $workflowBadge .= '<br><small style="color: #999; font-size: 0.85em;">Unassigned</small>';
+                    }
                 } elseif ($workflow->status == 'pending_dean') {
-                    $workflowBadge = '<span class="badge badge-info"><i class="fas fa-user-graduate"></i> Dean</span>';
+                    $assignedUser = $workflow->assignee ? $workflow->assignee->name : 'Unassigned';
+                    $workflowBadge = '<span class="badge badge-info" title="Pending Dean Approval - Assigned to: ' . htmlspecialchars($assignedUser) . '"><i class="fas fa-user-graduate"></i> Dean</span>';
+                    if ($workflow->assignee) {
+                        $workflowBadge .= '<br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> ' . htmlspecialchars($workflow->assignee->name) . '</small>';
+                    } else {
+                        $workflowBadge .= '<br><small style="color: #999; font-size: 0.85em;">Unassigned</small>';
+                    }
+                } elseif ($workflow->status == 'submitted') {
+                    $workflowBadge = '<span class="badge badge-secondary"><i class="fas fa-clock"></i> Submitted</span>';
                 } elseif ($workflow->status == 'approved') {
                     $workflowBadge = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Complete</span>';
                 } elseif ($workflow->status == 'rejected') {
                     $workflowBadge = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>';
                 } else {
-                    $workflowBadge = '<span class="badge badge-secondary">' . $workflowStatus . '</span>';
+                    $workflowBadge = '<span class="badge badge-secondary">' . htmlspecialchars($workflowStatus) . '</span>';
                 }
             }
 
-            $statusBadge = match($publication->status) {
+            // Use workflow status if available, otherwise use publication status
+            $displayStatus = $publication->status;
+            if ($workflow && in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted'])) {
+                $displayStatus = $workflow->status;
+            }
+            
+            $statusBadge = match($displayStatus) {
                 'approved' => '<span class="badge badge-success">Approved</span>',
                 'pending' => '<span class="badge badge-warning">Pending</span>',
+                'pending_coordinator' => '<span class="badge badge-warning">Pending Coordinator</span>',
+                'pending_dean' => '<span class="badge badge-info">Pending Dean</span>',
                 'rejected' => '<span class="badge badge-danger">Rejected</span>',
                 'submitted' => '<span class="badge badge-info">Submitted</span>',
-                default => '<span class="badge badge-secondary">' . ucfirst($publication->status) . '</span>'
+                'draft' => '<span class="badge badge-secondary">Draft</span>',
+                default => '<span class="badge badge-secondary">' . ucfirst($displayStatus) . '</span>'
             };
 
             $authorName = $publication->primaryAuthor?->name ?? $publication->submitter?->name ?? 'N/A';

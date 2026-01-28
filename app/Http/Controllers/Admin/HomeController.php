@@ -64,9 +64,9 @@ class HomeController
             $stats['grantsByStatus'] = $this->getGrantsByStatus($user);
             $stats['submissionsByType'] = $this->getSubmissionsByType($user);
             // Add grants, RTN, and bonus recognition listings
-            $stats['allGrants'] = Grant::where('submitted_by', $user->id)->with(['submitter', 'workflow'])->latest()->paginate(10);
-            $stats['allRtnSubmissions'] = RtnSubmission::where('user_id', $user->id)->with(['user', 'workflow'])->latest()->paginate(10);
-            $stats['allBonusRecognitions'] = BonusRecognition::where('user_id', $user->id)->with(['user', 'workflow'])->latest()->paginate(10);
+            $stats['allGrants'] = Grant::where('submitted_by', $user->id)->with(['submitter', 'workflow.assignee'])->latest()->paginate(10);
+            $stats['allRtnSubmissions'] = RtnSubmission::where('user_id', $user->id)->with(['user', 'workflow.assignee'])->latest()->paginate(10);
+            $stats['allBonusRecognitions'] = BonusRecognition::where('user_id', $user->id)->with(['user', 'workflow.assignee'])->latest()->paginate(10);
         }
 
         return view('admin.index', $stats);
@@ -159,7 +159,7 @@ class HomeController
             'allPublications' => Publication::where(function($q) use ($user) {
                 $q->where('primary_author_id', $user->id)
                   ->orWhere('submitted_by', $user->id);
-            })->with(['submitter', 'primaryAuthor', 'workflow'])->latest()->paginate(10),
+            })->with(['submitter', 'primaryAuthor', 'workflow.assignee'])->latest()->paginate(10),
         ];
     }
 
