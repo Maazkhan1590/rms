@@ -14,6 +14,11 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        // Redirect authenticated users to admin dashboard
+        if (auth()->check()) {
+            return redirect()->route('admin.home');
+        }
+        
         $query = Publication::with(['submitter', 'primaryAuthor'])
             ->where('status', 'approved');
 

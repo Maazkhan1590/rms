@@ -65,8 +65,18 @@ class LoginController extends Controller
             $user->id
         );
 
+        // Redirect based on user role
         // Student role is treated as Faculty role - redirect to admin dashboard
-        // No special redirect needed, default behavior applies
+        // Check if there's an intended URL first
+        $intended = $request->session()->pull('url.intended');
+        
+        // If intended URL is set and it's not the login page, use it
+        if ($intended && $intended !== route('login') && $intended !== route('welcome')) {
+            return redirect($intended);
+        }
+        
+        // All authenticated users (Faculty, Student, Admin, Coordinator, Dean) go to admin dashboard
+        return redirect()->route('admin.home');
     }
 
     /**
