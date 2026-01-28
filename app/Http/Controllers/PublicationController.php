@@ -242,6 +242,18 @@ class PublicationController extends Controller
             'evidence_urls.*' => 'nullable|url|max:500',
         ]);
 
+        // Map form publication_type values to database enum values
+        $publicationTypeMap = [
+            'journal' => 'journal_paper',
+            'conference' => 'conference_paper',
+            'book' => 'book',
+            'book_chapter' => 'book_chapter',
+            'patent' => 'non_indexed_journal', // Map patent to non_indexed_journal as closest match
+            'other' => 'non_indexed_journal', // Map other to non_indexed_journal
+        ];
+        
+        $dbPublicationType = $publicationTypeMap[$validated['publication_type']] ?? 'non_indexed_journal';
+
         // User is authenticated and has Faculty role (already checked above)
         $submittedBy = auth()->id();
 
@@ -249,7 +261,7 @@ class PublicationController extends Controller
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
             'abstract' => $validated['abstract'] ?? null,
-            'publication_type' => $validated['publication_type'],
+            'publication_type' => $dbPublicationType,
             'journal_name' => $validated['journal_name'] ?? null,
             'conference_name' => $validated['conference_name'] ?? null,
             'publisher' => $validated['publisher'] ?? null,
