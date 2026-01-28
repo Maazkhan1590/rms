@@ -153,10 +153,21 @@ class PublicationController extends Controller
                     . ($publication->points_locked ? '<br><small class="text-muted"><i class="fas fa-lock"></i> Locked</small>' : '')
                 : '<span class="text-muted">-</span>';
 
+            $user = auth()->user();
             $actions = '<div style="display: flex; gap: 5px; flex-wrap: wrap;">';
             $actions .= '<a class="btn btn-sm btn-info view-btn" href="' . route('admin.publications.show', $publication->id) . '" title="View" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-eye"></i> View</a>';
             
-            if (in_array($publication->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean'])) {
+            // Show "Submit for Approval" button for draft publications owned by the user
+            if ($publication->status === 'draft' && ($publication->submitted_by == $user->id || $publication->primary_author_id == $user->id)) {
+                $actions .= '<form action="' . route('publications.submit', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Submit this publication for approval?\');">';
+                $actions .= csrf_field();
+                $actions .= '<button type="submit" class="btn btn-sm btn-success" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-paper-plane"></i> Submit</button>';
+                $actions .= '</form>';
+            }
+            
+            // Only show approve/reject buttons to users with permission (Admin, Coordinator, Dean)
+            if (($user->isAdmin || $user->hasRole('admin') || $user->isResearchCoordinator() || $user->isDean()) 
+                && in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])) {
                 $actions .= '<form action="' . route('admin.publications.approve', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Approve this publication?\');">';
                 $actions .= csrf_field();
                 $actions .= '<button type="submit" class="btn btn-sm btn-success" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-check"></i> Approve</button>';
@@ -164,11 +175,14 @@ class PublicationController extends Controller
                 $actions .= '<button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal(' . $publication->id . ')" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-times"></i> Reject</button>';
             }
             
-            $actions .= '<form action="' . route('admin.publications.destroy', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Are you sure?\');">';
-            $actions .= csrf_field();
-            $actions .= method_field('DELETE');
-            $actions .= '<button type="submit" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-trash"></i> Delete</button>';
-            $actions .= '</form>';
+            // Only show delete button to admins or the publication owner
+            if ($user->isAdmin || $user->hasRole('admin') || $publication->submitted_by == $user->id) {
+                $actions .= '<form action="' . route('admin.publications.destroy', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Are you sure?\');">';
+                $actions .= csrf_field();
+                $actions .= method_field('DELETE');
+                $actions .= '<button type="submit" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-trash"></i> Delete</button>';
+                $actions .= '</form>';
+            }
             $actions .= '</div>';
 
             return [
