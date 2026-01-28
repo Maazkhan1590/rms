@@ -341,11 +341,13 @@ class PublicationController extends Controller
         }
 
         // Submit workflow for approval
-        $this->workflowService->submitWorkflow($workflow);
+        $workflow = $this->workflowService->submitWorkflow($workflow);
+        $workflow->refresh();
 
-        // Update publication status
+        // Update publication status based on workflow status
         $publication->update([
-            'status' => 'submitted',
+            'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
+                       ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
             'submitted_at' => now(),
         ]);
 

@@ -163,14 +163,40 @@ class GrantController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Find or get workflow
+            // Find workflow - MUST exist for approval
             $workflow = ApprovalWorkflow::where('submission_type', 'grant')
                 ->where('submission_id', $grant->id)
                 ->first();
 
+            // STRICT WORKFLOW: Workflow must exist - no admin bypass
+            if (!$workflow) {
+                \DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'No workflow found for this grant. The grant must be submitted through the proper workflow process.');
+            }
+
+            // Check if user can approve this workflow step (STRICT - NO ADMIN BYPASS)
+            $user = auth()->user();
+            $canApprove = false;
+            
+            if ($workflow->assigned_to == $user->id) {
+                $canApprove = true;
+            } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                $canApprove = true;
+            } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                $canApprove = true;
+            }
+            
+            if (!$canApprove) {
+                \DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'You are not authorized to approve this grant. Only the assigned Coordinator or Dean can approve at the current workflow step.');
+            }
+
             if ($workflow) {
+                
                 // Use workflow service to approve
-                $workflow = $this->workflowService->approveWorkflow($workflow, auth()->user(), 'Approved by admin');
+                $workflow = $this->workflowService->approveWorkflow($workflow, auth()->user(), 'Approved at workflow step');
                 
                 // Refresh workflow to get latest status
                 $workflow->refresh();
@@ -191,27 +217,11 @@ class GrantController extends Controller
                         );
                     }
                 } else {
-                    // Workflow still in progress
+                    // Workflow still in progress - update status based on workflow status
                     $grant->update([
-                        'status' => 'submitted',
+                        'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
+                                   ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
                     ]);
-                }
-            } else {
-                // No workflow exists, direct approval (admin override)
-                $grant->update([
-                    'status' => 'approved',
-                    'approved_at' => now(),
-                ]);
-
-                // Calculate and assign points
-                $points = $this->scoringService->calculateGrantPoints($grant);
-                
-                // Recalculate user's total points
-                if ($grant->submitted_by) {
-                    $this->scoringService->recalculateUserTotalPoints(
-                        $grant->submitted_by,
-                        $grant->award_year ?? $grant->submission_year
-                    );
                 }
             }
 

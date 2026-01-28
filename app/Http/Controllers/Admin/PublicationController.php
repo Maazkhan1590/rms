@@ -165,15 +165,36 @@ class PublicationController extends Controller
                 $actions .= '</form>';
             }
             
-            // Only show approve/reject buttons to users with permission (Admin, Coordinator, Dean)
-            if (($user->isAdmin || $user->hasRole('admin') || $user->isResearchCoordinator() || $user->isDean()) 
-                && in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])) {
-                $actions .= '<form action="' . route('admin.publications.approve', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Approve this publication?\');">';
-                $actions .= csrf_field();
-                $actions .= '<button type="submit" class="btn btn-sm btn-success" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-check"></i> Approve</button>';
-                $actions .= '</form>';
-                $actions .= '<button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal(' . $publication->id . ')" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-times"></i> Reject</button>';
+            // Check workflow status before showing approve/reject buttons
+            // STRICT WORKFLOW: Only assigned users can approve (Coordinator → Dean → Approved)
+            $workflow = ApprovalWorkflow::where('submission_type', 'publication')
+                ->where('submission_id', $publication->id)
+                ->first();
+            
+            // Only show approve/reject buttons if workflow exists and user is assigned to current step
+            if ($workflow && in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted'])) {
+                // Check if user is assigned to this workflow step (NO ADMIN BYPASS)
+                $canApprove = false;
+                
+                // User must be assigned to the workflow step OR have the correct role for the step
+                if ($workflow->assigned_to == $user->id) {
+                    $canApprove = true; // User is assigned to this workflow step
+                } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                    $canApprove = true; // Coordinator can approve coordinator step
+                } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                    $canApprove = true; // Dean can approve dean step
+                }
+                // Admins CANNOT bypass workflow - they must be assigned or have coordinator/dean role
+                
+                if ($canApprove) {
+                    $actions .= '<form action="' . route('admin.publications.approve', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Approve this publication at current workflow step?\');">';
+                    $actions .= csrf_field();
+                    $actions .= '<button type="submit" class="btn btn-sm btn-success" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-check"></i> Approve</button>';
+                    $actions .= '</form>';
+                    $actions .= '<button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal(' . $publication->id . ')" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-times"></i> Reject</button>';
+                }
             }
+            // No approve button if no workflow exists - must follow workflow process
             
             // Only show delete button to admins or the publication owner
             if ($user->isAdmin || $user->hasRole('admin') || $publication->submitted_by == $user->id) {
@@ -302,14 +323,42 @@ class PublicationController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Find or get workflow
+            // Find workflow - MUST exist for approval
             $workflow = ApprovalWorkflow::where('submission_type', 'publication')
                 ->where('submission_id', $publication->id)
                 ->first();
 
+            // STRICT WORKFLOW: Workflow must exist - no admin bypass
+            if (!$workflow) {
+                \DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'No workflow found for this publication. The publication must be submitted through the proper workflow process.');
+            }
+
+            // Check if user can approve this workflow step (STRICT - NO ADMIN BYPASS)
+            $user = auth()->user();
+            $canApprove = false;
+            
+            // User must be assigned to the workflow step OR have the correct role for the step
+            if ($workflow->assigned_to == $user->id) {
+                $canApprove = true; // User is assigned to this workflow step
+            } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                $canApprove = true; // Coordinator can approve coordinator step
+            } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                $canApprove = true; // Dean can approve dean step
+            }
+            // Admins CANNOT bypass workflow - they must be assigned or have coordinator/dean role
+            
+            if (!$canApprove) {
+                \DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'You are not authorized to approve this publication. Only the assigned Coordinator or Dean can approve at the current workflow step.');
+            }
+
             if ($workflow) {
+                
                 // Use workflow service to approve
-                $workflow = $this->workflowService->approveWorkflow($workflow, auth()->user(), 'Approved by admin');
+                $workflow = $this->workflowService->approveWorkflow($workflow, auth()->user(), 'Approved at workflow step');
                 
                 // Refresh workflow to get latest status
                 $workflow->refresh();
@@ -342,28 +391,11 @@ class PublicationController extends Controller
                         );
                     }
                 } else {
-                    // Workflow still in progress - update status to submitted
+                    // Workflow still in progress - update status based on workflow status
                     $publication->update([
-                        'status' => 'submitted',
+                        'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
+                                   ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
                     ]);
-                }
-            } else {
-                // No workflow exists, direct approval (admin override)
-                $publication->update([
-                    'status' => 'approved',
-                    'approved_at' => now(),
-                    'approver_id' => auth()->id(),
-                ]);
-
-                // Calculate and assign points
-                $points = $this->scoringService->calculatePublicationPoints($publication);
-                
-                // Recalculate user's total points
-                if ($publication->primary_author_id) {
-                    $this->scoringService->recalculateUserTotalPoints(
-                        $publication->primary_author_id,
-                        $publication->publication_year ?? $publication->year
-                    );
                 }
             }
 

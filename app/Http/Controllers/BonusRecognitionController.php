@@ -166,10 +166,13 @@ class BonusRecognitionController extends Controller
             $workflow = $this->workflowService->createWorkflow('bonus', $bonus->id, auth()->user());
         }
 
-        $this->workflowService->submitWorkflow($workflow);
+        $workflow = $this->workflowService->submitWorkflow($workflow);
+        $workflow->refresh();
 
+        // Update bonus recognition status based on workflow status
         $bonus->update([
-            'status' => 'submitted',
+            'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
+                       ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
             'submitted_at' => now(),
         ]);
 

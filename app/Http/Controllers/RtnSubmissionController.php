@@ -169,10 +169,13 @@ class RtnSubmissionController extends Controller
             $workflow = $this->workflowService->createWorkflow('rtn', $rtn->id, auth()->user());
         }
 
-        $this->workflowService->submitWorkflow($workflow);
+        $workflow = $this->workflowService->submitWorkflow($workflow);
+        $workflow->refresh();
 
+        // Update RTN status based on workflow status
         $rtn->update([
-            'status' => 'submitted',
+            'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
+                       ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
             'submitted_at' => now(),
         ]);
 

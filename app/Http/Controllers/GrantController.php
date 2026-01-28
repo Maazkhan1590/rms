@@ -210,10 +210,13 @@ class GrantController extends Controller
             $workflow = $this->workflowService->createWorkflow('grant', $grant->id, auth()->user());
         }
 
-        $this->workflowService->submitWorkflow($workflow);
+        $workflow = $this->workflowService->submitWorkflow($workflow);
+        $workflow->refresh();
 
+        // Update grant status based on workflow status
         $grant->update([
-            'status' => 'submitted',
+            'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
+                       ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
             'submitted_at' => now(),
         ]);
 
