@@ -43,12 +43,31 @@ class HomeController
             $stats = $this->getFacultyStats($user, $currentYear);
         }
 
-        // Get monthly submissions and recent activities for all roles
-        $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear);
-        $stats['recentActivities'] = $this->getRecentActivities();
-        $stats['publicationsByType'] = $this->getPublicationsByType();
-        $stats['grantsByStatus'] = $this->getGrantsByStatus();
-        $stats['submissionsByType'] = $this->getSubmissionsByType();
+        // Get monthly submissions and recent activities - filter by user for faculty
+        if ($user->isAdmin || $user->hasRole('admin')) {
+            $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear);
+            $stats['recentActivities'] = $this->getRecentActivities();
+            $stats['publicationsByType'] = $this->getPublicationsByType();
+            $stats['grantsByStatus'] = $this->getGrantsByStatus();
+            $stats['submissionsByType'] = $this->getSubmissionsByType();
+        } elseif ($user->isResearchCoordinator() || $user->isDean()) {
+            $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear, $user);
+            $stats['recentActivities'] = $this->getRecentActivities($user);
+            $stats['publicationsByType'] = $this->getPublicationsByType($user);
+            $stats['grantsByStatus'] = $this->getGrantsByStatus($user);
+            $stats['submissionsByType'] = $this->getSubmissionsByType($user);
+        } else {
+            // Faculty - only show their own data
+            $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear, $user);
+            $stats['recentActivities'] = $this->getRecentActivities($user);
+            $stats['publicationsByType'] = $this->getPublicationsByType($user);
+            $stats['grantsByStatus'] = $this->getGrantsByStatus($user);
+            $stats['submissionsByType'] = $this->getSubmissionsByType($user);
+            // Add grants, RTN, and bonus recognition listings
+            $stats['allGrants'] = Grant::where('submitted_by', $user->id)->with(['submitter', 'workflow'])->latest()->paginate(10);
+            $stats['allRtnSubmissions'] = RtnSubmission::where('user_id', $user->id)->with(['user', 'workflow'])->latest()->paginate(10);
+            $stats['allBonusRecognitions'] = BonusRecognition::where('user_id', $user->id)->with(['user', 'workflow'])->latest()->paginate(10);
+        }
 
         return view('admin.index', $stats);
     }
@@ -147,26 +166,41 @@ class HomeController
     /**
      * Get monthly submissions data for chart (includes publications and grants)
      */
-    private function getMonthlySubmissions(int $year): array
+    private function getMonthlySubmissions(int $year, ?User $user = null): array
     {
         // Get publications by month
-        $publicationsData = Publication::select(
+        $publicationsQuery = Publication::select(
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('COUNT(*) as count')
             )
-            ->whereYear('created_at', $year)
-            ->groupBy('month')
+            ->whereYear('created_at', $year);
+        
+        // Filter by user if provided (for faculty)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin')) {
+            $publicationsQuery->where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            });
+        }
+        
+        $publicationsData = $publicationsQuery->groupBy('month')
             ->orderBy('month')
             ->get()
             ->keyBy('month');
 
         // Get grants by month
-        $grantsData = Grant::select(
+        $grantsQuery = Grant::select(
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('COUNT(*) as count')
             )
-            ->whereYear('created_at', $year)
-            ->groupBy('month')
+            ->whereYear('created_at', $year);
+        
+        // Filter by user if provided (for faculty)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin')) {
+            $grantsQuery->where('submitted_by', $user->id);
+        }
+        
+        $grantsData = $grantsQuery->groupBy('month')
             ->orderBy('month')
             ->get()
             ->keyBy('month');
@@ -193,14 +227,20 @@ class HomeController
     /**
      * Get recent activities from database
      */
-    private function getRecentActivities(): array
+    private function getRecentActivities(?User $user = null): array
     {
         $activities = [];
 
         // Get recent approval workflows (most important)
-        $recentWorkflows = ApprovalWorkflow::with(['submitter', 'assignee'])
-            ->whereIn('status', ['submitted', 'pending_coordinator', 'pending_dean'])
-            ->latest('created_at')
+        $workflowsQuery = ApprovalWorkflow::with(['submitter', 'assignee'])
+            ->whereIn('status', ['submitted', 'pending_coordinator', 'pending_dean']);
+        
+        // Filter by user if provided (for faculty - only their own submissions)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin') && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $workflowsQuery->where('submitted_by', $user->id);
+        }
+        
+        $recentWorkflows = $workflowsQuery->latest('created_at')
             ->limit(5)
             ->get();
 
@@ -221,9 +261,18 @@ class HomeController
         }
 
         // Get recent pending publications
-        $recentPublications = Publication::whereIn('status', ['submitted', 'pending'])
-            ->with('submitter')
-            ->latest('submitted_at')
+        $publicationsQuery = Publication::whereIn('status', ['submitted', 'pending'])
+            ->with('submitter');
+        
+        // Filter by user if provided (for faculty)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin') && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $publicationsQuery->where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            });
+        }
+        
+        $recentPublications = $publicationsQuery->latest('submitted_at')
             ->limit(3)
             ->get();
 
@@ -238,9 +287,15 @@ class HomeController
         }
 
         // Get recent pending grants
-        $recentGrants = Grant::whereIn('status', ['submitted', 'pending'])
-            ->with('submitter')
-            ->latest('submitted_at')
+        $grantsQuery = Grant::whereIn('status', ['submitted', 'pending'])
+            ->with('submitter');
+        
+        // Filter by user if provided (for faculty)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin') && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $grantsQuery->where('submitted_by', $user->id);
+        }
+        
+        $recentGrants = $grantsQuery->latest('submitted_at')
             ->limit(2)
             ->get();
 
@@ -296,11 +351,20 @@ class HomeController
     /**
      * Get publications grouped by type for chart
      */
-    private function getPublicationsByType(): array
+    private function getPublicationsByType(?User $user = null): array
     {
-        $publicationsByType = Publication::select('publication_type', DB::raw('count(*) as count'))
-            ->whereNotNull('publication_type')
-            ->groupBy('publication_type')
+        $publicationsQuery = Publication::select('publication_type', DB::raw('count(*) as count'))
+            ->whereNotNull('publication_type');
+        
+        // Filter by user if provided (for faculty)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin') && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $publicationsQuery->where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            });
+        }
+        
+        $publicationsByType = $publicationsQuery->groupBy('publication_type')
             ->get();
 
         $labels = [];
@@ -328,11 +392,17 @@ class HomeController
     /**
      * Get grants grouped by status for chart
      */
-    private function getGrantsByStatus(): array
+    private function getGrantsByStatus(?User $user = null): array
     {
-        $grantsByStatus = Grant::select('status', DB::raw('count(*) as count'))
-            ->whereNotNull('status')
-            ->groupBy('status')
+        $grantsQuery = Grant::select('status', DB::raw('count(*) as count'))
+            ->whereNotNull('status');
+        
+        // Filter by user if provided (for faculty)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin') && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $grantsQuery->where('submitted_by', $user->id);
+        }
+        
+        $grantsByStatus = $grantsQuery->groupBy('status')
             ->get();
 
         $labels = [];
@@ -359,16 +429,33 @@ class HomeController
     /**
      * Get submissions by type (Publications vs Grants vs RTN)
      */
-    private function getSubmissionsByType(): array
+    private function getSubmissionsByType(?User $user = null): array
     {
-        $publicationsCount = Publication::count();
-        $grantsCount = Grant::count();
-        $rtnCount = RtnSubmission::count();
+        $publicationsQuery = Publication::query();
+        $grantsQuery = Grant::query();
+        $rtnQuery = RtnSubmission::query();
+        $bonusQuery = BonusRecognition::query();
+
+        // Filter by user if provided (for faculty)
+        if ($user && !$user->isAdmin && !$user->hasRole('admin') && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $publicationsQuery->where(function($q) use ($user) {
+                $q->where('primary_author_id', $user->id)
+                  ->orWhere('submitted_by', $user->id);
+            });
+            $grantsQuery->where('submitted_by', $user->id);
+            $rtnQuery->where('user_id', $user->id);
+            $bonusQuery->where('user_id', $user->id);
+        }
+        
+        $publicationsCount = $publicationsQuery->count();
+        $grantsCount = $grantsQuery->count();
+        $rtnCount = $rtnQuery->count();
+        $bonusCount = $bonusQuery->count();
 
         return [
-            'labels' => ['Publications', 'Grants', 'RTN Submissions'],
-            'data' => [$publicationsCount, $grantsCount, $rtnCount],
-            'colors' => ['#4d8bff', '#0056b3', '#28a745'],
+            'labels' => ['Publications', 'Grants', 'RTN Submissions', 'Bonus Recognitions'],
+            'data' => [$publicationsCount, $grantsCount, $rtnCount, $bonusCount],
+            'colors' => ['#4d8bff', '#0056b3', '#28a745', '#ffc107'],
         ];
     }
 }

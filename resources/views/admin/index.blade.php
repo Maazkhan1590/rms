@@ -165,6 +165,7 @@
         </div>
 
         <!-- Charts and Recent Activity -->
+        @if(auth()->user()->isAdmin || auth()->user()->isResearchCoordinator() || auth()->user()->isDean())
         <div class="dashboard-content">
             <!-- Chart Section -->
             <div class="card">
@@ -236,106 +237,449 @@
                 </div>
             </div>
         </div>
+        @else
+        <!-- Faculty Charts - Only Their Data -->
+        <div class="dashboard-content">
+            <!-- Chart Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">My Monthly Submissions</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlySubmissionsChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
 
-        <!-- Faculty Publications Listing -->
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">My Recent Activity</h3>
+                </div>
+                <div class="card-body">
+                    <div class="activity-list">
+                        @forelse($recentActivities ?? [] as $activity)
+                        <div class="activity-item">
+                            <div class="activity-icon">{{ $activity['icon'] ?? '📋' }}</div>
+                            <div class="activity-content">
+                                <p class="activity-title">{{ $activity['title'] ?? 'Activity' }}</p>
+                                <p class="activity-desc">{{ $activity['desc'] ?? '' }}</p>
+                            </div>
+                            <div class="activity-time">{{ $activity['time'] ?? 'Recently' }}</div>
+                        </div>
+                        @empty
+                        <div class="activity-item">
+                            <div class="activity-content">
+                                <p class="activity-desc" style="text-align: center; color: var(--text-light);">No recent activity</p>
+                            </div>
+                        </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Faculty Charts - Only Their Data -->
+        <div class="dashboard-charts-grid">
+            <!-- My Publications by Type -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">My Publications by Type</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="publicationsByTypeChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+
+            <!-- My Grants by Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">My Grants by Status</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="grantsByStatusChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+
+            <!-- My Submissions Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">My Submissions Overview</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="submissionsByTypeChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Faculty Dashboard Tabs -->
         @if(!auth()->user()->isAdmin && !auth()->user()->isResearchCoordinator() && !auth()->user()->isDean())
+        <style>
+            .dashboard-tabs {
+                display: flex;
+                gap: 0.5rem;
+                border-bottom: 2px solid var(--border-color, #e2e8f0);
+                margin-bottom: 2rem;
+            }
+            .dashboard-tab {
+                padding: 1rem 1.5rem;
+                background: transparent;
+                border: none;
+                border-bottom: 3px solid transparent;
+                cursor: pointer;
+                font-weight: 600;
+                color: var(--text-secondary, #6b7280);
+                transition: all 0.3s ease;
+            }
+            .dashboard-tab:hover {
+                color: var(--primary-color, #0056b3);
+            }
+            .dashboard-tab.active {
+                color: var(--primary-color, #0056b3);
+                border-bottom-color: var(--primary-color, #0056b3);
+            }
+            .tab-content {
+                display: none;
+            }
+            .tab-content.active {
+                display: block;
+            }
+        </style>
+        
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">My Publications</h3>
-                    <a href="{{ route('publications.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus"></i> Submit New Paper
-                    </a>
+                    <h3 class="card-title">My Submissions</h3>
+                    <div>
+                        <a href="{{ route('publications.create') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Submit Paper
+                        </a>
+                        <a href="{{ route('grants.create') }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus"></i> Submit Grant
+                        </a>
+                        <a href="{{ route('rtn-submissions.create') }}" class="btn btn-info btn-sm">
+                            <i class="fas fa-plus"></i> Submit RTN
+                        </a>
+                        <a href="{{ route('bonus-recognitions.create') }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-plus"></i> Submit Recognition
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="card-body">
-                @if(isset($allPublications) && $allPublications->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Type</th>
-                                <th>Year</th>
-                                <th>Status</th>
-                                <th>Points</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($allPublications as $publication)
-                            <tr>
-                                <td>
-                                    <a href="{{ route('publications.show', $publication->id) }}" style="color: inherit; text-decoration: none;">
-                                        {{ \Illuminate\Support\Str::limit($publication->title, 50) }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $publication->publication_type ?? 'N/A')) }}</span>
-                                </td>
-                                <td>{{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</td>
-                                <td>
-                                    @if($publication->status == 'approved')
-                                        <span class="badge badge-success">Approved</span>
-                                    @elseif($publication->status == 'submitted')
-                                        <span class="badge badge-warning">Submitted</span>
-                                    @elseif($publication->status == 'rejected')
-                                        <span class="badge badge-danger">Rejected</span>
-                                    @else
-                                        <span class="badge badge-secondary">{{ ucfirst($publication->status) }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($publication->points_allocated)
-                                        <strong style="color: var(--primary);">{{ number_format($publication->points_allocated, 2) }}</strong>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('publications.show', $publication->id) }}" class="btn btn-sm btn-info" title="View">
+                <!-- Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="dashboard-tab active" onclick="showTab('publications')">
+                        <i class="fas fa-book"></i> Publications
+                    </button>
+                    <button class="dashboard-tab" onclick="showTab('grants')">
+                        <i class="fas fa-money-bill-wave"></i> Grants
+                    </button>
+                    <button class="dashboard-tab" onclick="showTab('rtn')">
+                        <i class="fas fa-graduation-cap"></i> RTN
+                    </button>
+                    <button class="dashboard-tab" onclick="showTab('bonus')">
+                        <i class="fas fa-award"></i> Bonus Recognition
+                    </button>
+                </div>
+
+                <!-- Publications Tab -->
+                <div id="tab-publications" class="tab-content active">
+                    @if(isset($allPublications) && $allPublications->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Year</th>
+                                    <th>Status</th>
+                                    <th>Points</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($allPublications as $publication)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('publications.show', $publication->id) }}" style="color: inherit; text-decoration: none;">
+                                            {{ \Illuminate\Support\Str::limit($publication->title, 50) }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $publication->publication_type ?? 'N/A')) }}</span>
+                                    </td>
+                                    <td>{{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</td>
+                                    <td>
+                                        @if($publication->status == 'approved')
+                                            <span class="badge badge-success">Approved</span>
+                                        @elseif($publication->status == 'submitted')
+                                            <span class="badge badge-warning">Submitted</span>
+                                        @elseif($publication->status == 'rejected')
+                                            <span class="badge badge-danger">Rejected</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ ucfirst($publication->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($publication->points_allocated)
+                                            <strong style="color: var(--primary);">{{ number_format($publication->points_allocated, 2) }}</strong>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('publications.show', $publication->id) }}" class="btn btn-sm btn-info" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if($publication->status == 'draft')
+                                                <form action="{{ route('publications.submit', $publication->id) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Submit for Approval" onclick="return confirm('Submit this publication for approval?');">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        {{ $allPublications->links() }}
+                    </div>
+                    @else
+                    <p class="text-muted text-center py-4">No publications found. <a href="{{ route('publications.create') }}">Submit your first paper</a></p>
+                    @endif
+                </div>
+
+                <!-- Grants Tab -->
+                <div id="tab-grants" class="tab-content">
+                    @if(isset($allGrants) && $allGrants->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Amount (OMR)</th>
+                                    <th>Year</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($allGrants as $grant)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('grants.show', $grant->id) }}" style="color: inherit; text-decoration: none;">
+                                            {{ \Illuminate\Support\Str::limit($grant->title, 50) }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $grant->grant_type ?? 'N/A')) }}</span>
+                                    </td>
+                                    <td>{{ $grant->amount_omr ? number_format($grant->amount_omr, 2) . ' OMR' : 'N/A' }}</td>
+                                    <td>{{ $grant->award_year ?? 'N/A' }}</td>
+                                    <td>
+                                        @if($grant->status == 'approved')
+                                            <span class="badge badge-success">Approved</span>
+                                        @elseif($grant->status == 'submitted')
+                                            <span class="badge badge-warning">Submitted</span>
+                                        @elseif($grant->status == 'rejected')
+                                            <span class="badge badge-danger">Rejected</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ ucfirst($grant->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('grants.show', $grant->id) }}" class="btn btn-sm btn-info" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        @if($publication->status == 'draft')
-                                            <form action="{{ route('publications.submit', $publication->id) }}" method="POST" style="display: inline;">
+                                        @if($grant->status == 'draft')
+                                            <form action="{{ route('grants.submit', $grant->id) }}" method="POST" style="display: inline;">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-success" title="Submit for Approval" onclick="return confirm('Submit this publication for approval?');">
+                                                <button type="submit" class="btn btn-sm btn-success" title="Submit for Approval" onclick="return confirm('Submit this grant for approval?');">
                                                     <i class="fas fa-paper-plane"></i>
                                                 </button>
                                             </form>
                                         @endif
-                                        @can('publication_approve')
-                                        @if(in_array($publication->status, ['submitted', 'pending', 'pending_coordinator', 'pending_dean']))
-                                            <form action="{{ route('admin.publications.approve', $publication->id) }}" method="POST" style="display: inline;">
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        {{ $allGrants->links() }}
+                    </div>
+                    @else
+                    <p class="text-muted text-center py-4">No grants found. <a href="{{ route('grants.create') }}">Submit your first grant</a></p>
+                    @endif
+                </div>
+
+                <!-- RTN Tab -->
+                <div id="tab-rtn" class="tab-content">
+                    @if(isset($allRtnSubmissions) && $allRtnSubmissions->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>RTN Type</th>
+                                    <th>Year</th>
+                                    <th>Status</th>
+                                    <th>Points</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($allRtnSubmissions as $rtn)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('rtn-submissions.show', $rtn->id) }}" style="color: inherit; text-decoration: none;">
+                                            {{ \Illuminate\Support\Str::limit($rtn->title, 50) }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">{{ strtoupper($rtn->rtn_type ?? 'N/A') }}</span>
+                                    </td>
+                                    <td>{{ $rtn->year ?? 'N/A' }}</td>
+                                    <td>
+                                        @if($rtn->status == 'approved')
+                                            <span class="badge badge-success">Approved</span>
+                                        @elseif($rtn->status == 'submitted')
+                                            <span class="badge badge-warning">Submitted</span>
+                                        @elseif($rtn->status == 'rejected')
+                                            <span class="badge badge-danger">Rejected</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ ucfirst($rtn->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($rtn->points)
+                                            <strong style="color: var(--primary);">{{ number_format($rtn->points, 2) }}</strong>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('rtn-submissions.show', $rtn->id) }}" class="btn btn-sm btn-info" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if($rtn->status == 'draft')
+                                            <form action="{{ route('rtn-submissions.submit', $rtn->id) }}" method="POST" style="display: inline;">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-success" title="Approve" onclick="return confirm('Approve this publication?');">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('admin.publications.reject', $publication->id) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Reject" onclick="return confirm('Reject this publication?');">
-                                                    <i class="fas fa-times"></i>
+                                                <button type="submit" class="btn btn-sm btn-success" title="Submit for Approval" onclick="return confirm('Submit this RTN for approval?');">
+                                                    <i class="fas fa-paper-plane"></i>
                                                 </button>
                                             </form>
                                         @endif
-                                        @endcan
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        {{ $allRtnSubmissions->links() }}
+                    </div>
+                    @else
+                    <p class="text-muted text-center py-4">No RTN submissions found. <a href="{{ route('rtn-submissions.create') }}">Submit your first RTN</a></p>
+                    @endif
                 </div>
-                <div class="mt-3">
-                    {{ $allPublications->links() }}
+
+                <!-- Bonus Recognition Tab -->
+                <div id="tab-bonus" class="tab-content">
+                    @if(isset($allBonusRecognitions) && $allBonusRecognitions->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Recognition Type</th>
+                                    <th>Year</th>
+                                    <th>Status</th>
+                                    <th>Points</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($allBonusRecognitions as $bonus)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('bonus-recognitions.show', $bonus->id) }}" style="color: inherit; text-decoration: none;">
+                                            {{ \Illuminate\Support\Str::limit($bonus->title, 50) }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $bonus->recognition_type ?? 'N/A')) }}</span>
+                                    </td>
+                                    <td>{{ $bonus->year ?? 'N/A' }}</td>
+                                    <td>
+                                        @if($bonus->status == 'approved')
+                                            <span class="badge badge-success">Approved</span>
+                                        @elseif($bonus->status == 'submitted')
+                                            <span class="badge badge-warning">Submitted</span>
+                                        @elseif($bonus->status == 'rejected')
+                                            <span class="badge badge-danger">Rejected</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ ucfirst($bonus->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($bonus->points)
+                                            <strong style="color: var(--primary);">{{ number_format($bonus->points, 2) }}</strong>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('bonus-recognitions.show', $bonus->id) }}" class="btn btn-sm btn-info" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if($bonus->status == 'draft')
+                                            <form action="{{ route('bonus-recognitions.submit', $bonus->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success" title="Submit for Approval" onclick="return confirm('Submit this bonus recognition for approval?');">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        {{ $allBonusRecognitions->links() }}
+                    </div>
+                    @else
+                    <p class="text-muted text-center py-4">No bonus recognitions found. <a href="{{ route('bonus-recognitions.create') }}">Submit your first recognition</a></p>
+                    @endif
                 </div>
-                @else
-                <p class="text-muted text-center py-4">No publications found. <a href="{{ route('publications.create') }}">Submit your first paper</a></p>
-                @endif
             </div>
         </div>
+        
+        <script>
+            function showTab(tabName) {
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('.dashboard-tab').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Show selected tab
+                document.getElementById('tab-' + tabName).classList.add('active');
+                event.target.closest('.dashboard-tab').classList.add('active');
+            }
+        </script>
         @endif
 
         <!-- Quick Actions -->
