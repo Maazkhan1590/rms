@@ -43,6 +43,10 @@ Route::get('/clear-cache', function () {
 // Public Home Page
 Route::get('/', 'HomeController@index')->name('welcome');
 
+// Public Faculty Members Page
+Route::get('faculty-members', 'FacultyMemberController@index')->name('faculty-members.index');
+Route::get('faculty-members/{user}', 'FacultyMemberController@show')->name('faculty-members.show');
+
 // Public Publications Routes
 Route::get('publications', 'PublicationController@index')->name('publications.index');
 Route::get('publications/load-more', 'PublicationController@loadMore')->name('publications.load-more');
@@ -74,11 +78,7 @@ Route::get('/home', function () {
     if (auth()->check()) {
         $user = auth()->user();
         
-        // Students go to home page, others go to admin dashboard
-        if ($user->hasRole('Student')) {
-            return redirect()->route('welcome');
-        }
-        
+        // Student role is treated as Faculty role - redirect to admin dashboard
         if (session('status')) {
             return redirect()->route('admin.home')->with('status', session('status'));
         }

@@ -27,12 +27,14 @@ class BonusRecognition extends Model
         'status',
         'submitted_at',
         'approved_at',
+        'submission_year',
     ];
 
     protected $casts = [
         'evidence_files' => 'array',
         'points' => 'decimal:2',
         'year' => 'integer',
+        'submission_year' => 'integer',
         'event_date' => 'date',
         'submitted_at' => 'datetime',
         'approved_at' => 'datetime',
@@ -44,6 +46,24 @@ class BonusRecognition extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get all evidence files for this bonus recognition
+     */
+    public function evidenceFiles()
+    {
+        return $this->morphMany(EvidenceFile::class, 'submission', 'submission_type', 'submission_id')
+            ->where('submission_type', 'bonus');
+    }
+
+    /**
+     * Get approval workflow for this bonus recognition
+     */
+    public function workflow()
+    {
+        return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
+            ->where('submission_type', 'bonus');
     }
 
     /**

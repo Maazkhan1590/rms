@@ -130,6 +130,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Get all publications where this user is author (submitted or primary author)
+     */
+    public function publicationsAsAuthor()
+    {
+        return Publication::where(function($query) {
+            $query->where('submitted_by', $this->id)
+                  ->orWhere('primary_author_id', $this->id);
+        });
+    }
+
+    /**
      * Get all grants submitted by this user
      */
     public function grants()

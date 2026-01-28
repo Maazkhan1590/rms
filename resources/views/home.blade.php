@@ -21,15 +21,12 @@
                                 <i class="fas fa-rocket"></i> Start Your Research
                             </a>
                             @else
-                            @if(auth()->user()->hasRole('Student'))
                             <a href="{{ route('publications.create') }}" class="btn btn-primary">
-                                <i class="fas fa-rocket"></i> Submit Publication
+                                <i class="fas fa-rocket"></i> Submit Paper
                             </a>
-                            @else
-                            <a href="{{ route('admin.home') }}" class="btn btn-primary">
+                            <a href="{{ route('admin.home') }}" class="btn btn-primary" style="margin-left: 1rem;">
                                 <i class="fas fa-tachometer-alt"></i> Go to Dashboard
                             </a>
-                            @endif
                             @endguest
                             <a href="{{ route('publications.index') }}" class="btn btn-outline">
                                 <i class="fas fa-book-reader"></i> Explore Publications
@@ -261,7 +258,7 @@
                     <i class="fas fa-paper-plane"></i> Submit Your Paper
                 </a>
                 @else
-                @if(auth()->user()->hasRole('Student'))
+                @if(auth()->user()->hasAnyRole(['Student', 'Faculty']))
                 <a href="{{ route('publications.create') }}" class="btn btn-primary">
                     <i class="fas fa-paper-plane"></i> Submit Your Paper
                 </a>

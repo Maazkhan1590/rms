@@ -28,6 +28,10 @@ class RtnSubmission extends Model
         'status',
         'submitted_at',
         'approved_at',
+        'faculty',
+        'units',
+        'amount_omr',
+        'submission_year',
     ];
 
     protected $casts = [
@@ -46,6 +50,24 @@ class RtnSubmission extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get all evidence files for this RTN
+     */
+    public function evidenceFiles()
+    {
+        return $this->morphMany(EvidenceFile::class, 'submission', 'submission_type', 'submission_id')
+            ->where('submission_type', 'rtn');
+    }
+
+    /**
+     * Get approval workflow for this RTN
+     */
+    public function workflow()
+    {
+        return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
+            ->where('submission_type', 'rtn');
     }
 
     /**

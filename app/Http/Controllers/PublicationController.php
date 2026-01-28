@@ -4,17 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Publication;
 use App\Models\ApprovalWorkflow;
+use App\Models\EvidenceFile;
 use App\Services\WorkflowService;
+use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class PublicationController extends Controller
 {
     protected WorkflowService $workflowService;
+    protected FileUploadService $fileUploadService;
 
-    public function __construct(WorkflowService $workflowService)
+    public function __construct(WorkflowService $workflowService, FileUploadService $fileUploadService)
     {
         $this->workflowService = $workflowService;
+        $this->fileUploadService = $fileUploadService;
     }
     /**
      * Display all publications on home page
@@ -192,9 +196,9 @@ class PublicationController extends Controller
             return redirect()->route('login')->with('error', 'Please login to submit publications.');
         }
 
-        // Check if user has Student role
-        if (!auth()->user()->hasRole('Student')) {
-            return redirect()->route('welcome')->with('error', 'Only students can submit publications.');
+        // Check if user has Student or Faculty role (Student role is treated as Faculty)
+        if (!auth()->user()->hasAnyRole(['Student', 'Faculty'])) {
+            return redirect()->route('welcome')->with('error', 'Please login with a valid account to submit publications.');
         }
 
         return view('publications.create');
@@ -211,9 +215,9 @@ class PublicationController extends Controller
             return redirect()->route('login')->with('error', 'Please login to submit publications.');
         }
 
-        // Check if user has Student role
-        if (!auth()->user()->hasRole('Student')) {
-            return redirect()->route('welcome')->with('error', 'Only students can submit publications.');
+        // Check if user has Student or Faculty role (Student role is treated as Faculty)
+        if (!auth()->user()->hasAnyRole(['Student', 'Faculty'])) {
+            return redirect()->route('welcome')->with('error', 'Please login with a valid account to submit publications.');
         }
 
         $validated = $request->validate([
@@ -232,6 +236,10 @@ class PublicationController extends Controller
             'authors.*.is_primary' => 'boolean',
             'published_link' => 'nullable|url|max:500',
             'proceedings_link' => 'nullable|url|max:500',
+            'evidence_files' => 'nullable|array',
+            'evidence_files.*' => 'file|mimes:pdf,jpg,jpeg,png,gif|max:10240', // 10MB max per file
+            'evidence_urls' => 'nullable|array',
+            'evidence_urls.*' => 'nullable|url|max:500',
         ]);
 
         // User is authenticated and has Student role (already checked above)
@@ -258,6 +266,42 @@ class PublicationController extends Controller
             'primary_author_id' => $submittedBy,
             'submitted_at' => now(),
         ]);
+
+        // Handle evidence file uploads
+        if ($request->hasFile('evidence_files')) {
+            foreach ($request->file('evidence_files') as $file) {
+                $this->fileUploadService->uploadEvidenceFile(
+                    $file,
+                    'publication',
+                    $publication->id,
+                    auth()->id(),
+                    'other'
+                );
+            }
+            $publication->update(['evidence_uploaded' => true]);
+        }
+
+        // Handle evidence URLs
+        if ($request->has('evidence_urls') && is_array($request->evidence_urls)) {
+            foreach ($request->evidence_urls as $url) {
+                if (!empty($url)) {
+                    EvidenceFile::create([
+                        'submission_type' => 'publication',
+                        'submission_id' => $publication->id,
+                        'file_path' => $url,
+                        'file_name' => 'URL: ' . $url,
+                        'file_type' => 'text/url',
+                        'file_size' => 0,
+                        'file_category' => 'other',
+                        'uploaded_by' => auth()->id(),
+                        'uploaded_at' => now(),
+                    ]);
+                }
+            }
+            if (!empty(array_filter($request->evidence_urls))) {
+                $publication->update(['evidence_uploaded' => true]);
+            }
+        }
 
         // Create workflow for the publication (in draft status)
         $this->workflowService->createWorkflow('publication', $publication->id, auth()->user());

@@ -65,10 +65,8 @@ class LoginController extends Controller
             $user->id
         );
 
-        // Redirect Students to home page instead of admin dashboard
-        if ($user->hasRole('Student')) {
-            return redirect()->route('welcome');
-        }
+        // Student role is treated as Faculty role - redirect to admin dashboard
+        // No special redirect needed, default behavior applies
     }
 
     /**

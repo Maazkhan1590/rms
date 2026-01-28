@@ -25,19 +25,15 @@
                 </a>
             </li>
             @auth
-                @if(auth()->user()->hasRole('Student'))
-                    <li class="nav-item">
-                        <a href="{{ route('publications.create') }}" class="nav-link">
-                            <i class="fas fa-plus-circle"></i> Submit Paper
-                        </a>
+                <li class="nav-item">
+                    <a href="{{ route('publications.create') }}" class="nav-link">
+                        <i class="fas fa-plus-circle"></i> Submit Paper
                     </li>
-                @else
-                    <li class="nav-item">
-                        <a href="{{ route('admin.home') }}" class="nav-link">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                @endif
+                <li class="nav-item">
+                    <a href="{{ route('admin.home') }}" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
@@ -66,11 +62,9 @@
         </ul>
         <div class="nav-actions">
             @auth
-                @if(auth()->user()->hasRole('Student'))
-                    <button class="btn-submit" onclick="window.location.href='{{ route('publications.create') }}'">
-                        <i class="fas fa-paper-plane"></i> Submit Paper
-                    </button>
-                @endif
+                <button class="btn-submit" onclick="window.location.href='{{ route('publications.create') }}'">
+                    <i class="fas fa-paper-plane"></i> Submit Paper
+                </button>
             @else
                 <button class="btn-submit" onclick="window.location.href='{{ route('register') }}'">
                     <i class="fas fa-paper-plane"></i> Submit Paper

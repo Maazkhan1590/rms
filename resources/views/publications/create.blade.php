@@ -156,6 +156,94 @@
         border-top: 1px solid var(--border-color);
     }
 
+    /* Submission Type Selection Styles */
+    .submission-type-selection {
+        background: var(--light-color);
+        padding: 2rem;
+        border-radius: 16px;
+        border: 2px solid var(--border-color);
+    }
+
+    .submission-type-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .submission-type-btn {
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .submission-type-btn:hover {
+        border-color: var(--primary-color);
+        background: rgba(100, 255, 218, 0.05);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .submission-type-btn i {
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+
+    /* Evidence Upload Styles */
+    .evidence-upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        background: var(--light-color);
+    }
+
+    .evidence-files-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .evidence-file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    .evidence-file-item .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .evidence-file-item .file-icon {
+        color: var(--primary-color);
+    }
+
+    .evidence-url-item {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .evidence-url-item:first-child .btn-danger {
+        display: none !important;
+    }
+
     /* Author Item Styles */
     .author-item {
         margin-bottom: 1.5rem;
@@ -258,10 +346,34 @@
     <div class="container">
         <div class="auth-container">
             <div class="auth-header">
-                <h1>Submit Your Publication</h1>
+                <h1>Submit Paper</h1>
                 <p>Share your research work with the academic community</p>
             </div>
-            <form id="publicationForm" method="POST" action="{{ route('publications.store') }}" class="auth-form">
+            
+            <!-- Submission Type Selection -->
+            <div id="submissionTypeSelection" class="submission-type-selection" style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--text-color);">What would you like to submit?</h3>
+                <div class="submission-type-grid">
+                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('publication')">
+                        <i class="fas fa-book"></i>
+                        <span>Publication</span>
+                    </button>
+                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('grant')">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Grant</span>
+                    </button>
+                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('rtn')">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>RTN</span>
+                    </button>
+                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('bonus')">
+                        <i class="fas fa-award"></i>
+                        <span>Bonus Recognition</span>
+                    </button>
+                </div>
+            </div>
+            
+            <form id="publicationForm" method="POST" action="{{ route('publications.store') }}" class="auth-form" enctype="multipart/form-data" style="display: none;">
                 @csrf
 
                 @if ($errors->any())
@@ -437,6 +549,50 @@
                         @enderror
                     </div>
 
+                    <!-- Evidence Upload Section -->
+                    <div class="form-group">
+                        <label for="evidence_files">Evidence (URLs, Images, PDFs, etc.)</label>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            Upload multiple files or add URLs as evidence. Supported formats: PDF, Images (JPG, PNG), or URLs.
+                        </p>
+                        
+                        <!-- File Upload -->
+                        <div class="evidence-upload-area" id="evidenceUploadArea">
+                            <input type="file" id="evidence_files" name="evidence_files[]" 
+                                   multiple accept=".pdf,.jpg,.jpeg,.png,.gif,image/*,application/pdf"
+                                   style="display: none;" onchange="handleEvidenceFiles(this)">
+                            <button type="button" class="btn btn-outline" onclick="document.getElementById('evidence_files').click()" style="width: 100%; margin-bottom: 1rem;">
+                                <i class="fas fa-upload"></i> Upload Files
+                            </button>
+                            <div id="evidenceFilesList" class="evidence-files-list"></div>
+                        </div>
+                        
+                        <!-- URL Input -->
+                        <div class="evidence-urls-section" style="margin-top: 1rem;">
+                            <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; display: block;">Or add URLs:</label>
+                            <div id="evidenceUrlsContainer">
+                                <div class="evidence-url-item" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <input type="url" class="form-control evidence-url-input" 
+                                           name="evidence_urls[]" 
+                                           placeholder="https://...">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeEvidenceUrl(this)" style="display: none;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addEvidenceUrl()" style="margin-top: 0.5rem;">
+                                <i class="fas fa-plus"></i> Add Another URL
+                            </button>
+                        </div>
+                        
+                        @error('evidence_files')
+                            <div class="form-error">{{ $message }}</div>
+                        @enderror
+                        @error('evidence_urls')
+                            <div class="form-error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" onclick="prevStep()">
                             <i class="fas fa-arrow-left"></i> Previous
@@ -496,7 +652,7 @@
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
                         <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fas fa-paper-plane"></i> Submit Publication
+                            <i class="fas fa-paper-plane"></i> Submit Paper
                         </button>
                     </div>
                 </div>
@@ -722,6 +878,115 @@
     const publicationType = document.getElementById('publication_type');
     if (publicationType && publicationType.value) {
         publicationType.dispatchEvent(new Event('change'));
+    }
+
+    // Submission Type Selection
+    function selectSubmissionType(type) {
+        const form = document.getElementById('publicationForm');
+        const selection = document.getElementById('submissionTypeSelection');
+        
+        if (type === 'publication') {
+            // Show publication form
+            form.style.display = 'block';
+            selection.style.display = 'none';
+            form.action = "{{ route('publications.store') }}";
+        } else if (type === 'grant') {
+            // Redirect to grant form
+            window.location.href = "{{ route('grants.create') }}";
+        } else if (type === 'rtn') {
+            // Redirect to RTN form
+            window.location.href = "{{ route('rtn-submissions.create') }}";
+        } else if (type === 'bonus') {
+            // Redirect to bonus recognition form
+            window.location.href = "{{ route('bonus-recognitions.create') }}";
+        }
+    }
+
+    // Evidence Files Handling
+    let evidenceFileCount = 0;
+    
+    function handleEvidenceFiles(input) {
+        const files = Array.from(input.files);
+        const container = document.getElementById('evidenceFilesList');
+        
+        files.forEach(file => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'evidence-file-item';
+            fileItem.dataset.fileIndex = evidenceFileCount;
+            
+            const fileIcon = file.type.startsWith('image/') ? 'fa-image' : 'fa-file-pdf';
+            
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <i class="fas ${fileIcon} file-icon"></i>
+                    <span>${file.name}</span>
+                    <small style="color: var(--text-secondary);">(${(file.size / 1024).toFixed(2)} KB)</small>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeEvidenceFile(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(fileItem);
+            evidenceFileCount++;
+        });
+    }
+    
+    function removeEvidenceFile(button) {
+        const fileItem = button.closest('.evidence-file-item');
+        const fileIndex = fileItem.dataset.fileIndex;
+        
+        // Remove from file input
+        const fileInput = document.getElementById('evidence_files');
+        const dt = new DataTransfer();
+        const files = Array.from(fileInput.files);
+        
+        files.forEach((file, index) => {
+            if (index != fileIndex) {
+                dt.items.add(file);
+            }
+        });
+        
+        fileInput.files = dt.files;
+        fileItem.remove();
+    }
+    
+    // Evidence URLs Handling
+    function addEvidenceUrl() {
+        const container = document.getElementById('evidenceUrlsContainer');
+        const urlItem = document.createElement('div');
+        urlItem.className = 'evidence-url-item';
+        urlItem.style.display = 'flex';
+        urlItem.style.gap = '0.5rem';
+        urlItem.style.marginBottom = '0.5rem';
+        
+        urlItem.innerHTML = `
+            <input type="url" class="form-control evidence-url-input" 
+                   name="evidence_urls[]" 
+                   placeholder="https://...">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeEvidenceUrl(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        container.appendChild(urlItem);
+        updateEvidenceUrlButtons();
+    }
+    
+    function removeEvidenceUrl(button) {
+        const urlItem = button.closest('.evidence-url-item');
+        urlItem.remove();
+        updateEvidenceUrlButtons();
+    }
+    
+    function updateEvidenceUrlButtons() {
+        const urlItems = document.querySelectorAll('.evidence-url-item');
+        urlItems.forEach((item, index) => {
+            const removeBtn = item.querySelector('.btn-danger');
+            if (removeBtn) {
+                removeBtn.style.display = index === 0 ? 'none' : 'block';
+            }
+        });
     }
 </script>
 @endsection

@@ -27,11 +27,7 @@ class HomeController
     {
         $user = auth()->user();
         
-        // Block Students from accessing admin dashboard
-        if ($user->hasRole('Student')) {
-            return redirect()->route('welcome')
-                ->with('error', 'Students do not have access to the admin dashboard. You can view and submit publications from the home page.');
-        }
+        // Student role is treated as Faculty role - they have access to admin dashboard
 
         $currentYear = $request->get('year', now()->year);
 

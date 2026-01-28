@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 
 @section('content')
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
 <div class="card">
     <div class="card-header">
         <h3><i class="fas fa-money-bill-wave"></i> Grant Details</h3>
@@ -175,6 +178,70 @@
                             </table>
                         </div>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Evidence Files Section -->
+        @php
+            $evidenceFiles = $grant->evidenceFiles ?? collect();
+        @endphp
+        @if($evidenceFiles->count() > 0)
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-paperclip"></i> Evidence Files ({{ $evidenceFiles->count() }})</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Uploaded By</th>
+                                        <th>Upload Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($evidenceFiles as $file)
+                                    <tr>
+                                        <td>{{ $file->file_name }}</td>
+                                        <td>
+                                            @if($file->file_type === 'text/url')
+                                                <span class="badge badge-info">URL</span>
+                                            @elseif(str_contains($file->file_type, 'image'))
+                                                <span class="badge badge-success">Image</span>
+                                            @elseif(str_contains($file->file_type, 'pdf'))
+                                                <span class="badge badge-danger">PDF</span>
+                                            @else
+                                                <span class="badge badge-secondary">{{ $file->file_type }}</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                                        <td>{{ $file->uploader->name ?? 'N/A' }}</td>
+                                        <td>{{ $file->uploaded_at ? $file->uploaded_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                        <td>
+                                            @if($file->file_type === 'text/url')
+                                                <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-external-link-alt"></i> Open URL
+                                                </a>
+                                            @else
+                                                <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-download"></i> Download
+                                                </a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -44,6 +44,13 @@ class Grant extends Model
         'evidence_uploaded',
         'award_year',
         'submission_year',
+        'grant_status',
+        'application_date',
+        'amount_received_omr',
+        'kt_income',
+        'sdgs',
+        'reporting_period',
+        'faculty',
     ];
 
     protected $casts = [
@@ -51,16 +58,20 @@ class Grant extends Model
         'approved_at'  => 'datetime',
         'start_date'   => 'date',
         'end_date'     => 'date',
+        'application_date' => 'date',
         'amount' => 'decimal:2',
         'amount_omr' => 'decimal:2',
+        'amount_received_omr' => 'decimal:2',
         'units' => 'integer',
         'patent_su_registered' => 'boolean',
+        'kt_income' => 'boolean',
         'points_allocated' => 'decimal:2',
         'points_locked' => 'boolean',
         'evidence_required' => 'boolean',
         'evidence_uploaded' => 'boolean',
         'award_year' => 'integer',
         'submission_year' => 'integer',
+        'sdgs' => 'array',
     ];
 
     /**
