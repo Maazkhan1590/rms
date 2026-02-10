@@ -75,26 +75,6 @@ class PermissionsTableSeeder extends Seeder
                 'title' => 'user_access',
             ],
             [
-                'id'    => 17,
-                'title' => 'watch_create',
-            ],
-            [
-                'id'    => 18,
-                'title' => 'watch_edit',
-            ],
-            [
-                'id'    => 19,
-                'title' => 'watch_show',
-            ],
-            [
-                'id'    => 20,
-                'title' => 'watch_delete',
-            ],
-            [
-                'id'    => 21,
-                'title' => 'watch_access',
-            ],
-            [
                 'id'    => 22,
                 'title' => 'category_create',
             ],
