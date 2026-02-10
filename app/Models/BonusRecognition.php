@@ -22,6 +22,7 @@ class BonusRecognition extends Model
         'event_name',
         'event_date',
         'evidence_files',
+            'evidence_link',
         'points',
         'year',
         'status',

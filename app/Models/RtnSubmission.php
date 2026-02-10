@@ -17,6 +17,7 @@ class RtnSubmission extends Model
         'rtn_type',
         'title',
         'description',
+            'evidence_link',
         'student_coauthors',
         'course_files_updated',
         'lecture_materials',
@@ -31,6 +32,7 @@ class RtnSubmission extends Model
         'faculty',
         'units',
         'amount_omr',
+            'total_rtn',
         'submission_year',
     ];
 
@@ -39,6 +41,8 @@ class RtnSubmission extends Model
         'course_files_updated' => 'array',
         'evidence_files' => 'array',
         'points' => 'decimal:2',
+            'amount_omr' => 'decimal:2',
+            'total_rtn' => 'decimal:2',
         'year' => 'integer',
         'submitted_at' => 'datetime',
         'approved_at' => 'datetime',

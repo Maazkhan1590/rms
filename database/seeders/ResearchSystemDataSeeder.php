@@ -14,6 +14,11 @@ use App\Models\College;
 use App\Models\Department;
 use App\Models\RtnSubmission;
 use App\Models\BonusRecognition;
+use App\Models\AdjunctProfessor;
+use App\Models\ResearchFellow;
+use App\Models\EditorialAppointment;
+use App\Models\SupervisionExam;
+use App\Models\StudentInvolvement;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class ResearchSystemDataSeeder extends Seeder
@@ -113,8 +118,12 @@ class ResearchSystemDataSeeder extends Seeder
                 $this->importCommercializations($sheetName, $sheet, $headers, $headerRow);
             } elseif (str_contains($sheetNameLower, 'consultanc') && (str_contains($sheetNameLower, 'kt') || str_contains($sheetNameLower, 'knowledge'))) {
                 $this->importConsultanciesKt($sheetName, $sheet, $headers, $headerRow);
-            } elseif (str_contains($sheetNameLower, 'research_fellow') || str_contains($sheetNameLower, 'adjunct')) {
-                $this->importResearchFellows($sheetName, $sheet, $headers, $headerRow);
+                } elseif (str_contains($sheetNameLower, 'research_fellow')) {
+                    $this->importResearchFellowsPublications($sheetName, $sheet, $headers, $headerRow);
+                } elseif (str_contains($sheetNameLower, 'adj') && str_contains($sheetNameLower, 'professor')) {
+                    $this->importAdjunctProfessors($sheetName, $sheet, $headers, $headerRow);
+                } elseif (str_contains($sheetNameLower, 'student') && str_contains($sheetNameLower, 'involvement')) {
+                    $this->importStudentInvolvements($sheetName, $sheet, $headers, $headerRow);
             } elseif (str_contains($sheetNameLower, 'home') || str_contains($sheetNameLower, 'summary') || str_contains($sheetNameLower, 'dashboard') || str_contains($sheetNameLower, 'helper') || str_contains($sheetNameLower, 'config') || str_contains($sheetNameLower, 'kpi') || str_contains($sheetNameLower, 'table') || str_contains($sheetNameLower, 'sdg_list') || str_contains($sheetNameLower, 'sdg_mapping')) {
                 // Skip summary/dashboard/helper sheets
                 $this->command->info("  Skipping summary/dashboard sheet '{$sheetName}'");
@@ -137,6 +146,7 @@ class ResearchSystemDataSeeder extends Seeder
         $failed = 0;
         $skipped = 0;
         $highestRow = $sheet->getHighestRow();
+        $sheetNameLower = strtolower($sheetName);
 
         DB::beginTransaction();
         try {
@@ -164,8 +174,32 @@ class ResearchSystemDataSeeder extends Seeder
                     $googleScholar = $this->getValue($rowData, ['Google scholar link', 'Google Scholar', 'google_scholar', 'Google scholar']);
                     $orcid = $this->getValue($rowData, ['ORCID', 'ORCID Connected', 'orcid', 'ORCID ID']);
                     $scopusScholar = $this->getValue($rowData, ['Scopus scholar link', 'Scopus', 'scopus', 'Scopus Link']);
-                    $citationNumber = $this->getValue($rowData, ['Citation number', 'Citation', 'Citations', 'citation']);
-                    $hIndex = $this->getValue($rowData, ['H-index', 'H-index', 'h_index', 'H Index']);
+                        $citationNumber = $this->getValue($rowData, ['Citation number', 'Citation\n number ', 'Citation', 'Citations', 'citation']);
+                        $hIndex = $this->getValue($rowData, ['H-index', 'H-index', 'h_index', 'H Index']);
+                        $scopusCitationNumber = $this->getValue($rowData, ['Scopus Citation number', 'Citation\n number ', 'Scopus Citations']);
+                        $scopusHIndex = $this->getValue($rowData, ['Scopus H-index', 'H-index']);
+                        $scopusPapers = $this->getValue($rowData, ['Number of \npapers ( Scopus)', 'Number of papers ( Scopus)', 'Papers in Scopus', 'Scopus Papers']);
+                        $soharAffiliation = $this->getValue($rowData, ['sohar\n Affiliation', 'sohar Affiliation', 'Sohar Affiliation']);
+                        $orcidConnected = $this->getValue($rowData, ['ORCID \nConnected', 'ORCID Connected']);
+
+                    if (str_contains($sheetNameLower, 'staff_master')) {
+                        $cellValue = function (int $col) use ($sheet, $row) {
+                            $columnLetter = Coordinate::stringFromColumnIndex($col);
+                            return $this->excelReader->getCellValue($sheet, $columnLetter . $row);
+                        };
+
+                        $name = $name ?: trim((string)$cellValue(1));
+                        $email = $email ?: trim((string)$cellValue(2));
+                        $googleScholar = $googleScholar ?: trim((string)$cellValue(3));
+                        $citationNumber = $cellValue(4);
+                        $hIndex = $cellValue(5);
+                        $scopusScholar = $scopusScholar ?: trim((string)$cellValue(6));
+                        $soharAffiliation = $cellValue(7);
+                        $orcidConnected = $cellValue(8);
+                        $scopusCitationNumber = $cellValue(9);
+                        $scopusHIndex = $cellValue(10);
+                        $scopusPapers = $cellValue(11);
+                    }
 
                     if (empty($name) && empty($email)) {
                         continue;
@@ -193,6 +227,13 @@ class ResearchSystemDataSeeder extends Seeder
                     if ($googleScholar) $updateData['google_scholar'] = $createData['google_scholar'] = $googleScholar;
                     if ($orcid) $updateData['orcid'] = $createData['orcid'] = $orcid;
                     if ($scopusScholar) $updateData['research_gate'] = $createData['research_gate'] = $scopusScholar;
+                        if ($citationNumber !== null && $citationNumber !== '') $updateData['citation_number'] = $createData['citation_number'] = (int)$citationNumber;
+                        if ($hIndex !== null && $hIndex !== '') $updateData['h_index'] = $createData['h_index'] = (int)$hIndex;
+                        if ($scopusCitationNumber !== null && $scopusCitationNumber !== '') $updateData['scopus_citation_number'] = $createData['scopus_citation_number'] = (int)$scopusCitationNumber;
+                        if ($scopusHIndex !== null && $scopusHIndex !== '') $updateData['scopus_h_index'] = $createData['scopus_h_index'] = (int)$scopusHIndex;
+                        if ($scopusPapers !== null && $scopusPapers !== '') $updateData['scopus_papers'] = $createData['scopus_papers'] = (int)$scopusPapers;
+                        if ($soharAffiliation) $updateData['sohar_affiliation'] = $createData['sohar_affiliation'] = (strtoupper(trim((string)$soharAffiliation)) === 'Y' ? 'Yes' : (string)$soharAffiliation);
+                        if ($orcidConnected) $updateData['orcid_connected'] = $createData['orcid_connected'] = (strtoupper(trim((string)$orcidConnected)) === 'Y' ? 'Yes' : (string)$orcidConnected);
 
                     // Resolve college
                     if ($collegeName) {
@@ -421,12 +462,27 @@ class ResearchSystemDataSeeder extends Seeder
 
                     $title = $this->getValue($rowData, ['Title', 'title', 'research_title', 'Research Title', 'Publication Title']);
                     $authorName = $this->getValue($rowData, ['Author', 'author', 'author_name', 'Author Name', 'Staff Name']);
+                    $employeeId = $this->getValue($rowData, ['Employee ID', 'employee_id', 'ID']);
+                    $faculty = $this->getValue($rowData, ['Faculty', 'faculty', 'College']);
                     $type = $this->getValue($rowData, ['Type', 'type', 'Publication Type']);
                     $indexed = $this->getValue($rowData, ['Indexed', 'indexed_', 'Indexed?', 'Journal Category']);
                     $quartile = $this->getValue($rowData, ['Quartile', 'quartile', 'Q']);
+                    $month = $this->getValue($rowData, ['Month', 'month']);
                     $year = $this->getValue($rowData, ['Year', 'year', 'Publication Year']);
-                    $journal = $this->getValue($rowData, ['Journal', 'journal', 'Journal Name']);
+                    $status = $this->getValue($rowData, ['Status', 'status']);
+                    $journal = $this->getValue($rowData, ['Journal', 'journal', 'Journal Name', 'journal_name']);
                     $doi = $this->getValue($rowData, ['DOI', 'doi']);
+                    $authorsOnArticle = $this->getValue($rowData, ['Authors on Article', 'Authors', 'authors']);
+                    $firstSuAuthors = $this->getValue($rowData, ['1st SU authors', 'First SU authors', 'First SU Author']);
+                    $sdg = $this->getValue($rowData, ['SDG', 'sdg']);
+                    $sdgIndicator = $this->getValue($rowData, ['SDG Indicator', 'Indicator', 'SDG Indicator(s)']);
+                    $indexingDb = $this->getValue($rowData, ['Indexing DB (Scopus/WoS/Other)', 'Indexing DB', 'Indexing']);
+                    $soharAffiliation = $this->getValue($rowData, ['Sohar Affiliation? (Y/N)', 'Sohar Affiliation', 'Sohar Affiliation?']);
+                    $percentContribution = $this->getValue($rowData, ['% Contribution', 'Percent Contribution', 'Contribution %']);
+                    $suAuthorType = $this->getValue($rowData, ['SU Author Type (Academic/Adjunct/RF)', 'SU Author Type', 'Author Type']);
+                    $studentCoauthor = $this->getValue($rowData, ['Student Co-author? (Y/N)', 'Student Co-author', 'Student Coauthor']);
+                    $studentLevel = $this->getValue($rowData, ['Student Level (UG/MSc/PhD)', 'Student Level']);
+                    $evidenceLink = $this->getValue($rowData, ['Link/Evidence', 'Evidence Link', 'Evidence', 'Link']);
 
                     if (empty($title)) {
                         continue;
@@ -434,7 +490,10 @@ class ResearchSystemDataSeeder extends Seeder
 
                     // Find author user
                     $author = null;
-                    if ($authorName) {
+                    if ($employeeId) {
+                        $author = User::where('employee_id', $employeeId)->first();
+                    }
+                    if (!$author && $authorName) {
                         $author = User::where('name', 'like', "%{$authorName}%")->first();
                     }
 
@@ -447,6 +506,72 @@ class ResearchSystemDataSeeder extends Seeder
                     // Validate and map quartile (only Q1-Q4 are valid)
                     $validQuartile = $this->mapQuartile($quartile);
 
+                    // Build authors list
+                    $authors = [];
+                    if ($authorsOnArticle) {
+                        $authorNames = preg_split('/[;,\n]+/', $authorsOnArticle);
+                        foreach ($authorNames as $authorEntry) {
+                            $authorEntry = trim($authorEntry);
+                            if ($authorEntry) {
+                                $authors[] = [
+                                    'name' => $authorEntry,
+                                    'email' => null,
+                                    'is_primary' => false,
+                                ];
+                            }
+                        }
+                    }
+
+                    if ($author) {
+                        array_unshift($authors, [
+                            'name' => $author->name,
+                            'email' => $author->email,
+                            'is_primary' => true,
+                        ]);
+                    }
+
+                    if ($firstSuAuthors) {
+                        $firstSuNames = preg_split('/[;,\n]+/', $firstSuAuthors);
+                        foreach ($firstSuNames as $firstName) {
+                            $firstName = trim($firstName);
+                            if ($firstName) {
+                                $authors[] = [
+                                    'name' => $firstName,
+                                    'email' => null,
+                                    'is_primary' => false,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Resolve published_at from month/year if provided
+                    $publishedAt = null;
+                    if ($year && $month) {
+                        try {
+                            if (is_numeric($month)) {
+                                $publishedAt = \Carbon\Carbon::createFromDate((int)$year, (int)$month, 1)->format('Y-m-d');
+                            } else {
+                                $publishedAt = \Carbon\Carbon::parse("1 {$month} {$year}")->format('Y-m-d');
+                            }
+                        } catch (\Exception $e) {
+                            $publishedAt = null;
+                        }
+                    }
+
+                    $mappedStatus = 'approved';
+                    if ($status) {
+                        $statusLower = strtolower($status);
+                        if (str_contains($statusLower, 'draft')) {
+                            $mappedStatus = 'draft';
+                        } elseif (str_contains($statusLower, 'submit')) {
+                            $mappedStatus = 'submitted';
+                        } elseif (str_contains($statusLower, 'pending')) {
+                            $mappedStatus = 'pending';
+                        } elseif (str_contains($statusLower, 'reject')) {
+                            $mappedStatus = 'rejected';
+                        }
+                    }
+
                     $data = [
                         'title' => $title,
                         'slug' => \Illuminate\Support\Str::slug($title) . '-' . uniqid(),
@@ -455,23 +580,67 @@ class ResearchSystemDataSeeder extends Seeder
                         'quartile' => $validQuartile,
                         'year' => $year ? (int)$year : null,
                         'publication_year' => $year ? (int)$year : null,
+                        'journal' => $journal,
                         'journal_name' => $journal,
                         'doi' => $doi,
-                        'status' => 'approved',
+                        'status' => $mappedStatus,
                         'primary_author_id' => $author?->id,
                         'submitted_by' => $author?->id,
+                        'college' => $faculty,
+                        'published_at' => $publishedAt,
+                        'published_link' => $evidenceLink,
+                        'evidence_uploaded' => $evidenceLink ? true : false,
+                        'points_allocated' => 0,
+                        'indexing_db' => $indexingDb,
+                        'sohar_affiliation' => $soharAffiliation ? in_array(strtoupper(trim($soharAffiliation)), ['Y', 'YES']) : null,
+                        'percent_contribution' => $percentContribution ? (float)$percentContribution : null,
+                        'su_author_type' => $suAuthorType,
+                        'student_coauthor' => $studentCoauthor ? in_array(strtoupper(trim($studentCoauthor)), ['Y', 'YES']) : null,
+                        'student_level' => $studentLevel,
+                        'submission_year' => $year ? (int)$year : null,
                     ];
 
                     // Create authors array
-                    if ($author) {
-                        $data['authors'] = json_encode([[
-                            'name' => $author->name,
-                            'email' => $author->email,
-                            'is_primary' => true,
-                        ]]);
+                    if (!empty($authors)) {
+                        $data['authors'] = json_encode($authors);
                     }
 
-                    Publication::create($data);
+                    $unique = $doi ? ['doi' => $doi] : [
+                        'title' => $title,
+                        'publication_year' => $year ? (int)$year : null,
+                        'primary_author_id' => $author?->id,
+                    ];
+
+                    $publication = Publication::updateOrCreate($unique, $data);
+
+                    if ($sdg) {
+                        preg_match_all('/\d+/', $sdg, $matches);
+                        $sdgNumbers = $matches[0] ?? [];
+                        foreach ($sdgNumbers as $sdgNumber) {
+                            $sdgNumber = (int)$sdgNumber;
+                            if ($sdgNumber < 1 || $sdgNumber > 17) {
+                                continue;
+                            }
+                            DB::table('sdg_contributions')->updateOrInsert(
+                                [
+                                    'related_type' => 'publication',
+                                    'related_id' => $publication->id,
+                                    'sdg' => $sdgNumber,
+                                ],
+                                [
+                                    'user_id' => $author?->id,
+                                    'staffname' => $authorName,
+                                    'type' => 'paper',
+                                    'title' => $title,
+                                    'date' => $this->parseDate($publishedAt),
+                                    'evidence_link' => $evidenceLink,
+                                    'indicator' => $sdgIndicator,
+                                    'updated_at' => now(),
+                                    'created_at' => now(),
+                                ]
+                            );
+                        }
+                    }
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -512,10 +681,23 @@ class ResearchSystemDataSeeder extends Seeder
                     $staffName = $this->getValue($rowData, ['Staff Name', 'staff_name', 'StaffName', 'Name', 'Principal Investigator']);
                     $role = $this->getValue($rowData, ['Role', 'role']);
                     $amountOmr = $this->getValue($rowData, ['Amount OMR', 'amount_omr_', 'Amount (OMR)', 'Amount', 'amount']);
+                    $units = $this->getValue($rowData, ['Units', 'units']);
+                    $points = $this->getValue($rowData, ['Points', 'points']);
                     $sponsor = $this->getValue($rowData, ['Sponsor', 'sponsor', 'Sponsor Name', 'Client / Sponsor']);
                     $startDate = $this->getValue($rowData, ['Start Date', 'start_date', 'Start', 'Date']);
                     $endDate = $this->getValue($rowData, ['End Date', 'end_date', 'End']);
                     $status = $this->getValue($rowData, ['Status', 'status', 'Status (Ongoing/Closed)', 'Status (Submitted/Accepted/Rejected)']);
+                    $grantTypeValue = $this->getValue($rowData, ['Grant Type (RG/GRG/URG/EJAAD/Other)', 'Grant Type', 'Type (RG/GRG/URG)', 'Type']);
+                    $grantStatus = $this->getValue($rowData, ['Grant Status (Submitted/Accepted/Ongoing/Completed)', 'Grant Status']);
+                    $applicationDate = $this->getValue($rowData, ['Application Date', 'application_date']);
+                    $externalInternal = $this->getValue($rowData, ['External/Internal', 'External/Internal ']);
+                    $amountReceived = $this->getValue($rowData, ['Amount Received To Date (OMR)', 'Amount Received', 'amount_received']);
+                    $ktIncome = $this->getValue($rowData, ['KT Income? (Y/N)', 'KT Income']);
+                    $sdgs = $this->getValue($rowData, ['SDG(s)', 'SDGs', 'SDG']);
+                    $reportingPeriod = $this->getValue($rowData, ['Reporting Period (Q1/Q2/Q3/Q4)', 'Reporting Period']);
+                    $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'Evidence', 'Link']);
+                    $summary = $this->getValue($rowData, ['Summary', 'summary']);
+                    $faculty = $this->getValue($rowData, ['Faculty', 'faculty', 'College']);
 
                     // For Internal_Funding, use Application Type as title if title is empty
                     if (empty($title)) {
@@ -538,7 +720,7 @@ class ResearchSystemDataSeeder extends Seeder
                     }
 
                     // Determine grant type from sheet name
-                    $grantType = $this->mapGrantType($sheetName, $rowData);
+                    $grantType = $grantTypeValue ? $this->mapGrantTypeFromValue($grantTypeValue) : $this->mapGrantType($sheetName, $rowData);
 
                     // Map status
                     $mappedStatus = 'approved';
@@ -557,22 +739,71 @@ class ResearchSystemDataSeeder extends Seeder
                         }
                     }
 
+                    $sdgArray = null;
+                    if ($sdgs) {
+                        preg_match_all('/\d+/', $sdgs, $matches);
+                        $sdgArray = $matches[0] ?? [];
+                        $sdgArray = array_values(array_unique(array_filter(array_map('intval', $sdgArray))));
+                    }
+
+                    $reporting = null;
+                    if ($reportingPeriod) {
+                        $rp = strtoupper(trim($reportingPeriod));
+                        if (in_array($rp, ['Q1', 'Q2', 'Q3', 'Q4'])) {
+                            $reporting = $rp;
+                        }
+                    }
+
+                    $grantStatusMapped = null;
+                    if ($grantStatus) {
+                        $gs = strtolower($grantStatus);
+                        if (str_contains($gs, 'submit')) {
+                            $grantStatusMapped = 'submitted';
+                        } elseif (str_contains($gs, 'accept')) {
+                            $grantStatusMapped = 'accepted';
+                        } elseif (str_contains($gs, 'ongoing') || str_contains($gs, 'progress')) {
+                            $grantStatusMapped = 'ongoing';
+                        } elseif (str_contains($gs, 'complete') || str_contains($gs, 'closed')) {
+                            $grantStatusMapped = 'completed';
+                        } elseif (str_contains($gs, 'reject')) {
+                            $grantStatusMapped = 'draft';
+                        }
+                    }
+
                     $data = [
                         'title' => $title,
                         'slug' => \Illuminate\Support\Str::slug($title) . '-' . uniqid(),
                         'grant_type' => $grantType,
+                        'external_internal' => $externalInternal,
                         'role' => $this->mapGrantRole($role),
                         'amount_omr' => $amountOmr ? (float)$amountOmr : null,
-                        'units' => $amountOmr ? (int)ceil((float)$amountOmr / 10000) : 1,
+                        'units' => $units ? (int)$units : ($amountOmr ? (int)ceil((float)$amountOmr / 10000) : 1),
                         'sponsor' => $sponsor,
                         'sponsor_name' => $sponsor,
                         'start_date' => $this->parseDate($startDate),
                         'end_date' => $this->parseDate($endDate),
                         'status' => $mappedStatus,
                         'submitted_by' => $user?->id,
+                        'summary' => $summary,
+                        'grant_status' => $grantStatusMapped,
+                        'application_date' => $this->parseDate($applicationDate),
+                        'amount_received_omr' => $amountReceived ? (float)$amountReceived : null,
+                        'kt_income' => $ktIncome ? in_array(strtoupper(trim($ktIncome)), ['Y', 'YES']) : false,
+                        'sdgs' => $sdgArray,
+                        'reporting_period' => $reporting,
+                        'award_letter_path' => $evidenceLink,
+                        'evidence_uploaded' => $evidenceLink ? true : false,
+                        'points_allocated' => $points ? (float)$points : 0,
+                        'faculty' => $faculty,
                     ];
 
-                    Grant::create($data);
+                    $unique = [
+                        'title' => $title,
+                        'submitted_by' => $user?->id,
+                        'start_date' => $this->parseDate($startDate),
+                    ];
+
+                    Grant::updateOrCreate($unique, $data);
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -647,14 +878,25 @@ class ResearchSystemDataSeeder extends Seeder
                         'rtn_type' => 'other',
                         'title' => 'RTN Submission',
                         'description' => "Units: {$units}, Amount: {$amountOmr} OMR",
+                        'evidence_link' => $evidenceLink,
                         'points' => $calculatedPoints,
+                        'faculty' => $faculty,
+                        'units' => $units ? (int)$units : 1,
+                        'amount_omr' => $amountOmr ? (float)$amountOmr : null,
+                        'total_rtn' => $totalRtn ? (float)$totalRtn : null,
                         'year' => date('Y'),
                         'status' => 'approved',
                         'submitted_at' => now(),
                         'approved_at' => now(),
                     ];
 
-                    RtnSubmission::create($data);
+                    $unique = [
+                        'user_id' => $user->id,
+                        'year' => date('Y'),
+                        'title' => 'RTN Submission',
+                    ];
+
+                    RtnSubmission::updateOrCreate($unique, $data);
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -695,6 +937,7 @@ class ResearchSystemDataSeeder extends Seeder
                     $staffName = $this->getValue($rowData, ['Staff Name', 'staff_name', 'Staff Name', 'Name']);
                     $recognitionType = $this->getValue($rowData, ['Recognition Type', 'recognition_type', 'Type', 'Recognition Type']);
                     $points = $this->getValue($rowData, ['Points', 'points']);
+                        $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Evidence', 'Link']);
 
                     if (empty($staffName)) {
                         continue;
@@ -721,6 +964,7 @@ class ResearchSystemDataSeeder extends Seeder
                         'user_id' => $user->id,
                         'recognition_type' => $this->mapRecognitionType($recognitionType),
                         'title' => $recognitionType ?: 'Recognition',
+                            'evidence_link' => $evidenceLink,
                         'points' => $points ? (float)$points : 0,
                         'year' => date('Y'),
                         'status' => 'approved',
@@ -728,7 +972,14 @@ class ResearchSystemDataSeeder extends Seeder
                         'approved_at' => now(),
                     ];
 
-                    BonusRecognition::create($data);
+                        $unique = [
+                            'user_id' => $user->id,
+                            'recognition_type' => $this->mapRecognitionType($recognitionType),
+                            'title' => $recognitionType ?: 'Recognition',
+                            'year' => date('Y'),
+                        ];
+
+                        BonusRecognition::updateOrCreate($unique, $data);
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -790,20 +1041,28 @@ class ResearchSystemDataSeeder extends Seeder
                         continue;
                     }
 
+                        $startDate = $this->getValue($rowData, ['Start Date', 'start_date', 'From']);
+                        $endDate = $this->getValue($rowData, ['End Date', 'end_date', 'To']);
+                        $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Link', 'URL']);
+
                     $data = [
                         'user_id' => $user->id,
-                        'recognition_type' => 'editorial_board',
-                        'title' => "Editorial Role: {$role}",
-                        'organization' => $journalConference,
-                        'role_description' => $role,
-                        'journal_conference_name' => $journalConference,
-                        'year' => date('Y'),
-                        'status' => 'approved',
-                        'submitted_at' => now(),
-                        'approved_at' => now(),
+                            'staff_name' => $staffName,
+                            'journal_conference' => $journalConference,
+                            'role' => $role,
+                            'start_date' => $this->parseDate($startDate),
+                            'end_date' => $this->parseDate($endDate),
+                            'evidence_link' => $evidenceLink,
                     ];
 
-                    BonusRecognition::create($data);
+                        $unique = [
+                        'user_id' => $user->id,
+                        'journal_conference' => $journalConference,
+                        'role' => $role,
+                        'start_date' => $this->parseDate($startDate),
+                    ];
+
+                    EditorialAppointment::updateOrCreate($unique, $data);
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -851,6 +1110,12 @@ class ResearchSystemDataSeeder extends Seeder
                     $degree = $this->getValue($rowData, ['Degree (MSc/PhD)', 'Degree', 'degree']);
                     $university = $this->getValue($rowData, ['University', 'university']);
                     $studentName = $this->getValue($rowData, ['Student Name', 'student_name', 'Student']);
+                        $academicYear = $this->getValue($rowData, ['Academic Year', 'academic_year', 'Year']);
+                        $thesisTitle = $this->getValue($rowData, ['Thesis/Dissertation Title', 'Thesis Title', 'thesis_title', 'Title']);
+                        $startYear = $this->getValue($rowData, ['Start Year', 'start_year']);
+                        $endYear = $this->getValue($rowData, ['End Year', 'end_year']);
+                        $status = $this->getValue($rowData, ['Status (Ongoing/Completed)', 'Status', 'status']);
+                        $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Link']);
 
                     if (empty($staffName)) {
                         continue;
@@ -872,23 +1137,68 @@ class ResearchSystemDataSeeder extends Seeder
                         continue;
                     }
 
-                    // Only import external examiner roles as bonus recognition
-                    if (str_contains(strtolower($role), 'external')) {
+                        // Map role to enum values
+                        $roleMapping = [
+                            'Main' => 'Main',
+                            'Co-Supervisor' => 'Co-Supervisor',
+                            'Co' => 'Co',
+                            'External Examiner' => 'External Examiner',
+                            'External' => 'External',
+                        ];
+                        $mappedRole = 'Main';
+                        foreach ($roleMapping as $key => $value) {
+                            if (str_contains($role, $key)) {
+                                $mappedRole = $value;
+                                break;
+                            }
+                        }
+
+                        // Map degree to enum values
+                        $degreeUpper = strtoupper($degree);
+                        if (str_contains($degreeUpper, 'PHD')) {
+                            $mappedDegree = 'PhD';
+                        } elseif (str_contains($degreeUpper, 'MSC') || str_contains($degreeUpper, 'MASTER')) {
+                            $mappedDegree = 'MSc';
+                        } elseif (str_contains($degreeUpper, 'MPHIL')) {
+                            $mappedDegree = 'MPhil';
+                        } else {
+                            $mappedDegree = 'Other';
+                        }
+
+                        // Map status to enum values
+                        $statusLower = strtolower($status);
+                        if (str_contains($statusLower, 'complete')) {
+                            $mappedStatus = 'Completed';
+                        } elseif (str_contains($statusLower, 'discontinue')) {
+                            $mappedStatus = 'Discontinued';
+                        } else {
+                            $mappedStatus = 'Ongoing';
+                        }
+
                         $data = [
                             'user_id' => $user->id,
-                            'recognition_type' => 'external_examiner',
-                            'title' => "External Examiner: {$degree} - {$studentName}",
-                            'organization' => $university,
-                            'role_description' => "{$role} for {$degree} student: {$studentName}",
-                            'year' => date('Y'),
-                            'status' => 'approved',
-                            'submitted_at' => now(),
-                            'approved_at' => now(),
+                            'staff_name' => $staffName,
+                            'academic_year' => $academicYear,
+                            'role' => $mappedRole,
+                            'degree' => $mappedDegree,
+                            'university' => $university,
+                            'student_name' => $studentName,
+                            'thesis_title' => $thesisTitle,
+                            'start_year' => $startYear ? (int)$startYear : null,
+                            'end_year' => $endYear ? (int)$endYear : null,
+                            'status' => $mappedStatus,
+                            'evidence_link' => $evidenceLink,
                         ];
 
-                        BonusRecognition::create($data);
+                        $unique = [
+                            'user_id' => $user->id,
+                            'student_name' => $studentName,
+                            'degree' => $mappedDegree,
+                            'start_year' => $startYear ? (int)$startYear : null,
+                        ];
+
+                        SupervisionExam::updateOrCreate($unique, $data);
                         $imported++;
-                    }
                 } catch (\Exception $e) {
                     $failed++;
                     if ($failed <= 5) {
@@ -934,6 +1244,9 @@ class ResearchSystemDataSeeder extends Seeder
                     $date = $this->getValue($rowData, ['Date', 'date']);
                     $amountOmr = $this->getValue($rowData, ['Amount (OMR)', 'Amount OMR', 'amount_omr_', 'Amount']);
                     $fundingSource = $this->getValue($rowData, ['Funding Source', 'funding_source', 'Funding']);
+                    $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Evidence']);
+                    $notes = $this->getValue($rowData, ['Notes', 'notes']);
+                    $reportingPeriod = $this->getValue($rowData, ['Reporting Period (Q1/Q2/Q3/Q4)', 'Reporting Period']);
 
                     if (empty($item)) {
                         continue;
@@ -967,10 +1280,20 @@ class ResearchSystemDataSeeder extends Seeder
                         'date' => $this->parseDate($date),
                         'amount_omr' => $amountOmr ? (float)$amountOmr : null,
                         'funding_source' => $fundingSource,
+                        'evidence_link' => $evidenceLink,
+                        'notes' => $notes,
+                        'reporting_period' => $reportingPeriod ? strtolower(trim($reportingPeriod)) : null,
                         'year' => $date ? (int)date('Y', strtotime($this->parseDate($date) ?: 'now')) : date('Y'),
                     ];
 
-                    DB::table('research_investments')->insert($data);
+                    DB::table('research_investments')->updateOrInsert(
+                        [
+                            'item' => $item,
+                            'staff_name' => $staffName,
+                            'date' => $this->parseDate($date),
+                        ],
+                        $data + ['updated_at' => now(), 'created_at' => now()]
+                    );
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -1012,6 +1335,8 @@ class ResearchSystemDataSeeder extends Seeder
                     $title = $this->getValue($rowData, ['Title', 'title']);
                     $sdg = $this->getValue($rowData, ['SDG', 'sdg']);
                     $date = $this->getValue($rowData, ['Date', 'date']);
+                    $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Evidence']);
+                    $indicator = $this->getValue($rowData, ['Indicator(s)', 'Indicator', 'SDG Indicator']);
 
                     if (empty($title) || empty($sdg)) {
                         continue;
@@ -1047,9 +1372,18 @@ class ResearchSystemDataSeeder extends Seeder
                         'title' => $title,
                         'sdg' => $sdgNumber,
                         'date' => $this->parseDate($date),
+                        'evidence_link' => $evidenceLink,
+                        'indicator' => $indicator,
                     ];
 
-                    DB::table('sdg_contributions')->insert($data);
+                    DB::table('sdg_contributions')->updateOrInsert(
+                        [
+                            'title' => $title,
+                            'sdg' => $sdgNumber,
+                            'staffname' => $staffName,
+                        ],
+                        $data + ['updated_at' => now(), 'created_at' => now()]
+                    );
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -1092,6 +1426,8 @@ class ResearchSystemDataSeeder extends Seeder
                     $conference = $this->getValue($rowData, ['Conference', 'conference']);
                     $country = $this->getValue($rowData, ['Country', 'country']);
                     $date = $this->getValue($rowData, ['Date', 'date']);
+                    $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Evidence']);
+                    $notes = $this->getValue($rowData, ['Notes', 'notes']);
 
                     if (empty($staffName) || empty($conference)) {
                         continue;
@@ -1128,14 +1464,24 @@ class ResearchSystemDataSeeder extends Seeder
 
                     $data = [
                         'user_id' => $user->id,
+                        'staff_name' => $staffName,
                         'activity_type' => $mappedActivityType,
-                        'conference_name' => $conference,
+                        'conference' => $conference,
                         'country' => $country,
                         'date' => $this->parseDate($date),
+                        'evidence_link' => $evidenceLink,
+                        'notes' => $notes,
                         'year' => $date ? (int)date('Y', strtotime($this->parseDate($date) ?: 'now')) : date('Y'),
                     ];
 
-                    DB::table('conference_activities')->insert($data);
+                    DB::table('conference_activities')->updateOrInsert(
+                        [
+                            'user_id' => $user->id,
+                            'conference' => $conference,
+                            'date' => $this->parseDate($date),
+                        ],
+                        $data + ['updated_at' => now(), 'created_at' => now()]
+                    );
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -1174,8 +1520,14 @@ class ResearchSystemDataSeeder extends Seeder
 
                     $partnerOrg = $this->getValue($rowData, ['Partner Organization', 'Partner', 'partner', 'Organization']);
                     $type = $this->getValue($rowData, ['Type (MoU/MoA/Project/Industry)', 'Type', 'type']);
-                    $dateSigned = $this->getValue($rowData, ['Date Signed', 'date_signed', 'Date']);
+                    $dateSigned = $this->getValue($rowData, ['Date Signed', 'date_signed', 'Start Date', 'Date']);
+                    $expiryDate = $this->getValue($rowData, ['Expiry Date', 'expiry_date', 'End Date']);
+                    $scopeTheme = $this->getValue($rowData, ['Scope/Theme', 'scope', 'theme']);
                     $leadStaff = $this->getValue($rowData, ['Lead Staff', 'lead_staff', 'Staff']);
+                    $outputs = $this->getValue($rowData, ['Outputs (papers/grants/events)', 'Outputs', 'outputs']);
+                    $status = $this->getValue($rowData, ['Status (Active/Inactive)', 'Status', 'status']);
+                    $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Evidence']);
+                    $sdgs = $this->getValue($rowData, ['SDG(s)', 'SDGs', 'SDG']);
 
                     if (empty($partnerOrg)) {
                         continue;
@@ -1188,14 +1540,26 @@ class ResearchSystemDataSeeder extends Seeder
 
                     $data = [
                         'partner_organization' => $partnerOrg,
-                        'type' => $type ?: 'other',
+                        'type' => $type ? strtolower($type) : null,
                         'date_signed' => $this->parseDate($dateSigned),
+                        'expiry_date' => $this->parseDate($expiryDate),
+                        'scope_theme' => $scopeTheme,
                         'lead_staff_id' => $user?->id,
                         'lead_staff' => $leadStaff,
-                        'status' => 'active',
+                        'outputs_papers_grants_events' => $outputs,
+                        'status' => $status ? strtolower($status) : 'active',
+                        'evidence_link' => $evidenceLink,
+                        'sdg_s' => $sdgs,
                     ];
 
-                    DB::table('partnerships_mous')->insert($data);
+                    DB::table('partnerships_mous')->updateOrInsert(
+                        [
+                            'partner_organization' => $partnerOrg,
+                            'date_signed' => $this->parseDate($dateSigned),
+                            'type' => $type ? strtolower($type) : null,
+                        ],
+                        $data + ['updated_at' => now(), 'created_at' => now()]
+                    );
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -1238,6 +1602,11 @@ class ResearchSystemDataSeeder extends Seeder
                     $stage = $this->getValue($rowData, ['Stage (Prototype/Pilot/Launched)', 'Stage', 'stage']);
                     $launchDate = $this->getValue($rowData, ['Launch Date', 'launch_date', 'Date']);
                     $revenueOmr = $this->getValue($rowData, ['Revenue (OMR)', 'Revenue', 'revenue']);
+                    $ipPatent = $this->getValue($rowData, ['IP / Patent? (Y/N)', 'IP/Patent', 'IP Patent']);
+                    $clientMarket = $this->getValue($rowData, ['Client / Market', 'Client', 'Market']);
+                    $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Evidence']);
+                    $sdgs = $this->getValue($rowData, ['SDG(s)', 'SDGs', 'SDG']);
+                    $reportingPeriod = $this->getValue($rowData, ['Reporting Period (Q1/Q2/Q3/Q4)', 'Reporting Period']);
 
                     if (empty($productServiceName)) {
                         continue;
@@ -1256,10 +1625,21 @@ class ResearchSystemDataSeeder extends Seeder
                         'stage' => $this->mapStage($stage),
                         'launch_date' => $this->parseDate($launchDate),
                         'revenue_omr' => $revenueOmr ? (float)$revenueOmr : null,
+                        'ip_patent' => $ipPatent ? in_array(strtoupper(trim($ipPatent)), ['Y', 'YES']) : false,
+                        'client_market' => $clientMarket,
+                        'evidence_link' => $evidenceLink,
+                        'sdg_s' => $sdgs,
+                        'reporting_period' => $reportingPeriod ? strtolower(trim($reportingPeriod)) : null,
                         'year' => $launchDate ? (int)date('Y', strtotime($this->parseDate($launchDate) ?: 'now')) : date('Y'),
                     ];
 
-                    DB::table('commercializations')->insert($data);
+                    DB::table('commercializations')->updateOrInsert(
+                        [
+                            'product_service_name' => $productServiceName,
+                            'launch_date' => $this->parseDate($launchDate),
+                        ],
+                        $data + ['updated_at' => now(), 'created_at' => now()]
+                    );
                     $imported++;
                 } catch (\Exception $e) {
                     $failed++;
@@ -1282,8 +1662,102 @@ class ResearchSystemDataSeeder extends Seeder
      */
     protected function importConsultanciesKt(string $sheetName, $sheet, array $headers, int $headerRow = 1): void
     {
-        // Map to grants table with grant_type = 'external_consultancy'
-        $this->importGrants($sheetName, $sheet, $headers, $headerRow);
+        $imported = 0;
+        $failed = 0;
+        $highestRow = $sheet->getHighestRow();
+
+        DB::beginTransaction();
+        try {
+            for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
+                try {
+                    $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
+
+                    if (empty(array_filter($rowData))) {
+                        continue;
+                    }
+
+                    $projectName = $this->getValue($rowData, ['Project / Consultancy Name', 'Project Name', 'Consultancy Name', 'Name']);
+                    $startDate = $this->getValue($rowData, ['Start Date', 'start_date', 'Start']);
+                    $endDate = $this->getValue($rowData, ['End Date', 'end_date', 'End']);
+                    $clientSponsor = $this->getValue($rowData, ['Client / Sponsor', 'Client', 'Sponsor']);
+                    $amountOmr = $this->getValue($rowData, ['Amount (OMR)', 'Amount OMR', 'Amount']);
+                    $status = $this->getValue($rowData, ['Status (Ongoing/Completed)', 'Status', 'status']);
+                    $commercialized = $this->getValue($rowData, ['Commercialized? (Y/N)', 'Commercialized', 'Commercialised']);
+                    $incomeType = $this->getValue($rowData, ['Income Type (Consultancy/Service/Product)', 'Income Type', 'Type']);
+                    $leadStaff = $this->getValue($rowData, ['Lead Staff', 'lead_staff', 'Staff']);
+                    $evidenceLink = $this->getValue($rowData, ['Evidence Link', 'evidence_link', 'Evidence']);
+                    $sdgs = $this->getValue($rowData, ['SDG(s)', 'SDGs', 'SDG']);
+                    $reportingPeriod = $this->getValue($rowData, ['Reporting Period (Q1/Q2/Q3/Q4)', 'Reporting Period']);
+
+                    if (empty($projectName)) {
+                        continue;
+                    }
+
+                    $user = null;
+                    if ($leadStaff) {
+                        $user = User::where('name', 'like', "%{$leadStaff}%")->first();
+                    }
+
+                    $mappedStatus = 'ongoing';
+                    if ($status) {
+                        $statusLower = strtolower($status);
+                        if (str_contains($statusLower, 'complete')) {
+                            $mappedStatus = 'completed';
+                        }
+                    }
+
+                    $mappedIncomeType = null;
+                    if ($incomeType) {
+                        $incomeLower = strtolower($incomeType);
+                        if (str_contains($incomeLower, 'consult')) {
+                            $mappedIncomeType = 'consultancy';
+                        } elseif (str_contains($incomeLower, 'service')) {
+                            $mappedIncomeType = 'service';
+                        } elseif (str_contains($incomeLower, 'product')) {
+                            $mappedIncomeType = 'product';
+                        }
+                    }
+
+                    $data = [
+                        'user_id' => $user?->id,
+                        'project_consultancy_name' => $projectName,
+                        'start_date' => $this->parseDate($startDate),
+                        'end_date' => $this->parseDate($endDate),
+                        'client_sponsor' => $clientSponsor,
+                        'amount_omr' => $amountOmr ? (float)$amountOmr : null,
+                        'status' => $mappedStatus,
+                        'commercialized' => $commercialized ? in_array(strtoupper(trim($commercialized)), ['Y', 'YES']) : false,
+                        'income_type' => $mappedIncomeType,
+                        'lead_staff' => $leadStaff,
+                        'evidence_link' => $evidenceLink,
+                        'sdg_s' => $sdgs,
+                        'reporting_period' => $reportingPeriod ? strtolower(trim($reportingPeriod)) : null,
+                        'year' => $startDate ? (int)date('Y', strtotime($this->parseDate($startDate) ?: 'now')) : date('Y'),
+                    ];
+
+                    DB::table('consultancies_kts')->updateOrInsert(
+                        [
+                            'project_consultancy_name' => $projectName,
+                            'start_date' => $this->parseDate($startDate),
+                            'client_sponsor' => $clientSponsor,
+                        ],
+                        $data + ['updated_at' => now(), 'created_at' => now()]
+                    );
+                    $imported++;
+                } catch (\Exception $e) {
+                    $failed++;
+                    if ($failed <= 5) {
+                        $this->command->warn("    Row {$row}: " . $e->getMessage());
+                    }
+                }
+            }
+
+            DB::commit();
+            $this->command->info("  Imported: {$imported}, Failed: {$failed}");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
@@ -1519,6 +1993,40 @@ class ResearchSystemDataSeeder extends Seeder
     }
 
     /**
+     * Map grant type from explicit value (RG/GRG/URG/EJAAD/Other)
+     */
+    protected function mapGrantTypeFromValue(?string $value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        $valueUpper = strtoupper(trim($value));
+
+        if (in_array($valueUpper, ['RG', 'GRG', 'URG', 'EJAAD'])) {
+            return $valueUpper;
+        }
+
+        if (str_contains($valueUpper, 'CONSULT')) {
+            return 'external_consultancy';
+        }
+
+        if (str_contains($valueUpper, 'MATCH')) {
+            return 'matching_grant';
+        }
+
+        if (str_contains($valueUpper, 'PATENT')) {
+            return 'patent_copyright';
+        }
+
+        if (str_contains($valueUpper, 'GRG') || str_contains($valueUpper, 'URG')) {
+            return 'grg_urg';
+        }
+
+        return 'other';
+    }
+
+    /**
      * Map grant role
      */
     protected function mapGrantRole(?string $role): ?string
@@ -1569,4 +2077,244 @@ class ResearchSystemDataSeeder extends Seeder
             return null;
         }
     }
+
+        /**
+         * Import research fellows publications from sheet
+         */
+        protected function importResearchFellowsPublications(string $sheetName, $sheet, array $headers, int $headerRow = 1): void
+        {
+            $imported = 0;
+            $failed = 0;
+            $highestRow = $sheet->getHighestRow();
+
+            DB::beginTransaction();
+            try {
+                for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
+                    try {
+                        $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
+
+                        if (empty(array_filter($rowData))) {
+                            continue;
+                        }
+
+                        $staffName = $this->getValue($rowData, ['StaffName', 'Staff Name', 'staff_name', 'Name']);
+                        $publicationTitle = $this->getValue($rowData, ['Publication Title', 'Title', 'publication_title']);
+                        $journal = $this->getValue($rowData, ['Journal', 'journal']);
+                        $doi = $this->getValue($rowData, ['DOI', 'doi']);
+                        $status = $this->getValue($rowData, ['Status', 'status']);
+                        $indexed = $this->getValue($rowData, ['Indexed?', 'Indexed', 'indexed']);
+                        $year = $this->getValue($rowData, ['Year', 'year']);
+                        $countForUrc = $this->getValue($rowData, ['Count_for_URC', 'Count for URC', 'count_for_urc']);
+
+                        if (empty($staffName) || empty($publicationTitle)) {
+                            continue;
+                        }
+
+                        $user = null;
+                        if ($staffName) {
+                            $user = User::where('name', $staffName)->first();
+                            if (!$user) {
+                                $user = User::whereRaw('LOWER(name) = ?', [strtolower($staffName)])->first();
+                            }
+                            if (!$user) {
+                                $user = User::where('name', 'like', "%{$staffName}%")->first();
+                            }
+                        }
+
+                        $data = [
+                            'user_id' => $user?->id,
+                            'staff_name' => $staffName,
+                            'publication_title' => $publicationTitle,
+                            'journal' => $journal,
+                            'doi' => $doi,
+                            'status' => $status,
+                            'indexed' => $indexed,
+                            'year' => $year ? (int)$year : null,
+                            'count_for_urc' => $countForUrc ? (int)$countForUrc : 1,
+                        ];
+
+                        $unique = [
+                            'staff_name' => $staffName,
+                            'publication_title' => $publicationTitle,
+                            'year' => $year ? (int)$year : null,
+                        ];
+
+                        ResearchFellow::updateOrCreate($unique, $data);
+                        $imported++;
+                    } catch (\Exception $e) {
+                        $failed++;
+                        if ($failed <= 5) {
+                            $this->command->warn("    Row {$row}: " . $e->getMessage());
+                        }
+                    }
+                }
+
+                DB::commit();
+                $this->command->info("  Imported: {$imported}, Failed: {$failed}");
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+        }
+
+        /**
+         * Import adjunct professors from sheet
+         */
+        protected function importAdjunctProfessors(string $sheetName, $sheet, array $headers, int $headerRow = 1): void
+        {
+            $imported = 0;
+            $failed = 0;
+            $highestRow = $sheet->getHighestRow();
+            $sheetNameLower = strtolower($sheetName);
+
+            DB::beginTransaction();
+            try {
+                for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
+                    try {
+                        $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
+
+                        if (empty(array_filter($rowData))) {
+                            continue;
+                        }
+
+                        $name = $this->getValue($rowData, ['Name', 'name']);
+                        $email = $this->getValue($rowData, ['Email', 'email']);
+                        $googleScholar = $this->getValue($rowData, ['Google scholar link', 'Google Scholar', 'google_scholar']);
+                        $gsCitationNumber = $this->getValue($rowData, ['Citation\n number ', 'Citation number', 'GS Citations']);
+                        $gsHIndex = $this->getValue($rowData, ['H-index', 'GS H-index']);
+                        $gsPapers2025 = $this->getValue($rowData, ['Papers\n in 2025', 'Papers in 2025', 'GS Papers 2025']);
+                        $scopusScholar = $this->getValue($rowData, ['Scopus scholar link', 'Scopus Link']);
+                        $scopusCitationNumber = $this->getValue($rowData, ['Citation\n number ', 'Scopus Citations']);
+                        $scopusHIndex = $this->getValue($rowData, ['H-index', 'Scopus H-index']);
+                        $scopusPapers2025 = $this->getValue($rowData, ['Papers\n in 2025', 'Scopus Papers 2025']);
+                        $publicationWithSohar = $this->getValue($rowData, ['Publication with Sohar affiliation', 'Publication with Sohar', 'Sohar Pubs']);
+                        $appointmentFrom = $this->getValue($rowData, ['From', 'from', 'Appointment From']);
+
+                        if (str_contains($sheetNameLower, 'adj') && str_contains($sheetNameLower, 'prof')) {
+                            $cellValue = function (int $col) use ($sheet, $row) {
+                                $columnLetter = Coordinate::stringFromColumnIndex($col);
+                                return $this->excelReader->getCellValue($sheet, $columnLetter . $row);
+                            };
+
+                            $gsCitationNumber = $cellValue(4);
+                            $gsHIndex = $cellValue(5);
+                            $gsPapers2025 = $cellValue(6);
+                            $scopusScholar = $scopusScholar ?: $cellValue(7);
+                            $scopusCitationNumber = $cellValue(8);
+                            $scopusHIndex = $cellValue(9);
+                            $scopusPapers2025 = $cellValue(10);
+                            $publicationWithSohar = $cellValue(11);
+                            $appointmentFrom = $cellValue(12);
+                        }
+
+                        if (empty($name)) {
+                            continue;
+                        }
+
+                        $data = [
+                            'name' => $name,
+                            'email' => $email,
+                            'google_scholar' => $googleScholar,
+                            'gs_citation_number' => $gsCitationNumber ? (int)$gsCitationNumber : null,
+                            'gs_h_index' => $gsHIndex ? (int)$gsHIndex : null,
+                            'gs_papers_2025' => $gsPapers2025 ? (int)$gsPapers2025 : null,
+                            'scopus_scholar' => $scopusScholar,
+                            'scopus_citation_number' => $scopusCitationNumber ? (int)$scopusCitationNumber : null,
+                            'scopus_h_index' => $scopusHIndex ? (int)$scopusHIndex : null,
+                            'scopus_papers_2025' => $scopusPapers2025 ? (int)$scopusPapers2025 : null,
+                            'publication_with_sohar' => $publicationWithSohar ? (int)$publicationWithSohar : null,
+                            'appointment_from' => $this->parseDate($appointmentFrom),
+                        ];
+
+                        $unique = [
+                            'name' => $name,
+                            'email' => $email,
+                        ];
+
+                        AdjunctProfessor::updateOrCreate($unique, $data);
+                        $imported++;
+                    } catch (\Exception $e) {
+                        $failed++;
+                        if ($failed <= 5) {
+                            $this->command->warn("    Row {$row}: " . $e->getMessage());
+                        }
+                    }
+                }
+
+                DB::commit();
+                $this->command->info("  Imported: {$imported}, Failed: {$failed}");
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+        }
+
+        /**
+         * Import student involvements from sheet
+         */
+        protected function importStudentInvolvements(string $sheetName, $sheet, array $headers, int $headerRow = 1): void
+        {
+            $imported = 0;
+            $failed = 0;
+            $highestRow = $sheet->getHighestRow();
+
+            DB::beginTransaction();
+            try {
+                for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
+                    try {
+                        $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
+
+                        if (empty(array_filter($rowData))) {
+                            continue;
+                        }
+
+                        $category = $this->getValue($rowData, ['Category (UG/Master/PhD)', 'Category', 'category']);
+                        $count = $this->getValue($rowData, ['Count', 'count']);
+                        $notes = $this->getValue($rowData, ['Notes', 'notes']);
+                        $date = $this->getValue($rowData, ['Date', 'date']);
+
+                        if (empty($category) || empty($count)) {
+                            continue;
+                        }
+
+                        $categoryLower = strtolower($category);
+                        if (str_contains($categoryLower, 'ug') || str_contains($categoryLower, 'undergraduate')) {
+                            $mappedCategory = 'UG';
+                        } elseif (str_contains($categoryLower, 'master') || str_contains($categoryLower, 'msc')) {
+                            $mappedCategory = 'Master';
+                        } elseif (str_contains($categoryLower, 'phd') || str_contains($categoryLower, 'doctor')) {
+                            $mappedCategory = 'PhD';
+                        } else {
+                            $mappedCategory = 'UG';
+                        }
+
+                        $data = [
+                            'category' => $mappedCategory,
+                            'count' => (int)$count,
+                            'notes' => $notes,
+                            'date' => $this->parseDate($date),
+                        ];
+
+                        $unique = [
+                            'category' => $mappedCategory,
+                            'date' => $this->parseDate($date),
+                        ];
+
+                        StudentInvolvement::updateOrCreate($unique, $data);
+                        $imported++;
+                    } catch (\Exception $e) {
+                        $failed++;
+                        if ($failed <= 5) {
+                            $this->command->warn("    Row {$row}: " . $e->getMessage());
+                        }
+                    }
+                }
+
+                DB::commit();
+                $this->command->info("  Imported: {$imported}, Failed: {$failed}");
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+        }
 }

@@ -28,6 +28,7 @@ class Grant extends Model
         'submitted_at',
         'approved_at',
         'grant_type',
+            'external_internal',
         'role',
         'amount_omr',
         'units',

@@ -51,6 +51,13 @@ class User extends Authenticatable
         'google_scholar',
         'research_gate',
         'credentials_file',
+            'citation_number',
+            'h_index',
+            'scopus_citation_number',
+            'scopus_h_index',
+            'scopus_papers',
+            'sohar_affiliation',
+            'orcid_connected',
         'total_research_points',
         'last_points_calculation',
         'last_login_at',
@@ -219,6 +226,30 @@ class User extends Authenticatable
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+        /**
+         * Get all research fellowships for this user
+         */
+        public function researchFellows()
+        {
+            return $this->hasMany(ResearchFellow::class);
+        }
+
+        /**
+         * Get all editorial appointments for this user
+         */
+        public function editorialAppointments()
+        {
+            return $this->hasMany(EditorialAppointment::class);
+        }
+
+        /**
+         * Get all supervision/exam records for this user
+         */
+        public function supervisionExams()
+        {
+            return $this->hasMany(SupervisionExam::class);
+        }
 
     /**
      * Check if user is a research coordinator
