@@ -1,7 +1,12 @@
 @extends('layouts.admin')
 
 @section('content')
-
+<style>
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before, table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control::before {
+        background-color: #0056b300 !important;
+        box-shadow: none !important;
+    }
+</style>
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle"></i> {{ session('success') }}
@@ -30,19 +35,19 @@
             </div>
             <div style="margin-top: 10px; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <!-- Status Filters -->
-                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}" 
+                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}"
                    class="btn btn-sm {{ request('status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
                     <i class="fas fa-clock"></i> Pending
                 </a>
-                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}" 
+                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}"
                    class="btn btn-sm {{ request('status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
                     <i class="fas fa-check"></i> Approved
                 </a>
-                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'rejected'])) }}" 
+                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'rejected'])) }}"
                    class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
                     <i class="fas fa-times"></i> Rejected
                 </a>
-                <a href="{{ route('admin.publications.index', request()->except('status')) }}" 
+                <a href="{{ route('admin.publications.index', request()->except('status')) }}"
                    class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
                     <i class="fas fa-list"></i> All
                 </a>
@@ -52,7 +57,7 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <table id="publications-table" class="table table-bordered table-striped table-hover" style="width:100%">
+            <table id="publications-table" class="table table-bordered table-striped table-hover" style="width:100%; min-width: 1400px;">
                 <thead>
                     <tr>
                         <th>Sr No</th>
@@ -97,7 +102,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="reject_reason">Reason (Optional)</label>
-                        <textarea class="form-control" id="reject_reason" name="reason" rows="3" 
+                        <textarea class="form-control" id="reject_reason" name="reason" rows="3"
                                   placeholder="Enter reason for rejection..."></textarea>
                     </div>
                 </div>
@@ -172,6 +177,14 @@
     #publications-table_wrapper .dt-toolbar {
         margin-bottom: 15px;
     }
+
+    /* Ensure Sr No column does not show DataTables select checkbox */
+    #publications-table tbody td.select-checkbox::before {
+        content: '' !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
 </style>
 
 @endsection
@@ -190,7 +203,7 @@
                 }
             },
             columns: [
-                { 
+                {
                     data: null,
                     name: 'sr_no',
                     orderable: false,
@@ -212,17 +225,17 @@
                 { data: 'student_coauthor', name: 'student_coauthor', orderable: false },
                 { data: 'student_level', name: 'student_level', orderable: false },
                 { data: 'year', name: 'year' },
-                { 
-                    data: 'status', 
-                    name: 'status', 
+                {
+                    data: 'status',
+                    name: 'status',
                     orderable: false,
                     render: function(data, type, row) {
                         return data; // HTML is already escaped in controller
                     }
                 },
-                { 
-                    data: 'workflow', 
-                    name: 'workflow', 
+                {
+                    data: 'workflow',
+                    name: 'workflow',
                     orderable: false,
                     render: function(data, type, row) {
                         if (type === 'display' || type === 'type') {
@@ -231,9 +244,9 @@
                         return data || '';
                     }
                 },
-                { 
-                    data: 'points', 
-                    name: 'points', 
+                {
+                    data: 'points',
+                    name: 'points',
                     orderable: false,
                     render: function(data, type, row) {
                         return data || '<span class="text-muted">-</span>';
@@ -242,7 +255,7 @@
                 { data: 'submitted', name: 'submitted' },
                 { data: 'actions', name: 'actions', orderable: false, searchable: false }
             ],
-            order: [[4, 'desc']], // Order by Year descending (changed from ID)
+            order: [[11, 'desc']], // Order by Year column descending
             pageLength: 25,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
@@ -263,24 +276,15 @@
                 }
             },
             responsive: true,
+            scrollX: true,
+            select: false,
             columnDefs: [
                 {
-                    targets: [6], // Workflow column (0-indexed)
-                    render: function(data, type, row) {
-                        if (type === 'display' || type === 'type') {
-                            return data || '<span class="badge badge-secondary">No Workflow</span>';
-                        }
-                        return data || '';
-                    }
-                },
-                {
-                    targets: [5, 7], // Status and Points columns
-                    render: function(data, type, row) {
-                        if (type === 'display' || type === 'type') {
-                            return data || '';
-                        }
-                        return data || '';
-                    }
+                    targets: 0, // Sr No column - no checkbox/select styling
+                    orderable: false,
+                    searchable: false,
+                    className: '',
+                    width: '50px'
                 }
             ]
         });

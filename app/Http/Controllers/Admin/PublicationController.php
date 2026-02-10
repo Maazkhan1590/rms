@@ -129,26 +129,26 @@ class PublicationController extends Controller
                 // Build workflow badge with status and assigned user info
                 if ($workflow->status == 'pending_coordinator') {
                     $assignedUser = $workflow->assignee ? $workflow->assignee->name : 'Unassigned';
-                    $workflowBadge = '<span class="badge badge-warning" title="Pending Coordinator Approval - Assigned to: ' . htmlspecialchars($assignedUser) . '"><i class="fas fa-user-tie"></i> Coordinator</span>';
+                    $workflowBadge = '<span class="badge badge-warning" title="Pending Coordinator Approval - Assigned to: ' . htmlspecialchars($assignedUser) . '"><span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle;">supervisor_account</span> Coordinator</span>';
                     if ($workflow->assignee) {
-                        $workflowBadge .= '<br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> ' . htmlspecialchars($workflow->assignee->name) . '</small>';
+                        $workflowBadge .= '<br><small style="color: #666; font-size: 0.85em;"><span class="material-icons-outlined" style="font-size: 13px; vertical-align: middle;">person</span> ' . htmlspecialchars($workflow->assignee->name) . '</small>';
                     } else {
                         $workflowBadge .= '<br><small style="color: #999; font-size: 0.85em;">Unassigned</small>';
                     }
                 } elseif ($workflow->status == 'pending_dean') {
                     $assignedUser = $workflow->assignee ? $workflow->assignee->name : 'Unassigned';
-                    $workflowBadge = '<span class="badge badge-info" title="Pending Dean Approval - Assigned to: ' . htmlspecialchars($assignedUser) . '"><i class="fas fa-user-graduate"></i> Dean</span>';
+                    $workflowBadge = '<span class="badge badge-info" title="Pending Dean Approval - Assigned to: ' . htmlspecialchars($assignedUser) . '"><span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle;">school</span> Dean</span>';
                     if ($workflow->assignee) {
-                        $workflowBadge .= '<br><small style="color: #666; font-size: 0.85em;"><i class="fas fa-user"></i> ' . htmlspecialchars($workflow->assignee->name) . '</small>';
+                        $workflowBadge .= '<br><small style="color: #666; font-size: 0.85em;"><span class="material-icons-outlined" style="font-size: 13px; vertical-align: middle;">person</span> ' . htmlspecialchars($workflow->assignee->name) . '</small>';
                     } else {
                         $workflowBadge .= '<br><small style="color: #999; font-size: 0.85em;">Unassigned</small>';
                     }
                 } elseif ($workflow->status == 'submitted') {
-                    $workflowBadge = '<span class="badge badge-secondary"><i class="fas fa-clock"></i> Submitted</span>';
+                    $workflowBadge = '<span class="badge badge-secondary"><span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle;">schedule</span> Submitted</span>';
                 } elseif ($workflow->status == 'approved') {
-                    $workflowBadge = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Complete</span>';
+                    $workflowBadge = '<span class="badge badge-success"><span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle;">check_circle</span> Complete</span>';
                 } elseif ($workflow->status == 'rejected') {
-                    $workflowBadge = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>';
+                    $workflowBadge = '<span class="badge badge-danger"><span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle;">cancel</span> Rejected</span>';
                 } else {
                     $workflowBadge = '<span class="badge badge-secondary">' . htmlspecialchars($workflowStatus) . '</span>';
                 }
@@ -176,18 +176,43 @@ class PublicationController extends Controller
             
             $points = $publication->points_allocated 
                 ? '<strong style="color: var(--primary);">' . number_format($publication->points_allocated, 2) . '</strong>' 
-                    . ($publication->points_locked ? '<br><small class="text-muted"><i class="fas fa-lock"></i> Locked</small>' : '')
+                    . ($publication->points_locked ? '<br><small class="text-muted"><span class="material-icons-outlined" style="font-size: 13px; vertical-align: middle;">lock</span> Locked</small>' : '')
                 : '<span class="text-muted">-</span>';
 
             $user = auth()->user();
+            $isApproved = ($displayStatus === 'approved');
             $actions = '<div style="display: flex; gap: 5px; flex-wrap: wrap;">';
-            $actions .= '<a class="btn btn-sm btn-info view-btn" href="' . route('admin.publications.show', $publication->id) . '" title="View" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-eye"></i> View</a>';
+            $actions .= '<a class="btn btn-sm btn-outline-primary view-btn" href="' . route('admin.publications.show', $publication->id) . '" title="View" style="padding: 4px 8px; font-size: 12px;"><span class=\"material-icons-outlined\">visibility</span></a>';
+
+            // If publication is already approved, only show the View button
+            if ($isApproved) {
+                return [
+                    'id' => $publication->id,
+                    'title' => '<strong>' . \Str::limit($publication->title, 60) . '</strong>' . 
+                              ($publication->abstract ? '<br><small class="text-muted">' . \Str::limit(strip_tags($publication->abstract), 80) . '</small>' : ''),
+                    'type' => '<span class="badge badge-info">' . ucfirst(str_replace('_', ' ', $publication->publication_type ?? 'N/A')) . '</span>',
+                    'author' => $authorName,
+                    'journal' => $publication->journal_name ?? $publication->journal ?? 'N/A',
+                    'indexing_db' => $publication->indexing_db ?? 'N/A',
+                    'sohar_affiliation' => $publication->sohar_affiliation ? '<span class="material-icons-outlined" style="color: green; font-size: 16px;">check_circle</span>' : '<span class="material-icons-outlined" style="color: red; font-size: 16px;">cancel</span>',
+                    'percent_contribution' => $publication->percent_contribution ? $publication->percent_contribution . '%' : 'N/A',
+                    'su_author_type' => $publication->su_author_type ?? 'N/A',
+                    'student_coauthor' => $publication->student_coauthor ? '<span class="material-icons-outlined" style="color: green; font-size: 16px;">check_circle</span>' : '<span class="material-icons-outlined" style="color: red; font-size: 16px;">cancel</span>',
+                    'student_level' => $publication->student_level ?? 'N/A',
+                    'year' => $year,
+                    'status' => $statusBadge,
+                    'workflow' => $workflowBadge,
+                    'points' => $points,
+                    'submitted' => $publication->submitted_at ? $publication->submitted_at->format('M d, Y') : 'N/A',
+                    'actions' => $actions,
+                ];
+            }
             
             // Show "Submit for Approval" button for draft publications owned by the user
             if ($publication->status === 'draft' && ($publication->submitted_by == $user->id || $publication->primary_author_id == $user->id)) {
                 $actions .= '<form action="' . route('publications.submit', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Submit this publication for approval?\');">';
                 $actions .= csrf_field();
-                $actions .= '<button type="submit" class="btn btn-sm btn-success" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-paper-plane"></i> Submit</button>';
+                $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" style="padding: 4px 8px; font-size: 12px;" title="Submit"><span class=\"material-icons-outlined\">send</span></button>';
                 $actions .= '</form>';
             }
             
@@ -215,19 +240,19 @@ class PublicationController extends Controller
                 if ($canApprove) {
                     $actions .= '<form action="' . route('admin.publications.approve', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Approve this publication at current workflow step?\');">';
                     $actions .= csrf_field();
-                    $actions .= '<button type="submit" class="btn btn-sm btn-success" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-check"></i> Approve</button>';
+                    $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" style="padding: 4px 8px; font-size: 12px;" title="Approve"><span class=\"material-icons-outlined\">check_circle</span></button>';
                     $actions .= '</form>';
-                    $actions .= '<button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal(' . $publication->id . ')" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-times"></i> Reject</button>';
+                    $actions .= '<button type="button" class="btn btn-sm btn-outline-danger" onclick="showRejectModal(' . $publication->id . ')" style="padding: 4px 8px; font-size: 12px;" title="Reject"><span class=\"material-icons-outlined\">cancel</span></button>';
                 }
             }
             // No approve button if no workflow exists - must follow workflow process
             
-            // Only show delete button to admins or the publication owner
-            if ($user->isAdmin || $user->hasRole('admin') || $publication->submitted_by == $user->id) {
+            // Only show delete button to admins or the publication owner when not approved
+            if (!$isApproved && ($user->isAdmin || $user->hasRole('admin') || $publication->submitted_by == $user->id)) {
                 $actions .= '<form action="' . route('admin.publications.destroy', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Are you sure?\');">';
                 $actions .= csrf_field();
                 $actions .= method_field('DELETE');
-                $actions .= '<button type="submit" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 12px;"><i class="fas fa-trash"></i> Delete</button>';
+                $actions .= '<button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 4px 8px; font-size: 12px;" title="Delete"><span class=\"material-icons-outlined\">delete</span></button>';
                 $actions .= '</form>';
             }
             $actions .= '</div>';
@@ -240,10 +265,10 @@ class PublicationController extends Controller
                 'author' => $authorName,
                 'journal' => $publication->journal_name ?? $publication->journal ?? 'N/A',
                 'indexing_db' => $publication->indexing_db ?? 'N/A',
-                'sohar_affiliation' => $publication->sohar_affiliation ? '<i class="fas fa-check-circle" style="color: green;"></i>' : '<i class="fas fa-times-circle" style="color: red;"></i>',
+                'sohar_affiliation' => $publication->sohar_affiliation ? '<span class="material-icons-outlined" style="color: green; font-size: 16px;">check_circle</span>' : '<span class="material-icons-outlined" style="color: red; font-size: 16px;">cancel</span>',
                 'percent_contribution' => $publication->percent_contribution ? $publication->percent_contribution . '%' : 'N/A',
                 'su_author_type' => $publication->su_author_type ?? 'N/A',
-                'student_coauthor' => $publication->student_coauthor ? '<i class="fas fa-check-circle" style="color: green;"></i>' : '<i class="fas fa-times-circle" style="color: red;"></i>',
+                'student_coauthor' => $publication->student_coauthor ? '<span class="material-icons-outlined" style="color: green; font-size: 16px;">check_circle</span>' : '<span class="material-icons-outlined" style="color: red; font-size: 16px;">cancel</span>',
                 'student_level' => $publication->student_level ?? 'N/A',
                 'year' => $year,
                 'status' => $statusBadge,

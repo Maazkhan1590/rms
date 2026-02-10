@@ -8,8 +8,8 @@
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="card-title">Departments</h3>
             @can('college_create')
-            <a href="{{ route('admin.departments.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add Department
+            <a href="{{ route('admin.departments.create') }}" class="btn btn-primary btn-sm">
+                <span class="material-icons-outlined">add</span> Add Department
             </a>
             @endcan
         </div>
@@ -47,23 +47,23 @@
                             @endif
                         </td>
                         <td>
-                            <div class="btn-group">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Department actions">
                                 @can('college_read')
-                                <a href="{{ route('admin.departments.show', $department) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i>
+                                <a href="{{ route('admin.departments.show', $department) }}" class="btn btn-outline-primary" title="View">
+                                    <span class="material-icons-outlined">visibility</span>
                                 </a>
                                 @endcan
                                 @can('college_update')
-                                <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
+                                <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-outline-info" title="Edit">
+                                    <span class="material-icons-outlined">edit</span>
                                 </a>
                                 @endcan
                                 @can('college_delete')
                                 <form action="{{ route('admin.departments.destroy', $department) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this department?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
+                                    <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                        <span class="material-icons-outlined">delete</span>
                                     </button>
                                 </form>
                                 @endcan
