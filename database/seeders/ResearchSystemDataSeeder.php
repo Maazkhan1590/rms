@@ -283,7 +283,7 @@ class ResearchSystemDataSeeder extends Seeder
                         }
                         // Don't update password if user already has one
                         if (!$user->password) {
-                            $updateData['password'] = bcrypt('password');
+                            $updateData['password'] = bcrypt('password@123');
                         }
                         $user->update($updateData);
                         $imported++;
@@ -342,7 +342,7 @@ class ResearchSystemDataSeeder extends Seeder
                         // Set defaults for new user
                         $createData['name'] = $createData['name'] ?? 'Unknown';
                         $createData['status'] = 'active';
-                        $createData['password'] = bcrypt('password');
+                        $createData['password'] = bcrypt('password@123');
 
                         $created = User::create($createData);
                         $imported++;
