@@ -31,7 +31,8 @@ return new class extends Migration
             }
             
             if (!Schema::hasColumn('users', 'employee_id')) {
-                $table->string('employee_id')->unique()->nullable()->after('designation');
+                // Employee ID should no longer be unique to allow multiple records
+                $table->string('employee_id')->nullable()->after('designation');
             }
             
             // Research Profiles

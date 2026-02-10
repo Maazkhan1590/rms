@@ -156,6 +156,7 @@ class ResearchSystemDataSeeder extends Seeder
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
 
                     if (empty(array_filter($rowData))) {
+                        $this->command->info("    Row {$row}: empty row, skipped.");
                         continue;
                     }
 
@@ -200,19 +201,25 @@ class ResearchSystemDataSeeder extends Seeder
                         $scopusCitationNumber = $cellValue(9);
                         $scopusHIndex = $cellValue(10);
                         $scopusPapers = $cellValue(11);
+                        // Staff_Master sheet has no real employee IDs; avoid treating Yes/No values as IDs
+                        $employeeId = null;
                     }
 
                     if (empty($name) && empty($email)) {
+                        $this->command->warn("    Row {$row}: no name/email found, skipped.");
                         continue;
                     }
 
-                    // Find existing user by email or employee_id
+                    // For Staff_Master we always create new users (don't try to match existing)
                     $user = null;
-                    if ($email) {
-                        $user = User::where('email', $email)->first();
-                    }
-                    if (!$user && $employeeId) {
-                        $user = User::where('employee_id', $employeeId)->first();
+                    if (!str_contains($sheetNameLower, 'staff_master')) {
+                        // Find existing user by email or employee_id
+                        if ($email) {
+                            $user = User::where('email', $email)->first();
+                        }
+                        if (!$user && $employeeId) {
+                            $user = User::where('employee_id', $employeeId)->first();
+                        }
                     }
 
                     // Prepare data for update/create
@@ -266,6 +273,7 @@ class ResearchSystemDataSeeder extends Seeder
                         if ($isSystemUser) {
                             // Don't update system users, just skip
                             $skipped++;
+                            $this->command->warn("    Row {$row}: skipped system user {$user->email} (roles preserved).");
                             continue;
                         }
 
@@ -279,6 +287,7 @@ class ResearchSystemDataSeeder extends Seeder
                         }
                         $user->update($updateData);
                         $imported++;
+                        $this->command->info("    Row {$row}: updated existing user #{$user->id} {$user->name} ({$user->email}).");
                     } else {
                         // Create new user
                         // Special handling for Staff_Master sheet: many rows have no email/employee_id
@@ -309,6 +318,7 @@ class ResearchSystemDataSeeder extends Seeder
                                 $createData['email'] = $employeeId . '@example.com';
                             } else {
                                 $skipped++;
+                                $this->command->warn("    Row {$row}: cannot create user (no email or employee_id), skipped.");
                                 continue; // Can't create user without email or employee_id
                             }
                         }
@@ -334,8 +344,9 @@ class ResearchSystemDataSeeder extends Seeder
                         $createData['status'] = 'active';
                         $createData['password'] = bcrypt('password');
 
-                        User::create($createData);
+                        $created = User::create($createData);
                         $imported++;
+                        $this->command->info("    Row {$row}: created user #{$created->id} {$created->name} ({$created->email}).");
                     }
                 } catch (\Exception $e) {
                     $failed++;
