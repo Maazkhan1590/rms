@@ -28,6 +28,7 @@ class Kernel extends HttpKernel
         'throttle'         => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified'         => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'block.students'   => \App\Http\Middleware\BlockStudents::class,
+        'force.password.change' => \App\Http\Middleware\ForcePasswordChangeForRoles::class,
     ];
 
     protected $middlewareGroups = [
@@ -40,6 +41,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\AuthGates::class,
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\ForcePasswordChangeForRoles::class,
         ],
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,

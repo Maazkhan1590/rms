@@ -1,6 +1,12 @@
 @extends('layouts.admin')
 @section('content')
 
+@if(session('force_password_change'))
+    <div class="alert alert-warning" role="alert">
+        <strong>Security notice:</strong> As a Dean or Research Coordinator, you must set a new password before continuing to use the system.
+    </div>
+@endif
+
 <div class="row">
     <div class="col-md-6">
         <div class="card">
