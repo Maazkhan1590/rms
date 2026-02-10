@@ -54,8 +54,15 @@
                 <form method="POST" action="{{ route("profile.password.update") }}">
                     @csrf
                     <div class="form-group">
-                        <label class="required" for="title">New {{ trans('cruds.user.fields.password') }}</label>
-                        <input class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" type="password" name="password" id="password" required>
+                        <label class="required" for="password">New {{ trans('cruds.user.fields.password') }}</label>
+                        <div class="input-group">
+                            <input class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" type="password" name="password" id="password" required autocomplete="new-password">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary js-toggle-password" type="button" data-target="password" aria-label="Show password" title="Show password">
+                                    <span class="material-icons-outlined" aria-hidden="true" style="font-size:18px;line-height:1;">visibility</span>
+                                </button>
+                            </div>
+                        </div>
                         @if($errors->has('password'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('password') }}
@@ -63,8 +70,15 @@
                         @endif
                     </div>
                     <div class="form-group">
-                        <label class="required" for="title">Repeat New {{ trans('cruds.user.fields.password') }}</label>
-                        <input class="form-control" type="password" name="password_confirmation" id="password_confirmation" required>
+                        <label class="required" for="password_confirmation">Repeat New {{ trans('cruds.user.fields.password') }}</label>
+                        <div class="input-group">
+                            <input class="form-control" type="password" name="password_confirmation" id="password_confirmation" required autocomplete="new-password">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary js-toggle-password" type="button" data-target="password_confirmation" aria-label="Show password confirmation" title="Show password">
+                                    <span class="material-icons-outlined" aria-hidden="true" style="font-size:18px;line-height:1;">visibility</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <button class="btn btn-danger" type="submit">
@@ -76,7 +90,7 @@
         </div>
     </div>
 </div>
-<div class="row">
+<div class="row" style="display: none">
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
@@ -97,4 +111,34 @@
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+@parent
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var toggles = document.querySelectorAll('.js-toggle-password');
+        toggles.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var targetId = btn.getAttribute('data-target');
+                if (!targetId) return;
+
+                var input = document.getElementById(targetId);
+                if (!input) return;
+
+                var icon = btn.querySelector('.material-icons-outlined');
+                var isHidden = input.type === 'password';
+
+                input.type = isHidden ? 'text' : 'password';
+
+                if (icon) {
+                    icon.textContent = isHidden ? 'visibility_off' : 'visibility';
+                }
+
+                btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                btn.setAttribute('title', isHidden ? 'Hide password' : 'Show password');
+            });
+        });
+    });
+</script>
 @endsection
