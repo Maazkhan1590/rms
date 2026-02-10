@@ -785,7 +785,7 @@ class ResearchSystemDataSeeder extends Seeder
                         'status' => $mappedStatus,
                         'submitted_by' => $user?->id,
                         'summary' => $summary,
-                        'grant_status' => $grantStatusMapped,
+                        'grant_status' => $grantStatusMapped ?? 'draft',
                         'application_date' => $this->parseDate($applicationDate),
                         'amount_received_omr' => $amountReceived ? (float)$amountReceived : null,
                         'kt_income' => $ktIncome ? in_array(strtoupper(trim($ktIncome)), ['Y', 'YES']) : false,

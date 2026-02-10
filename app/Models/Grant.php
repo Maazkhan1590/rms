@@ -39,6 +39,7 @@ class Grant extends Model
         'patent_su_registered',
         'award_letter_path',
         'points_allocated',
+            'external_internal',
         'policy_version_id',
         'points_locked',
         'evidence_required',
