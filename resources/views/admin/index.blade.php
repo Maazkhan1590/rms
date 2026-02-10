@@ -12,7 +12,7 @@
 
         <!-- Stats Cards -->
         <div class="stats-grid">
-            @if(auth()->user()->isAdmin)
+            @if(auth()->user()->isAdmin || auth()->user()->isDean())
                 <!-- Admin Stats -->
                 <div class="card card-stat">
                     <div class="card-body">
@@ -79,8 +79,8 @@
                         <div class="card-stat-change warning">{{ $pendingWorkflowsCount ?? 0 }} pending</div>
                     </div>
                 </div>
-            @elseif(auth()->user()->isResearchCoordinator() || auth()->user()->isDean())
-                <!-- Coordinator/Dean Stats -->
+            @elseif(auth()->user()->isResearchCoordinator())
+                <!-- Coordinator Stats -->
                 <div class="card card-stat">
                     <div class="card-body">
                         <div class="card-stat-label">My Pending Approvals</div>

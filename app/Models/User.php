@@ -269,6 +269,12 @@ class User extends Authenticatable
      */
     public function isDean()
     {
+        // First, check explicit "Dean" role assignment
+        if ($this->hasRole('Dean')) {
+            return true;
+        }
+
+        // Fallback to workflow assignment role (legacy behavior)
         return $this->workflowAssignments()
             ->where('role', 'dean')
             ->where('is_active', true)

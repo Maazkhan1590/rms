@@ -32,11 +32,11 @@ class HomeController
         $currentYear = $request->get('year', now()->year);
 
         // Role-based stats
-        if ($user->isAdmin || $user->hasRole('admin')) {
-            // Admin stats
+        if ($user->isAdmin || $user->hasRole('admin') || $user->isDean()) {
+            // Admin / Dean stats (full admin dashboard)
             $stats = $this->getAdminStats($currentYear);
-        } elseif ($user->isResearchCoordinator() || $user->isDean()) {
-            // Coordinator/Dean stats
+        } elseif ($user->isResearchCoordinator()) {
+            // Coordinator stats
             $stats = $this->getCoordinatorStats($user, $currentYear);
         } else {
             // Faculty stats
@@ -44,13 +44,13 @@ class HomeController
         }
 
         // Get monthly submissions and recent activities - filter by user for faculty
-        if ($user->isAdmin || $user->hasRole('admin')) {
+        if ($user->isAdmin || $user->hasRole('admin') || $user->isDean()) {
             $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear);
             $stats['recentActivities'] = $this->getRecentActivities();
             $stats['publicationsByType'] = $this->getPublicationsByType();
             $stats['grantsByStatus'] = $this->getGrantsByStatus();
             $stats['submissionsByType'] = $this->getSubmissionsByType();
-        } elseif ($user->isResearchCoordinator() || $user->isDean()) {
+        } elseif ($user->isResearchCoordinator()) {
             $stats['monthlySubmissions'] = $this->getMonthlySubmissions($currentYear, $user);
             $stats['recentActivities'] = $this->getRecentActivities($user);
             $stats['publicationsByType'] = $this->getPublicationsByType($user);
