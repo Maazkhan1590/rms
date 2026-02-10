@@ -55,7 +55,7 @@
                     @csrf
                     <div class="form-group">
                         <label class="required" for="password">New {{ trans('cruds.user.fields.password') }}</label>
-                        <div class="position-relative">
+                        <div style="position: relative;">
                             <input
                                 class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}"
                                 type="password"
@@ -84,7 +84,7 @@
                     </div>
                     <div class="form-group">
                         <label class="required" for="password_confirmation">Repeat New {{ trans('cruds.user.fields.password') }}</label>
-                        <div class="position-relative">
+                        <div style="position: relative;">
                             <input
                                 class="form-control"
                                 type="password"
