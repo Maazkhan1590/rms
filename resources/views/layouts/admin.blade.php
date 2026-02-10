@@ -974,6 +974,31 @@
             border-color: var(--color-gray-200);
             cursor: not-allowed;
         }
+
+        /* Global action button colors */
+        .btn-outline-success {
+            background-color: #22c55e !important;
+            border-color: #22c55e !important;
+            color: #ffffff !important;
+        }
+
+        .btn-outline-success:hover {
+            background-color: #16a34a !important;
+            border-color: #16a34a !important;
+            color: #ffffff !important;
+        }
+
+        .btn-outline-danger {
+            background-color: #ef4444 !important;
+            border-color: #ef4444 !important;
+            color: #ffffff !important;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #dc2626 !important;
+            border-color: #dc2626 !important;
+            color: #ffffff !important;
+        }
     </style>
 
     <script>
