@@ -122,6 +122,7 @@
                         <th>Title</th>
                         <th>Type</th>
                         <th>Role</th>
+                        <th>External/Internal</th>
                         <th>Sponsor</th>
                         <th>Amount (OMR)</th>
                         <th>Units</th>
@@ -148,6 +149,11 @@
                             <td>
                                 <span class="badge badge-secondary">
                                     {{ strtoupper($grant->role ?? 'N/A') }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {{ $grant->external_internal == 'External' ? 'badge-danger' : 'badge-success' }}">
+                                    {{ $grant->external_internal ?? 'N/A' }}
                                 </span>
                             </td>
                             <td>{{ Str::limit($grant->sponsor_name ?? $grant->sponsor ?? 'N/A', 30) }}</td>

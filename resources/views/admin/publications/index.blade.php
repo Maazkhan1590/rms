@@ -59,6 +59,13 @@
                         <th>Title</th>
                         <th>Type</th>
                         <th>Author</th>
+                        <th>Journal</th>
+                        <th>Indexing DB</th>
+                        <th>Sohar Affiliation</th>
+                        <th>% Contribution</th>
+                        <th>SU Author Type</th>
+                        <th>Student Co-author</th>
+                        <th>Student Level</th>
                         <th>Year</th>
                         <th>Status</th>
                         <th>Workflow</th>
@@ -197,6 +204,13 @@
                 { data: 'title', name: 'title', orderable: false },
                 { data: 'type', name: 'type', orderable: false },
                 { data: 'author', name: 'author' },
+                { data: 'journal', name: 'journal', orderable: false },
+                { data: 'indexing_db', name: 'indexing_db', orderable: false },
+                { data: 'sohar_affiliation', name: 'sohar_affiliation', orderable: false },
+                { data: 'percent_contribution', name: 'percent_contribution', orderable: false },
+                { data: 'su_author_type', name: 'su_author_type', orderable: false },
+                { data: 'student_coauthor', name: 'student_coauthor', orderable: false },
+                { data: 'student_level', name: 'student_level', orderable: false },
                 { data: 'year', name: 'year' },
                 { 
                     data: 'status', 

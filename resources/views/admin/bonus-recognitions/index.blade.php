@@ -109,6 +109,7 @@
                         <th>Type</th>
                         <th>User</th>
                         <th>Organization</th>
+                        <th>Evidence Link</th>
                         <th>Year</th>
                         <th>Status</th>
                         <th>Workflow</th>
@@ -137,6 +138,15 @@
                                 @endif
                             </td>
                             <td>{{ Str::limit($recognition->organization ?? 'N/A', 30) }}</td>
+                            <td>
+                                @if($recognition->evidence_link)
+                                    <a href="{{ $recognition->evidence_link }}" target="_blank" class="text-primary">
+                                        <i class="fas fa-link"></i> View
+                                    </a>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td>{{ $recognition->year ?? 'N/A' }}</td>
                             <td>
                                 @if($recognition->status == 'approved')

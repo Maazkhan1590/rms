@@ -108,6 +108,8 @@
                         <th>Title</th>
                         <th>Type</th>
                         <th>User</th>
+                        <th>Evidence Link</th>
+                        <th>Total RTN</th>
                         <th>Year</th>
                         <th>Status</th>
                         <th>Workflow</th>
@@ -133,6 +135,22 @@
                                     {{ $submission->user->name }}
                                 @else
                                     N/A
+                                @endif
+                            </td>
+                            <td>
+                                @if($submission->evidence_link)
+                                    <a href="{{ $submission->evidence_link }}" target="_blank" class="text-primary">
+                                        <i class="fas fa-link"></i> View
+                                    </a>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($submission->total_rtn)
+                                    <span class="badge badge-info">{{ $submission->total_rtn }}</span>
+                                @else
+                                    <span class="text-muted">-</span>
                                 @endif
                             </td>
                             <td>{{ $submission->year ?? 'N/A' }}</td>
