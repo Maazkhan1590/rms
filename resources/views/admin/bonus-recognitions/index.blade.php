@@ -29,23 +29,23 @@
             </div>
             <div style="margin-top: 10px; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <a href="{{ route('bonus-recognitions.create') }}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-plus"></i> Create Bonus Recognition
+                    <span class="material-icons-outlined">add</span> Create Bonus Recognition
                 </a>
                 <a href="{{ route('admin.bonus-recognitions.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}" 
                    class="btn btn-sm {{ request('status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
-                    <i class="fas fa-clock"></i> Pending
+                    <span class="material-icons-outlined">schedule</span> Pending
                 </a>
                 <a href="{{ route('admin.bonus-recognitions.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}" 
                    class="btn btn-sm {{ request('status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
-                    <i class="fas fa-check"></i> Approved
+                    <span class="material-icons-outlined">check_circle</span> Approved
                 </a>
                 <a href="{{ route('admin.bonus-recognitions.index', array_merge(request()->except('status'), ['status' => 'rejected'])) }}" 
                    class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
-                    <i class="fas fa-times"></i> Rejected
+                    <span class="material-icons-outlined">cancel</span> Rejected
                 </a>
                 <a href="{{ route('admin.bonus-recognitions.index', request()->except('status')) }}" 
                    class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <i class="fas fa-list"></i> All
+                    <span class="material-icons-outlined">list</span> All
                 </a>
             </div>
         </div>
@@ -90,18 +90,18 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Search
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <span class="material-icons-outlined">search</span> Search
                     </button>
-                    <a href="{{ route('admin.bonus-recognitions.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-redo"></i> Reset
+                    <a href="{{ route('admin.bonus-recognitions.index') }}" class="btn btn-secondary btn-sm">
+                        <span class="material-icons-outlined">refresh</span> Reset
                     </a>
                 </div>
             </div>
         </form>
 
         <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
+            <table class="table table-bordered table-striped table-hover" style="min-width: 1200px;">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -207,27 +207,29 @@
                             </td>
                             <td>
                                 <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
-                                    <a class="btn btn-sm btn-info" href="{{ route('admin.bonus-recognitions.show', $recognition->id) }}" title="View" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px;">
-                                        <i class="fas fa-eye"></i> View
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.bonus-recognitions.show', $recognition->id) }}" title="View" aria-label="View">
+                                        <span class="material-icons-outlined">visibility</span>
                                     </a>
                                     @if(in_array($recognition->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean']))
                                         <form action="{{ route('admin.bonus-recognitions.approve', $recognition->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this bonus recognition? This will calculate and assign points.');">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-success" title="Approve" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #22c55e; color: white; border: none; cursor: pointer;">
-                                                <i class="fas fa-check"></i> Approve
+                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
+                                                <span class="material-icons-outlined">check_circle</span>
                                             </button>
                                         </form>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal({{ $recognition->id }})" title="Reject" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #ef4444; color: white; border: none; cursor: pointer;">
-                                            <i class="fas fa-times"></i> Reject
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="showRejectModal({{ $recognition->id }})" title="Reject" aria-label="Reject">
+                                            <span class="material-icons-outlined">cancel</span>
                                         </button>
                                     @endif
+                                    @if($recognition->status !== 'approved')
                                     <form action="{{ route('admin.bonus-recognitions.destroy', $recognition->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This cannot be undone.');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #ef4444; color: white; border: none; cursor: pointer;">
-                                            <i class="fas fa-trash"></i> Delete
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" aria-label="Delete">
+                                            <span class="material-icons-outlined">delete</span>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

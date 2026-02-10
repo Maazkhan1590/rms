@@ -220,15 +220,6 @@ class BonusRecognitionController extends Controller
                     ]);
                 }
             }
-                
-                // Recalculate user's total points
-                if ($bonusRecognition->user_id) {
-                    $this->scoringService->recalculateUserTotalPoints(
-                        $bonusRecognition->user_id,
-                        $bonusRecognition->year
-                    );
-                }
-            }
 
             \DB::commit();
 
