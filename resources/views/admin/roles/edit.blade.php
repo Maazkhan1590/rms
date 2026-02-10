@@ -22,6 +22,21 @@
             </div>
             <div class="form-group">
                 <label class="required" for="permissions">{{ trans('cruds.role.fields.permissions') }}</label>
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                    <div class="flex-grow-1 mr-2" style="max-width: 320px;">
+                        <input
+                            type="text"
+                            id="permission-search"
+                            class="form-control form-control-sm"
+                            placeholder="Search permission or module..."
+                            autocomplete="off"
+                        >
+                    </div>
+                    <div class="btn-group btn-group-sm mt-1 mt-md-0" role="group">
+                        <button type="button" class="btn btn-outline-secondary js-perm-select-all">Select all</button>
+                        <button type="button" class="btn btn-outline-secondary js-perm-deselect-all">Deselect all</button>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm mb-0">
                         <thead>
@@ -30,9 +45,12 @@
                                 <th>Permissions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="permissions-table-body">
                             @foreach($permissions as $module => $modulePermissions)
-                                <tr>
+                                <tr
+                                    class="js-permission-row"
+                                    data-permission-text="{{ strtolower($module) }} {{ strtolower(implode(' ', $modulePermissions->pluck('title')->toArray())) }}"
+                                >
                                     <td>
                                         <strong>{{ ucwords(str_replace('_', ' ', $module)) }}</strong>
                                     </td>
@@ -48,7 +66,7 @@
                                             @endphp
                                             <div class="form-check form-check-inline mb-1">
                                                 <input
-                                                    class="form-check-input"
+                                                    class="form-check-input js-permission-checkbox"
                                                     type="checkbox"
                                                     name="permissions[]"
                                                     id="perm_{{ $permission->id }}"
@@ -84,4 +102,47 @@
 
 
 
+@endsection
+
+@section('scripts')
+@parent
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var searchInput = document.getElementById('permission-search');
+        var rows = document.querySelectorAll('.js-permission-row');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                var term = this.value.toLowerCase();
+
+                rows.forEach(function (row) {
+                    var text = (row.getAttribute('data-permission-text') || '').toLowerCase();
+                    row.style.display = term === '' || text.indexOf(term) !== -1 ? '' : 'none';
+                });
+            });
+        }
+
+        function setAllPermissions(checked) {
+            document.querySelectorAll('.js-permission-checkbox').forEach(function (cb) {
+                if (!cb.disabled) {
+                    cb.checked = checked;
+                }
+            });
+        }
+
+        document.querySelectorAll('.js-perm-select-all').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                setAllPermissions(true);
+            });
+        });
+
+        document.querySelectorAll('.js-perm-deselect-all').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                setAllPermissions(false);
+            });
+        });
+    });
+</script>
 @endsection
