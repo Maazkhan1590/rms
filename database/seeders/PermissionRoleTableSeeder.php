@@ -204,7 +204,7 @@ class PermissionRoleTableSeeder extends Seeder
             $reportCrud,
             $collegePermissions,
             $auditPermissions,
-            ['research_access'], // My Research section access
+//            ['research_access'], // My Research section access
             $selfService
         );
 
