@@ -27,7 +27,13 @@ class RolesController extends Controller
     {
         abort_if(Gate::denies('role_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $permissions = Permission::pluck('title', 'id');
+        // Group permissions module-wise (by prefix before first underscore)
+        $permissions = Permission::all()
+            ->sortBy('title')
+            ->groupBy(function ($permission) {
+                $parts = explode('_', $permission->title, 2);
+                return $parts[0] ?? 'other';
+            });
 
         return view('admin.roles.create', compact('permissions'));
     }
@@ -44,7 +50,13 @@ class RolesController extends Controller
     {
         abort_if(Gate::denies('role_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $permissions = Permission::pluck('title', 'id');
+        // Group permissions module-wise (by prefix before first underscore)
+        $permissions = Permission::all()
+            ->sortBy('title')
+            ->groupBy(function ($permission) {
+                $parts = explode('_', $permission->title, 2);
+                return $parts[0] ?? 'other';
+            });
 
         $role->load('permissions');
 

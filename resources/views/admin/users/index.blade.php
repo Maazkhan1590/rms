@@ -110,7 +110,25 @@
                                 {{ $user->name ?: '----' }}
                             </td>
                             <td>
-                                {{ $user->email ?: '----' }}
+                                @if($user->email)
+                                    <div class="d-flex align-items-center">
+                                        <span class="mr-1 text-truncate" style="max-width: 180px;" title="{{ $user->email }}">
+                                            {{ $user->email }}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            class="btn btn-xs btn-outline-secondary js-copy-email"
+                                            data-email="{{ $user->email }}"
+                                            title="Copy email"
+                                            aria-label="Copy email"
+                                            style="padding: 2px 6px;"
+                                        >
+                                            <span class="material-icons-outlined" style="font-size:16px;line-height:1;">content_copy</span>
+                                        </button>
+                                    </div>
+                                @else
+                                    ----
+                                @endif
                             </td>
                             <td>
                                 {{ $user->email_verified_at ?: '----' }}
@@ -272,7 +290,33 @@
             $($.fn.dataTable.tables(true)).DataTable()
                 .columns.adjust();
         });
-    })
 
+        // Copy email to clipboard
+        $(document).on('click', '.js-copy-email', function () {
+            var email = $(this).data('email');
+            if (!email) return;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email).then(() => {
+                    // Optional: small feedback via title change
+                    var $btn = $(this);
+                    var oldTitle = $btn.attr('title') || '';
+                    $btn.attr('title', 'Copied!');
+                    setTimeout(function () {
+                        $btn.attr('title', oldTitle || 'Copy email');
+                    }, 1500);
+                });
+            } else {
+                // Fallback for older browsers
+                var tempInput = $('<input>');
+                $('body').append(tempInput);
+                tempInput.val(email).select();
+                try {
+                    document.execCommand('copy');
+                } catch (e) {}
+                tempInput.remove();
+            }
+        });
+    })
 </script>
 @endsection

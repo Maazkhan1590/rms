@@ -22,15 +22,50 @@
             </div>
             <div class="form-group">
                 <label class="required" for="permissions">{{ trans('cruds.role.fields.permissions') }}</label>
-                <div style="padding-bottom: 4px">
-                    <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-                    <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 200px;">Module</th>
+                                <th>Permissions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($permissions as $module => $modulePermissions)
+                                <tr>
+                                    <td>
+                                        <strong>{{ ucwords(str_replace('_', ' ', $module)) }}</strong>
+                                    </td>
+                                    <td>
+                                        @foreach($modulePermissions as $permission)
+                                            @php
+                                                $parts = explode('_', $permission->title, 2);
+                                                $action = $parts[1] ?? $parts[0];
+                                                $checked = in_array(
+                                                    $permission->id,
+                                                    old('permissions', $role->permissions->pluck('id')->toArray())
+                                                );
+                                            @endphp
+                                            <div class="form-check form-check-inline mb-1">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    name="permissions[]"
+                                                    id="perm_{{ $permission->id }}"
+                                                    value="{{ $permission->id }}"
+                                                    {{ $checked ? 'checked' : '' }}
+                                                >
+                                                <label class="form-check-label" for="perm_{{ $permission->id }}">
+                                                    {{ ucwords(str_replace('_', ' ', $action)) }}
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-                <select class="form-control select2 {{ $errors->has('permissions') ? 'is-invalid' : '' }}" name="permissions[]" id="permissions" multiple required>
-                    @foreach($permissions as $id => $permission)
-                        <option value="{{ $id }}" {{ (in_array($id, old('permissions', [])) || $role->permissions->contains($id)) ? 'selected' : '' }}>{{ $permission }}</option>
-                    @endforeach
-                </select>
                 @if($errors->has('permissions'))
                     <div class="invalid-feedback">
                         {{ $errors->first('permissions') }}
