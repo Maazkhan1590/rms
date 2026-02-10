@@ -29,6 +29,7 @@ class Kernel extends HttpKernel
         'verified'         => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'block.students'   => \App\Http\Middleware\BlockStudents::class,
         'force.password.change' => \App\Http\Middleware\ForcePasswordChangeForRoles::class,
+        'require.role'     => \App\Http\Middleware\EnsureUserHasRole::class,
     ];
 
     protected $middlewareGroups = [

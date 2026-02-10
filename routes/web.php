@@ -114,7 +114,7 @@ Route::get('email/verify', 'Auth\VerificationController@show')->name('verificati
 Route::get('email/verify/{id}/{hash}', 'Auth\VerificationController@verify')->name('verification.verify');
 Route::post('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', 'block.students']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', 'block.students', 'require.role']], function () {
     Route::get('/', 'HomeController@index')->name('home');
     // Demo Dashboard view (Blade-layout based)
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
@@ -227,7 +227,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 });
 
 // Faculty Portal Routes
-Route::group(['prefix' => 'faculty', 'as' => 'faculty.', 'namespace' => 'Faculty', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'faculty', 'as' => 'faculty.', 'namespace' => 'Faculty', 'middleware' => ['auth', 'require.role']], function () {
     Route::get('/dashboard', function() {
         return redirect()->route('admin.home');
     })->name('dashboard');
