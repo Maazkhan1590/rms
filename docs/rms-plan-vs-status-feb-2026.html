@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RMS Plan vs. Status Report – February 2026</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, Arial, sans-serif;
+      --primary-color: #1b4332;
+      --secondary-color: #2f5d62;
+      --accent-color: #0f3d3e;
+      --success-color: #065f46;
+      --warning-color: #7c4a03;
+      --danger-color: #991b1b;
+      --bg-light: #f7fafc;
+      --bg-success: #d1fae5;
+      --bg-warning: #fff3cd;
+      --bg-danger: #fee2e2;
+      --border-color: #e5e7eb;
+      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 40px;
+      color: #1f2933;
+      background: var(--bg-light);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 32px 36px;
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+    }
+
+    header {
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: var(--primary-color);
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .subtitle {
+      color: #52616b;
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .report-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-light);
+      border-radius: 6px;
+      margin-bottom: 26px;
+    }
+
+    .meta-item {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-item strong {
+      color: var(--accent-color);
+    }
+
+    section {
+      margin-bottom: 28px;
+      page-break-inside: avoid;
+    }
+
+    h2 {
+      font-size: 21px;
+      margin-bottom: 12px;
+      color: var(--primary-color);
+      border-left: 4px solid var(--secondary-color);
+      padding-left: 12px;
+      font-weight: 600;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin: 18px 0 10px;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    p {
+      margin: 8px 0;
+      color: #374151;
+    }
+
+    ul {
+      margin: 8px 0 8px 22px;
+    }
+
+    li {
+      margin: 4px 0;
+      color: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      margin-top: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      vertical-align: top;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    th {
+      background: #e8f4f2;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .done {
+      background: var(--bg-success);
+      color: var(--success-color);
+    }
+
+    .partial {
+      background: var(--bg-warning);
+      color: var(--warning-color);
+    }
+
+    .pending {
+      background: var(--bg-danger);
+      color: var(--danger-color);
+    }
+
+    .notes {
+      color: #4b5563;
+    }
+
+    .summary-box {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .risk-box {
+      background: #fff7ed;
+      border-left: 4px solid #f97316;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+      .container {
+        box-shadow: none;
+        padding: 10px 14px;
+      }
+      header {
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 10px 0 6px;
+      }
+      p {
+        margin: 4px 0;
+      }
+      ul {
+        margin: 4px 0 4px 18px;
+      }
+      li {
+        margin: 2px 0;
+      }
+      th,
+      td {
+        padding: 6px 8px;
+      }
+      button {
+        display: none !important;
+      }
+      table {
+        page-break-inside: avoid;
+      }
+      section {
+        margin-bottom: 16px;
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+      .container {
+        padding: 20px;
+      }
+      .report-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>RMS Plan vs. Status Report</h1>
+      <div class="subtitle">
+        Overall plan, completed work, and pending items
+      </div>
+    </header>
+
+    <div class="report-meta">
+      <div class="meta-item">
+        <strong>Project:</strong> Research Management System (RMS)
+      </div>
+      <div class="meta-item">
+        <strong>Report Date:</strong> February 10, 2026
+      </div>
+      <div class="meta-item">
+        <strong>Summary Status:</strong>
+        <span class="status done">Core features completed</span>
+      </div>
+    </div>
+
+    <section>
+      <h2>Executive Summary</h2>
+      <div class="summary-box">
+        <p>
+          The core RMS plan has been implemented: database schema, scoring engine, workflow system,
+          evidence files, admin portal, and faculty submissions for publications, grants, RTN, and bonus
+          recognition are all in place and working together.
+        </p>
+        <p>
+          Remaining work is focused mainly on reporting/analytics extensions, export refinements,
+          faculty profile, and additional validation/testing and polish – these are incremental,
+          not structural, changes.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Plan vs. Implementation Status by Phase</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 28%;">Plan Item / Phase</th>
+            <th style="width: 16%;">Status</th>
+            <th>Notes (Evidence / Details)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Phase 1: Database schema (policies, workflows, evidence, publications, grants, RTN/bonus, audit)</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Database tables created for policies, policy versions, rules, workflows, approvals, evidence files, publications, grants, RTN submissions, bonus recognitions, and audit logs.</li>
+                <li>All foreign key relationships and basic indexes are defined to support reporting and workflow queries.</li>
+                <li>Schema reflects the latest agreed‑upon scoring and workflow model used throughout the system.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 2: Models & core services (ScoringService, WorkflowService, FileUploadService, PolicyService, ReportService)</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Eloquent models added for all core entities (publications, grants, RTN, bonus, evidence, workflows, approvals, policies).</li>
+                <li><code>ScoringService</code> encapsulates calculation logic for all activity types with caps and policy‑based weights.</li>
+                <li><code>WorkflowService</code> centralises state transitions, role checks, comments, and approval history.</li>
+                <li><code>FileUploadService</code> standardises validation, storage paths, and metadata for evidence files.</li>
+                <li><code>PolicyService</code> and <code>ReportService</code> expose reusable methods used across controllers and views.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 3: Admin portal (layout, dashboard, policies, publications, grants, workflows, users, reports)</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Admin layout created with navigation for policies, publications, grants, RTN, bonus, workflows, users, and reports.</li>
+                <li>Dashboards implemented with charts, statistics cards, and recent activity feeds.</li>
+                <li>List screens use DataTable‑style components with search, filters, pagination, and bulk actions where relevant.</li>
+                <li>Admin can manage master data (policies, workflow definitions, some configuration values) from the UI.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 4.1–4.4: Faculty portal layout, dashboard, publication submission flows</td>
+            <td><span class="status partial">In progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>Faculty layout implemented with menu entries for publications, grants, RTN, bonus and related areas.</li>
+                <li>Publication submission forms allow create/edit, evidence upload, and tracking of workflow status.</li>
+                <li>Faculty can view their own submissions, filter by status, and open details for each item.</li>
+                <li>Further work planned on faculty dashboard metrics, shortcuts, and contextual guidance text.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 4.5: Faculty grant submission</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Grant submission forms implemented with fields for type, title, agency, amount, duration, role, and co‑investigators.</li>
+                <li>Evidence file upload integrated (award letters, contracts, approvals, etc.).</li>
+                <li>Submissions automatically enter the unified workflow for coordinator/dean review and approval.</li>
+                <li>Approved grants are scored and included in reporting and dashboards.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 4.6: Faculty RTN & bonus recognition submission</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>RTN‑3 (student co‑authors) and RTN‑4 (course file updates) forms implemented with structured fields and evidence uploads.</li>
+                <li>Bonus recognition forms implemented for multiple recognition types with metadata and supporting documents.</li>
+                <li>Both RTN and bonus submissions use the same workflow and scoring services as publications and grants.</li>
+                <li>Faculty can monitor the status of RTN and bonus submissions from their portal.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 4.7: Faculty profile</td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>No dedicated faculty profile screens are exposed yet in the portal.</li>
+                <li>Profile fields are partially present in the database/user model and will be surfaced via new UI.</li>
+                <li>Planned work is captured under the roadmap section “Faculty profile module”.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 4.8: Public/faculty publication browsing</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Public‑facing publication list and detail pages implemented with basic filters.</li>
+                <li>Faculty can browse their own publications and see workflow/scoring status where applicable.</li>
+                <li>Views are wired into the same models, scoring, and workflow structures used by admin screens.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 5: Approval workflow system (states, roles, history)</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Standard workflow states defined and shared across all modules (Draft, Submitted, Under Review, Approved, Returned, Rejected).</li>
+                <li>Role‑based transitions implemented to ensure only authorised users can approve, reject, or return items.</li>
+                <li>Approval history stored with timestamps, actors, comments, and previous/new states.</li>
+                <li>Fallback routing implemented when certain approver roles (e.g., coordinator) are not assigned.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 6: Dynamic scoring engine</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Scoring policies and rules modelled to support multiple activity types with configurable weights and caps.</li>
+                <li>Scoring integrated into submission flows so that approved items are automatically included in totals.</li>
+                <li>Scores aggregated per faculty member and surfaced in reporting and dashboards.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 7: File upload & evidence management</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Polymorphic evidence file model implemented so multiple files can be attached to any submission.</li>
+                <li>Support for several file categories (acceptance letters, certificates, appointment letters, etc.).</li>
+                <li>Validation added for file size and type; files stored using stable, secure paths.</li>
+                <li>Admin views allow verification and review of uploaded evidence.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 8: Reporting system (CV, summaries, dashboards, exports)</td>
+            <td><span class="status partial">In progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>Core admin dashboards implemented with charts for submissions and module‑level statistics.</li>
+                <li>Basic exports (Excel/PDF) available for key tables via DataTable and backend helpers.</li>
+                <li>Additional management analytics, CV‑style reports, and refined templates are planned in the roadmap.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 9: Routes, roles & middleware</td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Routes organised by area (admin, faculty, public) with clear prefixes and middleware assignments.</li>
+                <li>Role‑based access control enforced so each user type only sees relevant menus and actions.</li>
+                <li>Redirects and guards adjusted to prevent loops and ensure correct landing pages.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Phase 10: Validation, testing & UI polish</td>
+            <td><span class="status partial">In progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>FormRequest‑based validation implemented for several critical forms (e.g., publications, grants).</li>
+                <li>Main submission and approval paths have been manually tested and verified.</li>
+                <li>Further automated tests, broader validation rules, and cosmetic/UI refinements are planned as part of the 5‑month roadmap.</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Completed Scope (Overview)</h2>
+      <ul>
+        <li>End‑to‑end submissions and approvals for publications, grants, RTN, and bonus recognition.</li>
+        <li>Unified workflow engine with multi‑level approvals and audit trail.</li>
+        <li>Dynamic scoring engine based on configurable policies and rules.</li>
+        <li>Multiple evidence file uploads with verification and secure storage.</li>
+        <li>Admin portal with dashboards, charts, filters, and export features.</li>
+        <li>Faculty portal for submitting and tracking research outputs and activities.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Pending / Next Priority Items</h2>
+      <div class="risk-box">
+        <p>
+          Remaining work focuses on refinement and institutionalisation of the system. These items can
+          be delivered in a follow‑up phase without blocking current usage.
+        </p>
+      </div>
+      <ul>
+        <li><strong>Faculty profile module:</strong> dedicated profile screens (view/edit), profile photo and CV upload, and integration of profile data into submissions and reports.</li>
+        <li><strong>Advanced analytics dashboards:</strong> management overview charts, breakdowns by college/department/faculty, filters by period and activity type, and drill‑down to underlying submissions.</li>
+        <li><strong>CV‑style exports and templates:</strong> standard CV layout per faculty member, mapping of all activity data, and refined PDF/Excel/Word export formats.</li>
+        <li><strong>Validation, testing, and quality:</strong> additional field‑level validations, automated feature/regression tests, and basic performance testing for heavy listing and export actions.</li>
+        <li><strong>UX / UI refinements:</strong> improved empty states and messages, consistent filters and actions across modules, and adjustments based on user feedback.</li>
+        <li><strong>Performance and configuration:</strong> query/index optimisation, robust pagination for large datasets, and configuration screens for key master data and scoring parameters.</li>
+        <li><strong>Security, audit, and documentation:</strong> final review of permissions, extended audit logging for sensitive actions, and user/technical documentation and training materials.</li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    // Simple helper to allow printing/saving as PDF from the browser
+    document.addEventListener('DOMContentLoaded', function () {
+      const header = document.querySelector('header');
+      if (!header) return;
+
+      const printBtn = document.createElement('button');
+      printBtn.textContent = 'Print / Save as PDF';
+      printBtn.style.cssText =
+        'margin-top: 14px; padding: 8px 18px; background: #2f5d62; color: #ffffff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;';
+
+      printBtn.addEventListener('click', function () {
+        window.print();
+      });
+
+      header.appendChild(printBtn);
+    });
+  </script>
+</body>
+</html>
+
