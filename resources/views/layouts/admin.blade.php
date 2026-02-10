@@ -11,6 +11,8 @@
 
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
+    <!-- Icon library for action buttons (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dyZ88n1UnvJny7pX4P3H1VlzDq+W8sELpAo0P5PLf4KJIp4jOSAm5N6wX9Z8MZ0fjQX+0Gooy2cQkS8qW2zYKg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- DataTables core + extensions (vanilla theme) -->
     <link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet" />

@@ -104,46 +104,54 @@
                     @foreach($users as $key => $user)
                         <tr data-entry-id="{{ $user->id }}">
                             <td>
-                                {{ $user->id ?? '' }}
+                                {{ $user->id ?? '----' }}
                             </td>
                             <td>
-                                {{ $user->name ?? '' }}
+                                {{ $user->name ?: '----' }}
                             </td>
                             <td>
-                                {{ $user->email ?? '' }}
+                                {{ $user->email ?: '----' }}
                             </td>
                             <td>
-                                {{ $user->email_verified_at ?? '' }}
+                                {{ $user->email_verified_at ?: '----' }}
                             </td>
                             <td>
                                 @if($user->google_scholar)
                                     <a href="{{ $user->google_scholar }}" target="_blank" rel="noopener noreferrer">Profile</a>
+                                @else
+                                    ----
                                 @endif
                             </td>
                             <td>
-                                {{ $user->citation_number ?? '' }}
+                                {{ $user->citation_number !== null ? $user->citation_number : '----' }}
                             </td>
                             <td>
-                                {{ $user->h_index ?? '' }}
+                                {{ $user->h_index !== null ? $user->h_index : '----' }}
                             </td>
                             <td>
                                 @if($user->research_gate)
                                     <a href="{{ $user->research_gate }}" target="_blank" rel="noopener noreferrer">Scopus</a>
+                                @else
+                                    ----
                                 @endif
                             </td>
                             <td>
-                                {{ $user->sohar_affiliation ?? '' }}
+                                {{ $user->sohar_affiliation ?? '----' }}
                             </td>
                             <td>
-                                {{ $user->orcid_connected ?? '' }}
+                                {{ $user->orcid_connected ?? '----' }}
                             </td>
                             <td>
-                                {{ $user->scopus_papers ?? '' }}
+                                {{ $user->scopus_papers !== null ? $user->scopus_papers : '----' }}
                             </td>
                             <td>
-                                @foreach($user->roles as $key => $item)
-                                    <span class="badge badge-info">{{ $item->title }}</span>
-                                @endforeach
+                                @if($user->roles->count())
+                                    @foreach($user->roles as $key => $item)
+                                        <span class="badge badge-info">{{ $item->title }}</span>
+                                    @endforeach
+                                @else
+                                    ----
+                                @endif
                             </td>
                             <td>
                                 @if($user->status === 'pending')
@@ -159,30 +167,30 @@
                                 @endif
                             </td>
                             <td>
-                                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <div class="btn-group btn-group-sm" role="group" aria-label="User actions">
                                     @if($user->status === 'pending')
                                         @can('user_edit')
                                             <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this user? An email notification will be sent.');">
                                                 @csrf
-                                                <button type="submit" class="btn btn-xs btn-success">
-                                                    Approve
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Approve">
+                                                    <i class="fas fa-check"></i>
                                                 </button>
                                             </form>
-                                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#rejectModal{{ $user->id }}">
-                                                Reject
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#rejectModal{{ $user->id }}" title="Reject">
+                                                <i class="fas fa-times"></i>
                                             </button>
                                         @endcan
                                     @endif
 
                                     @can('user_show')
-                                        <a class="btn btn-xs btn-primary" href="{{ route('admin.users.show', $user->id) }}">
-                                            {{ trans('global.view') }}
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.users.show', $user->id) }}" title="{{ trans('global.view') }}">
+                                            <i class="fas fa-eye"></i>
                                         </a>
                                     @endcan
 
                                     @can('user_edit')
-                                        <a class="btn btn-xs btn-info" href="{{ route('admin.users.edit', $user->id) }}">
-                                            {{ trans('global.edit') }}
+                                        <a class="btn btn-sm btn-outline-info" href="{{ route('admin.users.edit', $user->id) }}" title="{{ trans('global.edit') }}">
+                                            <i class="fas fa-edit"></i>
                                         </a>
                                     @endcan
 
@@ -190,7 +198,9 @@
                                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline;">
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ trans('global.delete') }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
                                         </form>
                                     @endcan
                                 </div>

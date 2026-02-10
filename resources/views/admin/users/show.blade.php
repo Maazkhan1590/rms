@@ -7,21 +7,34 @@
             <strong>{{ $user->name }}</strong>
             <small class="text-muted d-block">{{ trans('cruds.user.title_singular') }} #{{ $user->id }}</small>
         </div>
-        <div>
-            <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-secondary">
-                {{ trans('global.back_to_list') }}
-            </a>
-            @can('user_edit')
-                <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-primary">
-                    {{ trans('global.edit') }}
+        <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group btn-group-sm mr-2" role="group">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary" title="{{ trans('global.back_to_list') }}">
+                    <i class="fas fa-arrow-left"></i>
                 </a>
-            @endcan
+            </div>
+            <div class="btn-group btn-group-sm" role="group">
+                @can('user_edit')
+                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-outline-primary" title="{{ trans('global.edit') }}">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                @endcan
+                @can('user_delete')
+                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display:inline;">
+                        @method('DELETE')
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger" title="{{ trans('global.delete') }}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                @endcan
+            </div>
         </div>
     </div>
 
     <div class="card-body">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-4">
                 <h5 class="mb-3">Basic Information</h5>
                 <table class="table table-borderless table-sm">
                     <tbody>
@@ -64,9 +77,9 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-4">
                 <h5 class="mb-3">Research Profile</h5>
-                <table class="table table-borderless table-sm">
+                <table class="table table-borderless table-sm mb-0">
                     <tbody>
                         <tr>
                             <th style="width: 40%;">Google Scholar</th>
@@ -107,6 +120,33 @@
                         <tr>
                             <th>Number of papers (Scopus)</th>
                             <td>{{ $user->scopus_papers ?? '-' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h5 class="mb-3">Organization</h5>
+                <table class="table table-borderless table-sm mb-0">
+                    <tbody>
+                        <tr>
+                            <th style="width: 40%;">College</th>
+                            <td>{{ optional($user->college)->name ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Department</th>
+                            <td>{{ optional($user->department)->name ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Designation</th>
+                            <td>{{ $user->designation ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Employee ID</th>
+                            <td>{{ $user->employee_id ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone</th>
+                            <td>{{ $user->phone ?? '-' }}</td>
                         </tr>
                     </tbody>
                 </table>
