@@ -24,7 +24,7 @@ class ResearchSystemDataSeeder extends Seeder
 
     public function __construct()
     {
-        $this->filePath = base_path('Research System.xlsx');
+        $this->filePath = base_path('Research_System.xlsx');
         $this->excelReader = new ExcelReaderService();
         $this->excelImport = new ExcelImportService($this->excelReader);
     }
@@ -67,12 +67,12 @@ class ResearchSystemDataSeeder extends Seeder
     {
         try {
             $sheet = $this->excelReader->getSheet($this->filePath, $sheetName);
-            
+
             // Try to find headers in multiple rows (1, 2, or 3)
             $headers = $this->findHeaders($sheet);
             $headerRow = $headers['row'];
             $headers = $headers['headers'];
-            
+
             if (empty($headers)) {
                 $this->command->warn("  No headers found in sheet '{$sheetName}', skipping...");
                 return;
@@ -82,7 +82,7 @@ class ResearchSystemDataSeeder extends Seeder
 
             // Route to appropriate import method based on sheet name
             $sheetNameLower = strtolower($sheetName);
-            
+
             if (str_contains($sheetNameLower, 'user') || str_contains($sheetNameLower, 'staff') || str_contains($sheetNameLower, 'master')) {
                 $this->importUsers($sheetName, $sheet, $headers, $headerRow);
             } elseif (str_contains($sheetNameLower, 'college')) {
@@ -143,14 +143,14 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
 
                     // Map Excel columns to database fields
                     $data = [];
-                    
+
                     // Try different possible column names
                     $name = $this->getValue($rowData, ['Name', 'name', 'staff_name', 'Staff Name', 'Author Name', 'author_name']);
                     $email = $this->getValue($rowData, ['Email', 'email', 'Email Address']);
@@ -159,7 +159,7 @@ class ResearchSystemDataSeeder extends Seeder
                     $phone = $this->getValue($rowData, ['Phone', 'phone', 'Phone Number', 'Mobile']);
                     $collegeName = $this->getValue($rowData, ['College', 'college', 'Faculty', 'faculty', 'sohar Affiliation', 'Affiliation']);
                     $departmentName = $this->getValue($rowData, ['Department', 'department', 'Dept']);
-                    
+
                     // Research profile fields
                     $googleScholar = $this->getValue($rowData, ['Google scholar link', 'Google Scholar', 'google_scholar', 'Google scholar']);
                     $orcid = $this->getValue($rowData, ['ORCID', 'ORCID Connected', 'orcid', 'ORCID ID']);
@@ -220,13 +220,13 @@ class ResearchSystemDataSeeder extends Seeder
                         // Check if user is a system user by checking if they have roles or specific emails
                         $isSystemUser = in_array($user->email, ['admin@admin.com', 'admin@example.com', 'dean@example.com', 'coordinator@example.com', 'faculty@example.com'])
                             || $user->roles()->exists();
-                        
+
                         if ($isSystemUser) {
                             // Don't update system users, just skip
                             $skipped++;
                             continue;
                         }
-                        
+
                         // Update existing user but preserve password and status if already set
                         if (!isset($updateData['status'])) {
                             $updateData['status'] = $user->status ?: 'active';
@@ -235,7 +235,7 @@ class ResearchSystemDataSeeder extends Seeder
                         if (!$user->password) {
                             $updateData['password'] = bcrypt('password');
                         }
-                        
+
                         $user->update($updateData);
                         $imported++;
                     } else {
@@ -248,18 +248,18 @@ class ResearchSystemDataSeeder extends Seeder
                                 continue; // Can't create user without email or employee_id
                             }
                         }
-                        
+
                         // Check if email already exists (double check)
                         if (User::where('email', $createData['email'])->exists()) {
                             $skipped++;
                             continue;
                         }
-                        
+
                         // Set defaults for new user
                         $createData['name'] = $createData['name'] ?? 'Unknown';
                         $createData['status'] = 'active';
                         $createData['password'] = bcrypt('password');
-                        
+
                         User::create($createData);
                         $imported++;
                     }
@@ -294,7 +294,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -348,7 +348,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -414,7 +414,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -440,7 +440,7 @@ class ResearchSystemDataSeeder extends Seeder
 
                     // Map publication type
                     $publicationType = $this->mapPublicationType($type);
-                    
+
                     // Map journal category
                     $journalCategory = $this->mapJournalCategory($indexed);
 
@@ -503,7 +503,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -605,7 +605,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -633,7 +633,7 @@ class ResearchSystemDataSeeder extends Seeder
                             $user = User::where('name', 'like', "%{$staffName}%")->first();
                         }
                     }
-                    
+
                     if (!$user) {
                         $skipped++;
                         continue;
@@ -687,7 +687,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -711,7 +711,7 @@ class ResearchSystemDataSeeder extends Seeder
                             $user = User::where('name', 'like', "%{$staffName}%")->first();
                         }
                     }
-                    
+
                     if (!$user) {
                         $skipped++;
                         continue;
@@ -761,7 +761,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -784,7 +784,7 @@ class ResearchSystemDataSeeder extends Seeder
                             $user = User::where('name', 'like', "%{$staffName}%")->first();
                         }
                     }
-                    
+
                     if (!$user) {
                         $skipped++;
                         continue;
@@ -841,7 +841,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -866,7 +866,7 @@ class ResearchSystemDataSeeder extends Seeder
                             $user = User::where('name', 'like', "%{$staffName}%")->first();
                         }
                     }
-                    
+
                     if (!$user) {
                         $skipped++;
                         continue;
@@ -923,7 +923,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -1002,7 +1002,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -1082,7 +1082,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -1107,7 +1107,7 @@ class ResearchSystemDataSeeder extends Seeder
                             $user = User::where('name', 'like', "%{$staffName}%")->first();
                         }
                     }
-                    
+
                     if (!$user) {
                         $skipped++;
                         continue;
@@ -1167,7 +1167,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -1227,7 +1227,7 @@ class ResearchSystemDataSeeder extends Seeder
             for ($row = $headerRow + 1; $row <= $highestRow; $row++) {
                 try {
                     $rowData = $this->getRowData($sheet, $headers, $row, $headerRow);
-                    
+
                     if (empty(array_filter($rowData))) {
                         continue;
                     }
@@ -1305,7 +1305,7 @@ class ResearchSystemDataSeeder extends Seeder
         }
 
         $stageLower = strtolower($stage);
-        
+
         if (str_contains($stageLower, 'prototype')) {
             return 'prototype';
         } elseif (str_contains($stageLower, 'pilot')) {
@@ -1313,7 +1313,7 @@ class ResearchSystemDataSeeder extends Seeder
         } elseif (str_contains($stageLower, 'launch')) {
             return 'launched';
         }
-        
+
         return null;
     }
 
@@ -1375,7 +1375,7 @@ class ResearchSystemDataSeeder extends Seeder
                 return trim((string)$rowData[$key]);
             }
         }
-        
+
         // Then try case-insensitive match
         $rowDataLower = array_change_key_case($rowData, CASE_LOWER);
         foreach ($keys as $key) {
@@ -1386,7 +1386,7 @@ class ResearchSystemDataSeeder extends Seeder
                 }
             }
         }
-        
+
         // Then try partial match
         foreach ($keys as $key) {
             $keyLower = strtolower($key);
@@ -1396,7 +1396,7 @@ class ResearchSystemDataSeeder extends Seeder
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -1410,7 +1410,7 @@ class ResearchSystemDataSeeder extends Seeder
         }
 
         $typeLower = strtolower($type);
-        
+
         if (str_contains($typeLower, 'journal')) {
             return 'journal_paper';
         } elseif (str_contains($typeLower, 'conference')) {
@@ -1418,7 +1418,7 @@ class ResearchSystemDataSeeder extends Seeder
         } elseif (str_contains($typeLower, 'book')) {
             return str_contains($typeLower, 'chapter') ? 'book_chapter' : 'book';
         }
-        
+
         return 'journal_paper'; // Default
     }
 
@@ -1432,7 +1432,7 @@ class ResearchSystemDataSeeder extends Seeder
         }
 
         $indexedLower = strtolower($indexed);
-        
+
         if (str_contains($indexedLower, 'scopus')) {
             return 'scopus';
         } elseif (str_contains($indexedLower, 'international') || str_contains($indexedLower, 'refereed')) {
@@ -1440,7 +1440,7 @@ class ResearchSystemDataSeeder extends Seeder
         } elseif (str_contains($indexedLower, 'arabic')) {
             return 'su_approved_arabic';
         }
-        
+
         return 'non_indexed';
     }
 
@@ -1454,7 +1454,7 @@ class ResearchSystemDataSeeder extends Seeder
         }
 
         $quartileUpper = strtoupper(trim($quartile));
-        
+
         // Handle invalid values like "NOT YET ASSIGNED", "N/A", etc.
         if (in_array($quartileUpper, ['NOT YET ASSIGNED', 'N/A', 'NA', 'NULL', 'NONE', 'TBD', 'PENDING'])) {
             return null;
@@ -1464,12 +1464,12 @@ class ResearchSystemDataSeeder extends Seeder
         if (preg_match('/Q([1-4])/', $quartileUpper, $matches)) {
             return 'Q' . $matches[1];
         }
-        
+
         // If it's just a number 1-4
         if (in_array($quartileUpper, ['1', '2', '3', '4'])) {
             return 'Q' . $quartileUpper;
         }
-        
+
         // Invalid quartile value
         return null;
     }
@@ -1484,7 +1484,7 @@ class ResearchSystemDataSeeder extends Seeder
         }
 
         $typeLower = strtolower($type);
-        
+
         if (str_contains($typeLower, 'editorial') || str_contains($typeLower, 'editor')) {
             return 'editorial_board';
         } elseif (str_contains($typeLower, 'examiner') || str_contains($typeLower, 'exam')) {
@@ -1494,7 +1494,7 @@ class ResearchSystemDataSeeder extends Seeder
         } elseif (str_contains($typeLower, 'recognition')) {
             return 'recognition';
         }
-        
+
         return 'other';
     }
 
@@ -1504,7 +1504,7 @@ class ResearchSystemDataSeeder extends Seeder
     protected function mapGrantType(string $sheetName, array $rowData): ?string
     {
         $sheetNameLower = strtolower($sheetName);
-        
+
         if (str_contains($sheetNameLower, 'consultancy') || str_contains($sheetNameLower, 'kt')) {
             return 'external_consultancy';
         } elseif (str_contains($sheetNameLower, 'grg') || str_contains($sheetNameLower, 'urg')) {
@@ -1514,7 +1514,7 @@ class ResearchSystemDataSeeder extends Seeder
         } elseif (str_contains($sheetNameLower, 'patent')) {
             return 'patent_copyright';
         }
-        
+
         return 'external_grant'; // Default
     }
 
@@ -1528,7 +1528,7 @@ class ResearchSystemDataSeeder extends Seeder
         }
 
         $roleUpper = strtoupper($role);
-        
+
         if (str_contains($roleUpper, 'PI') || str_contains($roleUpper, 'PRINCIPAL')) {
             return 'PI';
         } elseif (str_contains($roleUpper, 'CO-PI') || str_contains($roleUpper, 'COPI')) {
@@ -1538,7 +1538,7 @@ class ResearchSystemDataSeeder extends Seeder
         } elseif (str_contains($roleUpper, 'ADVISOR') || str_contains($roleUpper, 'MENTOR')) {
             return 'Advisor_Mentor';
         }
-        
+
         return 'PI'; // Default
     }
 
