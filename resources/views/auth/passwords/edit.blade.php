@@ -55,13 +55,26 @@
                     @csrf
                     <div class="form-group">
                         <label class="required" for="password">New {{ trans('cruds.user.fields.password') }}</label>
-                        <div class="input-group">
-                            <input class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" type="password" name="password" id="password" required autocomplete="new-password">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary js-toggle-password" type="button" data-target="password" aria-label="Show password" title="Show password">
-                                    <span class="material-icons-outlined" aria-hidden="true" style="font-size:18px;line-height:1;">visibility</span>
-                                </button>
-                            </div>
+                        <div class="position-relative">
+                            <input
+                                class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}"
+                                type="password"
+                                name="password"
+                                id="password"
+                                required
+                                autocomplete="new-password"
+                                style="padding-right: 2.5rem;"
+                            >
+                            <button
+                                class="js-toggle-password"
+                                type="button"
+                                data-target="password"
+                                aria-label="Show password"
+                                title="Show password"
+                                style="position:absolute;top:50%;right:0.75rem;transform:translateY(-50%);border:none;background:transparent;padding:0;cursor:pointer;outline:none;"
+                            >
+                                <span class="material-icons-outlined" aria-hidden="true" style="font-size:20px;line-height:1;">visibility</span>
+                            </button>
                         </div>
                         @if($errors->has('password'))
                             <div class="invalid-feedback">
@@ -71,13 +84,26 @@
                     </div>
                     <div class="form-group">
                         <label class="required" for="password_confirmation">Repeat New {{ trans('cruds.user.fields.password') }}</label>
-                        <div class="input-group">
-                            <input class="form-control" type="password" name="password_confirmation" id="password_confirmation" required autocomplete="new-password">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary js-toggle-password" type="button" data-target="password_confirmation" aria-label="Show password confirmation" title="Show password">
-                                    <span class="material-icons-outlined" aria-hidden="true" style="font-size:18px;line-height:1;">visibility</span>
-                                </button>
-                            </div>
+                        <div class="position-relative">
+                            <input
+                                class="form-control"
+                                type="password"
+                                name="password_confirmation"
+                                id="password_confirmation"
+                                required
+                                autocomplete="new-password"
+                                style="padding-right: 2.5rem;"
+                            >
+                            <button
+                                class="js-toggle-password"
+                                type="button"
+                                data-target="password_confirmation"
+                                aria-label="Show password confirmation"
+                                title="Show password"
+                                style="position:absolute;top:50%;right:0.75rem;transform:translateY(-50%);border:none;background:transparent;padding:0;cursor:pointer;outline:none;"
+                            >
+                                <span class="material-icons-outlined" aria-hidden="true" style="font-size:20px;line-height:1;">visibility</span>
+                            </button>
                         </div>
                     </div>
                     <div class="form-group">
