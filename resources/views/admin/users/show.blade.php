@@ -10,17 +10,17 @@
         <div class="btn-toolbar" role="toolbar">
             <div class="btn-group btn-group-sm mr-2" role="group">
                 <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary" title="{{ trans('global.back_to_list') }}" aria-label="{{ trans('global.back_to_list') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <path d="M9.5 3L4.5 8L9.5 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M14 5L8 11L14 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
             </div>
             <div class="btn-group btn-group-sm" role="group">
                 @can('user_edit')
                     <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-outline-primary" title="{{ trans('global.edit') }}" aria-label="{{ trans('global.edit') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <path d="M3 11.5L3.5 9L10 2.5L12.5 5L6 11.5L3 11.5Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M3 13.5H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M7 20H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                            <path d="M7 14.5L15.75 5.75L18.75 8.75L10 17.5L7 17.5V14.5Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
                         </svg>
                     </a>
                 @endcan
@@ -29,11 +29,11 @@
                         @method('DELETE')
                         @csrf
                         <button type="submit" class="btn btn-outline-danger" title="{{ trans('global.delete') }}" aria-label="{{ trans('global.delete') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                <path d="M3.5 4.5H12.5L11.9 12.1C11.85 12.65 11.4 13.05 10.85 13.05H5.15C4.6 13.05 4.15 12.65 4.1 12.1L3.5 4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M6 7L6.5 11M10 7L9.5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-                                <path d="M5 4.5V3.5C5 3.22 5.22 3 5.5 3H10.5C10.78 3 11 3.22 11 3.5V4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-                                <path d="M4 4.5H12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 10V17M15 10V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M6 7H18L17.2 18.2C17.12 19.3 16.2 20.15 15.09 20.15H8.91C7.8 20.15 6.88 19.3 6.8 18.2L6 7Z" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                                <path d="M9 4H15C15.55 4 16 4.45 16 5V6H8V5C8 4.45 8.45 4 9 4Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M5 6H19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                             </svg>
                         </button>
                     </form>
