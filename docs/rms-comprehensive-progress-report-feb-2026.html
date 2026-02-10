@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RMS Progress Report - Recent Work (Jan 24 - Feb 3, 2026)</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, Arial, sans-serif;
+      --primary-color: #1b4332;
+      --secondary-color: #2f5d62;
+      --accent-color: #0f3d3e;
+      --success-color: #065f46;
+      --warning-color: #7c4a03;
+      --danger-color: #991b1b;
+      --bg-light: #f7fafc;
+      --bg-success: #d1fae5;
+      --bg-warning: #fff3cd;
+      --bg-danger: #fee2e2;
+      --border-color: #e5e7eb;
+      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 40px;
+      color: #1f2933;
+      background: var(--bg-light);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    header {
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    h1 { 
+      margin: 0; 
+      font-size: 32px; 
+      color: var(--primary-color); 
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle { 
+      color: #52616b; 
+      margin-top: 10px; 
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .report-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: var(--bg-light);
+      border-radius: 6px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .meta-item strong {
+      color: var(--primary-color);
+    }
+
+    section { 
+      margin-bottom: 35px; 
+      page-break-inside: avoid;
+    }
+
+    h2 { 
+      font-size: 24px; 
+      margin-bottom: 15px; 
+      color: var(--primary-color);
+      border-left: 4px solid var(--secondary-color);
+      padding-left: 15px;
+      font-weight: 600;
+    }
+
+    h3 { 
+      font-size: 18px; 
+      margin: 20px 0 12px; 
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    h4 {
+      font-size: 16px;
+      margin: 15px 0 10px;
+      color: var(--accent-color);
+      font-weight: 500;
+    }
+
+    p { 
+      margin: 10px 0; 
+      line-height: 1.7;
+      color: #374151;
+    }
+
+    ul, ol { 
+      margin: 10px 0 10px 25px;
+      line-height: 1.8;
+    }
+
+    li {
+      margin: 6px 0;
+      color: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: var(--shadow);
+      margin: 15px 0;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 12px 15px;
+      vertical-align: top;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    th {
+      background: #e8f4f2;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    tbody tr:hover {
+      background: #f0f9ff;
+    }
+
+    .status {
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 4px;
+      display: inline-block;
+      font-size: 13px;
+    }
+
+    .done { 
+      background: var(--bg-success); 
+      color: var(--success-color); 
+    }
+
+    .partial { 
+      background: var(--bg-warning); 
+      color: var(--warning-color); 
+    }
+
+    .pending { 
+      background: var(--bg-danger); 
+      color: var(--danger-color); 
+    }
+
+    .notes { 
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    code {
+      background: #edf2f7;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      color: #c7254e;
+    }
+
+    .highlight-box {
+      background: #fff7ed;
+      border-left: 4px solid #f59e0b;
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+    .success-box {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .feature-card {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .feature-card h4 {
+      margin-top: 0;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon {
+      font-size: 24px;
+    }
+
+    .toc {
+      background: var(--bg-light);
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 30px;
+    }
+
+    .toc h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+
+    .toc ul {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .toc li {
+      margin: 8px 0;
+    }
+
+    .toc a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .toc a:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+      }
+
+      .container {
+        box-shadow: none;
+        padding: 20px;
+      }
+
+      button {
+        display: none !important;
+      }
+
+      .feature-card {
+        break-inside: avoid;
+      }
+
+      table {
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .report-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>RMS Progress Report</h1>
+      <div class="subtitle">
+        Recent Development Work - January 24 - February 3, 2026
+      </div>
+    </header>
+
+    <div class="report-meta">
+      <div class="meta-item">
+        <strong>Project:</strong> Research Management System
+      </div>
+      <!-- <div class="meta-item">
+        <strong>Period:</strong> Last 2 Weeks
+      </div> -->
+      <div class="meta-item">
+        <strong>Status:</strong> <span class="status done">Inprogress</span>
+      </div>
+    </div>
+
+    <section id="exec-summary">
+      <h2>Work Completed</h2>
+      
+      <div class="success-box">
+        <h4>✅ All Modules Implemented & Integrated</h4>
+        <p>Successfully completed bonus recognition, RTN submissions, grants workflows, multiple evidence file support, and frontend enhancements.</p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bonus Recognition</td>
+            <td><span class="status done">✓ Done</span></td>
+          </tr>
+          <tr>
+            <td>RTN Submissions</td>
+            <td><span class="status done">✓ Done</span></td>
+          </tr>
+          <tr>
+            <td>Grants Module</td>
+            <td><span class="status done">✓ Done</span></td>
+          </tr>
+          <tr>
+            <td>Evidence Files</td>
+            <td><span class="status done">✓ Done</span></td>
+          </tr>
+          <tr>
+            <td>Workflow System</td>
+            <td><span class="status done">✓ Done</span></td>
+          </tr>
+          <tr>
+            <td>Frontend Updates</td>
+            <td><span class="status done">✓ Done</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="bonus-recognition">
+      <h2>1. Bonus Recognition Module</h2>
+
+      <h3>What Was Built</h3>
+      <ul>
+        <li>Database: <code>bonus_recognition</code> table with 6 recognition types</li>
+        <li>Controllers: Admin + Faculty + API controllers</li>
+        <li>Views: Submission form + admin review pages</li>
+        <li>Workflow: Integrated with approval system</li>
+      </ul>
+
+      <h3>Submission Form Fields</h3>
+      <ul>
+        <li><strong>Recognition Type:</strong> Dropdown (6 options: Editorial Board, External Examiner, Regulatory Body, Workshop/Seminar, Keynote/Plenary, Journal Reviewer)</li>
+        <li><strong>Title:</strong> Text field for recognition title</li>
+        <li><strong>Organization:</strong> Organization or institution name</li>
+        <li><strong>Journal/Conference Name:</strong> Related publication venue</li>
+        <li><strong>Event Name:</strong> Name of event or activity</li>
+        <li><strong>Event Date:</strong> Date picker for activity date</li>
+        <li><strong>Description:</strong> Textarea for detailed description</li>
+        <li><strong>Year:</strong> Academic year dropdown</li>
+        <li><strong>Evidence Files:</strong> Multiple file upload (certificates, appointment letters, etc.)</li>
+      </ul>
+    </section>
+
+    <section id="rtn-submissions">
+      <h2>2. RTN Submissions Module</h2>
+
+      <h3>What Was Built</h3>
+      <ul>
+        <li>Database: <code>rtn_submissions</code> table for RTN-3 (student co-authors) and RTN-4 (course updates)</li>
+        <li>Controllers: Admin + Faculty + API controllers</li>
+        <li>Fixed 5 points for both RTN types</li>
+        <li>Evidence file support</li>
+        <li>Workflow integration</li>
+      </ul>
+
+      <h3>RTN-3 Form Fields (Student Co-Authors)</h3>
+      <ul>
+        <li><strong>Title:</strong> Research title with student involvement</li>
+        <li><strong>Description:</strong> Overview of student contribution</li>
+        <li><strong>Student Co-Authors:</strong> Dynamic list (student name, email, contribution level)</li>
+        <li><strong>Publication Reference:</strong> Link to related publication</li>
+        <li><strong>Evidence Files:</strong> Acceptance letters, published papers</li>
+      </ul>
+
+      <h3>RTN-4 Form Fields (Course File Updates)</h3>
+      <ul>
+        <li><strong>Title:</strong> Course update title</li>
+        <li><strong>Course Files Updated:</strong> Dynamic list (course code, course name, file path)</li>
+        <li><strong>Lecture Materials:</strong> Description of updated lecture content</li>
+        <li><strong>Assessment Redesign:</strong> Changes to assessment methods</li>
+        <li><strong>Case Study Documentation:</strong> New case studies added</li>
+        <li><strong>Evidence Files:</strong> Updated course materials, syllabi</li>
+      </ul>
+    </section>
+
+    <section id="grants">
+      <h2>3. Grants Module Integration</h2>
+
+      <h3>What Was Done</h3>
+      <ul>
+        <li>Integrated existing grant model with new workflow system</li>
+        <li>Added approve/reject actions to admin controller</li>
+        <li>Connected to scoring service</li>
+        <li>Evidence file support added</li>
+      </ul>
+
+      <h3>Grant Submission Form Fields</h3>
+      <ul>
+        <li><strong>Grant Type:</strong> Dropdown (Internal, National, International, Industry-Sponsored, Collaborative)</li>
+        <li><strong>Title:</strong> Grant title/project name</li>
+        <li><strong>Funding Agency:</strong> Name of funding organization</li>
+        <li><strong>Grant Amount:</strong> Amount in OMR</li>
+        <li><strong>Duration:</strong> Start date and end date fields</li>
+        <li><strong>Role:</strong> Principal Investigator (PI) or Co-Investigator (Co-PI)</li>
+        <li><strong>Co-Investigators:</strong> Dynamic list of team members</li>
+        <li><strong>Project Description:</strong> Detailed project overview</li>
+        <li><strong>Evidence Files:</strong> Award letters, contracts, approvals</li>
+      </ul>
+    </section>
+
+    <section id="evidence-files">
+      <h2>4. Multiple Evidence Files Support</h2>
+
+      <h3>What Was Built</h3>
+      <ul>
+        <li>Polymorphic <code>EvidenceFile</code> model</li>
+        <li>Supports publications, grants, RTN, bonus</li>
+        <li>File categories: acceptance_letter, award_letter, certificate, etc.</li>
+        <li>Admin verification system</li>
+        <li>UUID-based secure file storage</li>
+      </ul>
+
+      <h3>Evidence Upload Features</h3>
+      <ul>
+        <li><strong>Multiple File Upload:</strong> Support for unlimited files per submission</li>
+        <li><strong>File Categories:</strong>
+          <ul style="margin-top: 8px;">
+            <li>Acceptance Letter</li>
+            <li>Award Letter</li>
+            <li>Certificate</li>
+            <li>Appointment Letter</li>
+            <li>DOI Link/Proof</li>
+            <li>Meeting Agenda</li>
+            <li>Other Documents</li>
+          </ul>
+        </li>
+        <li><strong>File Types Accepted:</strong> PDF, DOC, DOCX, JPG, PNG (max 10MB per file)</li>
+        <li><strong>Admin Verification:</strong> Mark files as verified after review</li>
+        <li><strong>Preview & Download:</strong> View uploaded files inline or download</li>
+      </ul>
+    </section>
+
+    <section id="workflow">
+      <h2>5. Workflow System</h2>
+
+      <h3>What Was Built</h3>
+      <ul>
+        <li>Unified workflow for all submission types</li>
+        <li>3-tier approval: Faculty → Coordinator → Dean</li>
+        <li>Fallback routing when coordinator not assigned</li>
+        <li>Approve/reject/return actions</li>
+        <li>Complete audit trail via <code>ApprovalHistory</code></li>
+      </ul>
+
+      <h3>Workflow States</h3>
+      <p>draft → submitted → pending_coordinator → pending_dean → approved</p>
+      <p>Alternative paths: rejected, returned (for revision)</p>
+
+      <h3>Workflow Management Features</h3>
+      <ul>
+        <li><strong>Coordinator Assignment:</strong> Assign coordinators by college/department</li>
+        <li><strong>Dean Assignment:</strong> Assign deans by college</li>
+        <li><strong>Action Buttons:</strong> Approve, Reject, Return for Revision</li>
+        <li><strong>Comments Field:</strong> Add notes with each action</li>
+        <li><strong>History Timeline:</strong> Visual timeline of all approval actions</li>
+        <li><strong>Status Tracking:</strong> Real-time status updates for submitters</li>
+        <li><strong>Email Notifications:</strong> Automatic alerts at each workflow stage</li>
+        <li><strong>Bulk Actions:</strong> Process multiple submissions at once</li>
+      </ul>
+    </section>
+
+    <section id="frontend">
+      <h2>6. Frontend Changes</h2>
+
+      <h3>Admin Dashboard</h3>
+      <ul>
+        <li>Added Chart.js for visualization</li>
+        <li>Monthly submission charts</li>
+        <li>Publications by type chart</li>
+        <li>Grants by status chart</li>
+        <li>Statistics cards for all modules</li>
+        <li>Recent activity feed</li>
+      </ul>
+
+      <h3>Admin Views</h3>
+      <ul>
+        <li>DataTables integration for all list views</li>
+        <li>Filter by status, type, user, date</li>
+        <li>Approve/reject modals with comments</li>
+        <li>Workflow history timelines</li>
+        <li>Evidence file display</li>
+      </ul>
+
+      <h3>Dashboard Features Added</h3>
+      <ul>
+        <li><strong>Charts:</strong>
+          <ul style="margin-top: 8px;">
+            <li>Monthly Submissions Chart (Bar Chart)</li>
+            <li>Publications by Type (Pie Chart)</li>
+            <li>Grants by Status (Doughnut Chart)</li>
+            <li>Submissions by Type (Bar Chart)</li>
+          </ul>
+        </li>
+        <li><strong>Statistics Cards:</strong> Total submissions, approved count, pending count, total points</li>
+        <li><strong>Recent Activity Feed:</strong> Latest 10 submissions with status</li>
+        <li><strong>Quick Actions:</strong> Direct links to add new submissions</li>
+        <li><strong>Filter Options:</strong> Date range, status, type, user filters</li>
+        <li><strong>Export Functionality:</strong> Export data to Excel/PDF</li>
+      </ul>
+    </section>
+
+    <section id="fixes">
+      <h2>7. Bug Fixes & Improvements</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Issue</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>URL generation in subdirectory</td>
+            <td>Updated <code>AppServiceProvider</code> to auto-detect and force root URL</td>
+          </tr>
+          <tr>
+            <td>Asset loading issues</td>
+            <td>Injected BASE_URL and ASSET_URL in layouts for JavaScript</td>
+          </tr>
+          <tr>
+            <td>Faculty redirect loop</td>
+            <td>Fixed middleware to properly route faculty vs admin/coordinator/dean</td>
+          </tr>
+          <tr>
+            <td>Workflow routing</td>
+            <td>Implemented fallback when no coordinator assigned</td>
+          </tr>
+         
+        </tbody>
+      </table>
+
+    </section>
+
+    <section id="summary">
+      <h2>Summary</h2>
+      
+      <div class="success-box">
+        <h4>✅ Work Completed Till Feb 3, 2026  </h4>
+        <ul style="margin-top: 10px;">
+          <li>✓ Bonus Recognition module - complete</li>
+          <li>✓ RTN Submissions module - complete</li>
+          <li>✓ Grants workflow integration - complete</li>
+          <li>✓ Multiple evidence files - working across all modules</li>
+          <!-- <li>✓ Unified workflow system - 3-tier approval with fallbacks</li> -->
+          <li>✓ Admin dashboard with charts - complete</li>
+          <li>✓ Frontend improvements - responsive & functional</li>
+          <li>✓ Bug fixes - URL generation, routing, redirects</li>
+        </ul>
+      </div>
+
+      <div class="report-meta" style="margin-top: 20px;">
+        <div class="meta-item">
+          <strong>Report Date:</strong> February 3, 2026
+        </div>
+        <div class="meta-item">
+          <strong>Development Period:</strong> Jan 24 - Feb 3, 2026
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Print functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add print button
+      const header = document.querySelector('header');
+      const printBtn = document.createElement('button');
+      printBtn.textContent = '🖨️ Print/Save as PDF';
+      printBtn.style.cssText = 'margin-top: 15px; padding: 10px 20px; background: #2f5d62; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;';
+      printBtn.onclick = () => window.print();
+      header.appendChild(printBtn);
+
+      // Smooth scroll for TOC links
+      document.querySelectorAll('.toc a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

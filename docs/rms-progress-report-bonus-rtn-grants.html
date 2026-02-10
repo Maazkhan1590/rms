@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RMS Progress – Grants, RTN, Bonus & Workflow</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    body {
+      margin: 24px;
+      color: #1f2933;
+      background: #f7f9fb;
+    }
+    header {
+      border-bottom: 2px solid #2f5d62;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0; font-size: 24px; color: #1b4332; }
+    .subtitle { color: #52616b; margin-top: 6px; }
+    section { margin-bottom: 24px; }
+    h2 { font-size: 18px; margin-bottom: 10px; color: #1b4332; }
+    h3 { font-size: 15px; margin: 12px 0 6px; color: #0f3d3e; }
+    p { margin: 6px 0; line-height: 1.5; }
+    ul { margin-top: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-top: 8px;
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th {
+      background: #e8f4f2;
+      text-align: left;
+      color: #0f3d3e;
+    }
+    .status {
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      color: #0f3d3e;
+    }
+    .done { background: #d1fae5; color: #065f46; }
+    .partial { background: #fff3cd; color: #7c4a03; }
+    .pending { background: #fee2e2; color: #991b1b; }
+    .notes { color: #374151; }
+    code {
+      background: #edf2f7;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RMS Progress – Grants, RTN & Bonus, Workflow Changes</h1>
+    <div class="subtitle">
+      Updated: February 3, 2026
+    </div>
+  </header>
+
+  <section>
+    <h2>Summary</h2>
+    <p>
+      This report focuses specifically on the status and technical details of the
+      <strong>Grants</strong>, <strong>RTN (Return to Nature)</strong>, and
+      <strong>Bonus Recognition</strong> modules, and on the recent
+      <strong>workflow changes</strong> that connect these modules to the approval engine.
+    </p>
+    <ul>
+      <li>End‑to‑end grant, RTN, and bonus flows are wired into the common workflow and scoring services.</li>
+      <li>Admin interfaces for reviewing, approving, and returning submissions are live.</li>
+      <li>Faculty‑facing submission screens for these modules are aligned with publication flows (where implemented).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Grants Module – Detailed Working</h2>
+
+    <h3>Implementation Overview</h3>
+    <p class="notes">
+      Grant functionality is handled primarily via
+      <code>app/Http/Controllers/Admin/GrantController.php</code>,
+      <code>app/Http/Controllers/GrantController.php</code>, and related views under
+      <code>resources/views/admin/grants</code> and <code>resources/views/grants</code>.
+      Scoring logic is delegated to <code>app/Services/ScoringService.php</code> and workflows
+      to <code>app/Services/WorkflowService.php</code>.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 26%;">Area</th>
+          <th style="width: 16%;">Status</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Faculty grant submission</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            Faculty can submit grant records with metadata, amounts, dates, and evidence files.
+            Routes are protected so that only authenticated faculty can create/update their own grants.
+          </td>
+        </tr>
+        <tr>
+          <td>Admin grant review & approval</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            Admin screens show grant queues by status (pending, under review, approved, returned).
+            Actions to approve, reject, or return to faculty are exposed through the admin grant controller,
+            which internally calls the workflow service.
+          </td>
+        </tr>
+        <tr>
+          <td>Grant scoring & caps</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            <code>ScoringService</code> calculates scores for grants using policy‑driven rules
+            (category weights, maximum points per period, and aggregation with publications/RTN/bonus).
+          </td>
+        </tr>
+        <tr>
+          <td>Evidence & file handling</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            Grant records can attach evidence documents.
+            <code>FileUploadService</code> validates file size/type, stores files, and links them
+            via the evidence tables in the database.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>RTN & Bonus Recognition – Detailed Working</h2>
+
+    <h3>Implementation Overview</h3>
+    <p class="notes">
+      RTN submissions and bonus recognitions are managed via
+      <code>app/Http/Controllers/Admin/RtnSubmissionController.php</code>,
+      <code>app/Http/Controllers/Admin/BonusRecognitionController.php</code>,
+      their public/faculty counterparts, and views under
+      <code>resources/views/rtn-submissions</code> and
+      <code>resources/views/bonus-recognitions</code>.
+      Both modules share the same scoring and workflow engine as grants and publications.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 26%;">Flow</th>
+          <th style="width: 16%;">Status</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Faculty RTN submission</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            Faculty can submit RTN activities with structured metadata and attach supporting files.
+            Submissions are created in a <em>Draft</em> state and then sent into the workflow for review.
+          </td>
+        </tr>
+        <tr>
+          <td>Faculty bonus submission</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            Bonus recognition requests (awards, distinctions, etc.) are captured through dedicated forms.
+            Data is normalized so that bonus items can be scored and reported consistently alongside
+            publications and grants.
+          </td>
+        </tr>
+        <tr>
+          <td>Admin RTN & bonus review</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            Admin views provide filters by department, faculty member, and academic year.
+            From the detail screens, approvers can approve, reject, or return items with comments,
+            using the shared workflow actions.
+          </td>
+        </tr>
+        <tr>
+          <td>RTN & bonus scoring</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            <code>ScoringService</code> computes points for RTN and bonus items according to policy rules
+            (e.g., activity type, level, and caps).
+            Scores feed into overall faculty performance and reporting summaries.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Workflow Changes</h2>
+
+    <h3>Unified Workflow Model</h3>
+    <p class="notes">
+      The approval engine is centered on workflow entities and is coordinated by
+      <code>app/Http/Controllers/Admin/WorkflowController.php</code> and
+      <code>app/Services/WorkflowService.php</code>.
+      Recent changes ensure that publications, grants, RTN, and bonus items all use a
+      <strong>single, consistent workflow model</strong> with shared states and transitions.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 26%;">Area</th>
+          <th style="width: 16%;">Status</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Standardized workflow states</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            All modules now share a common set of states
+            (Draft, Submitted, Under Review, Approved, Returned, Rejected),
+            which simplifies both UI and reporting logic.
+          </td>
+        </tr>
+        <tr>
+          <td>Role‑based transitions</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            Transition rules are enforced so that only authorized roles
+            (faculty, HoD, Dean, central admin) can move items between specific states.
+            Routes and middleware have been aligned with these rules.
+          </td>
+        </tr>
+        <tr>
+          <td>Comments & return reasons</td>
+          <td><span class="status done">Completed</span></td>
+          <td class="notes">
+            When items are returned or rejected, approvers must supply comments.
+            These comments are stored with the workflow step and surfaced in faculty views,
+            closing the feedback loop for grants, RTN, and bonus submissions.
+          </td>
+        </tr>
+        <tr>
+          <td>Integration with scoring & reports</td>
+          <td><span class="status partial">Partially done</span></td>
+          <td class="notes">
+            Only <em>Approved</em> items are considered in scoring and reports.
+            Integration is in place, but additional summary and analytics views will be added
+            to the reporting dashboards.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Next Actions Specific to These Modules</h2>
+    <ul>
+      <li>Enhance analytics dashboards to show separate and combined trends for grants, RTN, and bonus recognitions.</li>
+      <li>Add more granular validation rules and user‑friendly error messages on all submission forms.</li>
+      <li>Expand automated test coverage for grant/RTN/bonus workflow transitions and scoring edge cases.</li>
+    </ul>
+  </section>
+</body>
+</html>
+
