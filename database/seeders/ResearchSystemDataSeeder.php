@@ -19,6 +19,7 @@ use App\Models\ResearchFellow;
 use App\Models\EditorialAppointment;
 use App\Models\SupervisionExam;
 use App\Models\StudentInvolvement;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class ResearchSystemDataSeeder extends Seeder
@@ -276,13 +277,35 @@ class ResearchSystemDataSeeder extends Seeder
                         if (!$user->password) {
                             $updateData['password'] = bcrypt('password');
                         }
-
                         $user->update($updateData);
                         $imported++;
                     } else {
                         // Create new user
+                        // Special handling for Staff_Master sheet: many rows have no email/employee_id
+                        if (
+                            empty($createData['email'])
+                            && empty($createData['employee_id'])
+                            && str_contains($sheetNameLower, 'staff_master')
+                        ) {
+                            // Generate a technical employee_id from the row number and ensure it's unique
+                            $baseEmployeeId = 'SM' . str_pad((string) $row, 4, '0', STR_PAD_LEFT);
+                            $generatedEmployeeId = $baseEmployeeId;
+                            $suffix = 1;
+
+                            while (User::where('employee_id', $generatedEmployeeId)->exists()) {
+                                $generatedEmployeeId = $baseEmployeeId . '_' . $suffix;
+                                $suffix++;
+                            }
+
+                            $createData['employee_id'] = $generatedEmployeeId;
+                            $createData['email'] = $generatedEmployeeId . '@example.com';
+                        }
+
+                        // If we still don't have an email, derive it from employee_id if possible
                         if (empty($createData['email'])) {
-                            if ($employeeId) {
+                            if (!empty($createData['employee_id'])) {
+                                $createData['email'] = $createData['employee_id'] . '@example.com';
+                            } elseif ($employeeId) {
                                 $createData['email'] = $employeeId . '@example.com';
                             } else {
                                 $skipped++;
@@ -290,11 +313,21 @@ class ResearchSystemDataSeeder extends Seeder
                             }
                         }
 
-                        // Check if email already exists (double check)
-                        if (User::where('email', $createData['email'])->exists()) {
-                            $skipped++;
-                            continue;
+                        // Ensure email is unique in DB by adjusting if needed (instead of skipping)
+                        $baseEmail = $createData['email'];
+                        $emailLocal = $baseEmail;
+                        $emailDomain = 'example.com';
+                        if (str_contains($baseEmail, '@')) {
+                            [$emailLocal, $emailDomain] = explode('@', $baseEmail, 2);
                         }
+
+                        $suffix = 1;
+                        $finalEmail = $emailLocal . '@' . $emailDomain;
+                        while (User::where('email', $finalEmail)->exists()) {
+                            $finalEmail = $emailLocal . $suffix . '@' . $emailDomain;
+                            $suffix++;
+                        }
+                        $createData['email'] = $finalEmail;
 
                         // Set defaults for new user
                         $createData['name'] = $createData['name'] ?? 'Unknown';
@@ -315,6 +348,8 @@ class ResearchSystemDataSeeder extends Seeder
             DB::commit();
             $skipReason = $skipped > 0 ? " (skipped: {$skipped} existing/system users preserved)" : "";
             $this->command->info("  Imported: {$imported}, Failed: {$failed}{$skipReason}");
+            // Debug: show total users after importing this user/staff sheet
+            $this->command->info("  Users in DB after '{$sheetName}': " . User::count());
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
@@ -488,13 +523,14 @@ class ResearchSystemDataSeeder extends Seeder
                         continue;
                     }
 
-                    // Find author user
+                    // Find or create author user
                     $author = null;
                     if ($employeeId) {
                         $author = User::where('employee_id', $employeeId)->first();
                     }
                     if (!$author && $authorName) {
-                        $author = User::where('name', 'like', "%{$authorName}%")->first();
+                        // Try to find by name, or create a user if not found
+                        $author = $this->findOrCreateUserByName($authorName, $faculty);
                     }
 
                     // Map publication type
@@ -713,10 +749,10 @@ class ResearchSystemDataSeeder extends Seeder
                         $title = "Grant Application - {$staffName}";
                     }
 
-                    // Find staff user
+                    // Find or create staff user
                     $user = null;
                     if ($staffName) {
-                        $user = User::where('name', 'like', "%{$staffName}%")->first();
+                        $user = $this->findOrCreateUserByName($staffName, $faculty);
                     }
 
                     // Determine grant type from sheet name
@@ -1872,6 +1908,70 @@ class ResearchSystemDataSeeder extends Seeder
         }
 
         return null;
+    }
+
+    /**
+     * Find existing user by name or create a new one with a generated email.
+     * This is used when other sheets (publications, grants, etc.) reference staff
+     * who are not present in the Staff_Master sheet as full user records.
+     */
+    protected function findOrCreateUserByName(string $name, ?string $collegeName = null, ?string $departmentName = null): ?User
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return null;
+        }
+
+        // Try to find by exact name first
+        $user = User::where('name', $name)->first();
+        if ($user) {
+            return $user;
+        }
+
+        // Then try a fuzzy match
+        $user = User::where('name', 'like', "%{$name}%")->first();
+        if ($user) {
+            return $user;
+        }
+
+        // Generate a unique technical email from the name
+        $baseLocalPart = Str::slug($name, '.');
+        if ($baseLocalPart === '') {
+            $baseLocalPart = 'user';
+        }
+
+        $email = $baseLocalPart . '@example.com';
+        $suffix = 1;
+        while (User::where('email', $email)->exists()) {
+            $email = $baseLocalPart . $suffix . '@example.com';
+            $suffix++;
+        }
+
+        $data = [
+            'name'   => $name,
+            'email'  => $email,
+            'status' => 'active',
+            'password' => bcrypt('password'),
+        ];
+
+        // Optionally resolve college and department from provided names
+        if ($collegeName) {
+            $college = College::where('name', 'like', "%{$collegeName}%")->first();
+            if ($college) {
+                $data['college_id'] = $college->id;
+            }
+        }
+
+        if ($departmentName && isset($data['college_id'])) {
+            $department = Department::where('name', 'like', "%{$departmentName}%")
+                ->where('college_id', $data['college_id'])
+                ->first();
+            if ($department) {
+                $data['department_id'] = $department->id;
+            }
+        }
+
+        return User::create($data);
     }
 
     /**
