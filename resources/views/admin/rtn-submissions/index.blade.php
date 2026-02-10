@@ -28,22 +28,22 @@
                 </h3>
             </div>
             <div style="margin-top: 10px; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <a href="{{ route('rtn-submissions.create') }}" class="btn btn-sm btn-primary">
-                    <span class="material-icons-outlined">add</span> Create RTN Submission
-                </a>
-                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}" 
+{{--                <a href="{{ route('rtn-submissions.create') }}" class="btn btn-sm btn-primary">--}}
+{{--                    <span class="material-icons-outlined">add</span> Create RTN Submission--}}
+{{--                </a>--}}
+                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}"
                    class="btn btn-sm {{ request('status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
                     <span class="material-icons-outlined">schedule</span> Pending
                 </a>
-                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}" 
+                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}"
                    class="btn btn-sm {{ request('status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
                     <span class="material-icons-outlined">check_circle</span> Approved
                 </a>
-                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'rejected'])) }}" 
+                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'rejected'])) }}"
                    class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
                     <span class="material-icons-outlined">cancel</span> Rejected
                 </a>
-                <a href="{{ route('admin.rtn-submissions.index', request()->except('status')) }}" 
+                <a href="{{ route('admin.rtn-submissions.index', request()->except('status')) }}"
                    class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
                     <span class="material-icons-outlined">list</span> All
                 </a>
@@ -56,7 +56,7 @@
         <form method="GET" action="{{ route('admin.rtn-submissions.index') }}" style="margin-bottom: 20px;">
             <div class="row">
                 <div class="col-md-3">
-                    <input type="text" name="search" class="form-control" placeholder="Search RTN submissions..." 
+                    <input type="text" name="search" class="form-control" placeholder="Search RTN submissions..."
                            value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
@@ -275,7 +275,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="reject_reason">Reason (Optional)</label>
-                        <textarea class="form-control" id="reject_reason" name="reason" rows="3" 
+                        <textarea class="form-control" id="reject_reason" name="reason" rows="3"
                                   placeholder="Enter reason for rejection..."></textarea>
                     </div>
                 </div>
