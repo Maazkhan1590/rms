@@ -5,8 +5,11 @@
     use Illuminate\Support\Facades\Storage;
 @endphp
 <div class="card">
-    <div class="card-header">
-        <h3><i class="fas fa-file-alt"></i> RTN Submission Details</h3>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">
+            <span class="material-icons-outlined" style="vertical-align: middle;">description</span>
+            <span style="vertical-align: middle;">RTN Submission Details</span>
+        </h3>
     </div>
     <div class="card-body">
         <div class="row">
@@ -90,7 +93,10 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5><i class="fas fa-sitemap"></i> Workflow Information</h5>
+                        <h5 class="mb-0">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">account_tree</span>
+                            <span style="vertical-align: middle;">Workflow Information</span>
+                        </h5>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered">
@@ -99,19 +105,23 @@
                                 <td>
                                     @if($workflow->status == 'pending_coordinator')
                                         <span class="badge badge-warning">
-                                            <i class="fas fa-user-tie"></i> Pending Coordinator Approval
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">supervisor_account</span>
+                                            Pending Coordinator Approval
                                         </span>
                                     @elseif($workflow->status == 'pending_dean')
                                         <span class="badge badge-info">
-                                            <i class="fas fa-user-graduate"></i> Pending Dean Approval
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">school</span>
+                                            Pending Dean Approval
                                         </span>
                                     @elseif($workflow->status == 'approved')
                                         <span class="badge badge-success">
-                                            <i class="fas fa-check-circle"></i> Approved
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">check_circle</span>
+                                            Approved
                                         </span>
                                     @elseif($workflow->status == 'rejected')
                                         <span class="badge badge-danger">
-                                            <i class="fas fa-times-circle"></i> Rejected
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">cancel</span>
+                                            Rejected
                                         </span>
                                     @else
                                         <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $workflow->status)) }}</span>
@@ -127,7 +137,10 @@
                         </table>
 
                         @if($workflow->history && $workflow->history->count() > 0)
-                        <h6 class="mt-3 mb-2"><i class="fas fa-history"></i> Approval History</h6>
+                        <h6 class="mt-3 mb-2">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">history</span>
+                            <span style="vertical-align: middle;">Approval History</span>
+                        </h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered">
                                 <thead>
@@ -170,7 +183,10 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5><i class="fas fa-paperclip"></i> Evidence Files ({{ $evidenceFiles->count() }})</h5>
+                        <h5 class="mb-0">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">attach_file</span>
+                            <span style="vertical-align: middle;">Evidence Files ({{ $evidenceFiles->count() }})</span>
+                        </h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -205,12 +221,14 @@
                                         <td>{{ $file->uploaded_at ? $file->uploaded_at->format('Y-m-d H:i') : 'N/A' }}</td>
                                         <td>
                                             @if($file->file_type === 'text/url')
-                                                <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-external-link-alt"></i> Open URL
+                                                <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                    Open URL
                                                 </a>
                                             @else
-                                                <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-download"></i> Download
+                                                <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">download</span>
+                                                    Download
                                                 </a>
                                             @endif
                                         </td>
@@ -226,18 +244,21 @@
         @endif
         
         <div style="margin-top: 20px;">
-            <a href="{{ route('admin.rtn-submissions.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to List
+            <a href="{{ route('admin.rtn-submissions.index') }}" class="btn btn-outline-secondary btn-sm">
+                <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
+                <span style="vertical-align: middle;">Back to List</span>
             </a>
             @if(in_array($rtnSubmission->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
                 <form action="{{ route('admin.rtn-submissions.approve', $rtnSubmission->id) }}" method="POST" style="display: inline;">
                     @csrf
-                    <button type="submit" class="btn btn-success" onclick="return confirm('Approve this RTN submission? This will allocate 5 points.');">
-                        <i class="fas fa-check"></i> Approve Submission
+                    <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Approve this RTN submission? This will allocate 5 points.');">
+                        <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">check_circle</span>
+                        <span style="vertical-align: middle;">Approve Submission</span>
                     </button>
                 </form>
-                <button type="button" class="btn btn-danger" onclick="showRejectModal()">
-                    <i class="fas fa-times"></i> Reject Submission
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="showRejectModal()">
+                    <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">cancel</span>
+                    <span style="vertical-align: middle;">Reject Submission</span>
                 </button>
             @endif
         </div>
