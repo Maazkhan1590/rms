@@ -10,18 +10,13 @@
         <div class="btn-toolbar" role="toolbar">
             <div class="btn-group btn-group-sm mr-2" role="group">
                 <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary" title="{{ trans('global.back_to_list') }}" aria-label="{{ trans('global.back_to_list') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M14 5L8 11L14 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <span class="material-icons-outlined">arrow_back</span>
                 </a>
             </div>
             <div class="btn-group btn-group-sm" role="group">
                 @can('user_edit')
                     <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-outline-primary" title="{{ trans('global.edit') }}" aria-label="{{ trans('global.edit') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M7 20H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                            <path d="M7 14.5L15.75 5.75L18.75 8.75L10 17.5L7 17.5V14.5Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-                        </svg>
+                        <span class="material-icons-outlined">edit</span>
                     </a>
                 @endcan
                 @can('user_delete')
@@ -29,12 +24,7 @@
                         @method('DELETE')
                         @csrf
                         <button type="submit" class="btn btn-outline-danger" title="{{ trans('global.delete') }}" aria-label="{{ trans('global.delete') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 10V17M15 10V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                                <path d="M6 7H18L17.2 18.2C17.12 19.3 16.2 20.15 15.09 20.15H8.91C7.8 20.15 6.88 19.3 6.8 18.2L6 7Z" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-                                <path d="M9 4H15C15.55 4 16 4.45 16 5V6H8V5C8 4.45 8.45 4 9 4Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M5 6H19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                            </svg>
+                            <span class="material-icons-outlined">delete</span>
                         </button>
                     </form>
                 @endcan

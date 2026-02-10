@@ -173,36 +173,24 @@
                                             <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this user? An email notification will be sent.');">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                                        <path d="M6.00039 10.7998L3.20039 7.9998L2.26606 8.93313L6.00039 12.6665L14.0004 4.66647L13.0671 3.73314L6.00039 10.7998Z" fill="currentColor"/>
-                                                    </svg>
+                                                    <span class="material-icons-outlined">check_circle</span>
                                                 </button>
                                             </form>
                                             <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#rejectModal{{ $user->id }}" title="Reject" aria-label="Reject">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                                    <path d="M4.222 4.222L11.778 11.778M11.778 4.222L4.222 11.778" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                                                </svg>
+                                                <span class="material-icons-outlined">cancel</span>
                                             </button>
                                         @endcan
                                     @endif
 
                                     @can('user_show')
                                         <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.users.show', $user->id) }}" title="{{ trans('global.view') }}" aria-label="{{ trans('global.view') }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                                <path d="M12 5C7 5 3.3 8.11 2 12C3.3 15.89 7 19 12 19C17 19 20.7 15.89 22 12C20.7 8.11 17 5 12 5Z" fill="currentColor" fill-opacity="0.12"/>
-                                                <path d="M12 9.25C10.48 9.25 9.25 10.48 9.25 12C9.25 13.52 10.48 14.75 12 14.75C13.52 14.75 14.75 13.52 14.75 12C14.75 10.48 13.52 9.25 12 9.25Z" fill="currentColor"/>
-                                                <path d="M2 12C3.3 8.11 7 5 12 5C17 5 20.7 8.11 22 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
+                                            <span class="material-icons-outlined">visibility</span>
                                         </a>
                                     @endcan
 
                                     @can('user_edit')
                                         <a class="btn btn-sm btn-outline-info" href="{{ route('admin.users.edit', $user->id) }}" title="{{ trans('global.edit') }}" aria-label="{{ trans('global.edit') }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                                <path d="M15.75 4.25L18.75 7.25L9 17H6V14L15.75 4.25Z" fill="currentColor" fill-opacity="0.15"/>
-                                                <path d="M15.75 4.25L18.75 7.25M7 20H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M6 14L15.75 4.25L18.75 7.25L9 17H6V14Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-                                            </svg>
+                                            <span class="material-icons-outlined">edit</span>
                                         </a>
                                     @endcan
 
@@ -211,12 +199,7 @@
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ trans('global.delete') }}" aria-label="{{ trans('global.delete') }}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                                    <path d="M9 10V17M15 10V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                                                    <path d="M6 7H18L17.2 18.2C17.12 19.3 16.2 20.15 15.09 20.15H8.91C7.8 20.15 6.88 19.3 6.8 18.2L6 7Z" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-                                                    <path d="M9 4H15C15.55 4 16 4.45 16 5V6H8V5C8 4.45 8.45 4 9 4Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    <path d="M5 6H19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                                                </svg>
+                                                <span class="material-icons-outlined">delete</span>
                                             </button>
                                         </form>
                                     @endcan
