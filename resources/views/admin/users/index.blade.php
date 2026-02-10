@@ -53,12 +53,9 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <table class=" table table-bordered table-striped table-hover datatable datatable-User">
+            <table class=" table table-bordered table-striped table-hover datatable datatable-User" style="min-width: 1400px;">
                 <thead>
                     <tr>
-                        <th width="10">
-
-                        </th>
                         <th>
                             {{ trans('cruds.user.fields.id') }}
                         </th>
@@ -70,6 +67,27 @@
                         </th>
                         <th>
                             {{ trans('cruds.user.fields.email_verified_at') }}
+                        </th>
+                        <th>
+                            Google Scholar
+                        </th>
+                        <th>
+                            Citations
+                        </th>
+                        <th>
+                            H-index
+                        </th>
+                        <th>
+                            Scopus Link
+                        </th>
+                        <th>
+                            Sohar Affiliation
+                        </th>
+                        <th>
+                            ORCID Connected
+                        </th>
+                        <th>
+                            Scopus Papers
                         </th>
                         <th>
                             {{ trans('cruds.user.fields.roles') }}
@@ -86,9 +104,6 @@
                     @foreach($users as $key => $user)
                         <tr data-entry-id="{{ $user->id }}">
                             <td>
-
-                            </td>
-                            <td>
                                 {{ $user->id ?? '' }}
                             </td>
                             <td>
@@ -99,6 +114,31 @@
                             </td>
                             <td>
                                 {{ $user->email_verified_at ?? '' }}
+                            </td>
+                            <td>
+                                @if($user->google_scholar)
+                                    <a href="{{ $user->google_scholar }}" target="_blank" rel="noopener noreferrer">Profile</a>
+                                @endif
+                            </td>
+                            <td>
+                                {{ $user->citation_number ?? '' }}
+                            </td>
+                            <td>
+                                {{ $user->h_index ?? '' }}
+                            </td>
+                            <td>
+                                @if($user->research_gate)
+                                    <a href="{{ $user->research_gate }}" target="_blank" rel="noopener noreferrer">Scopus</a>
+                                @endif
+                            </td>
+                            <td>
+                                {{ $user->sohar_affiliation ?? '' }}
+                            </td>
+                            <td>
+                                {{ $user->orcid_connected ?? '' }}
+                            </td>
+                            <td>
+                                {{ $user->scopus_papers ?? '' }}
                             </td>
                             <td>
                                 @foreach($user->roles as $key => $item)
@@ -201,50 +241,28 @@
 @parent
 <script>
     $(function () {
-  let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('user_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
-  let deleteButton = {
-    text: deleteButtonTrans,
-    url: "{{ route('admin.users.massDestroy') }}",
-    className: 'btn-danger',
-    action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-          return $(entry).data('entry-id')
-      });
+        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 
-      if (ids.length === 0) {
-        alert('{{ trans('global.datatables.zero_selected') }}')
+        $.extend(true, $.fn.dataTable.defaults, {
+            orderCellsTop: true,
+            order: [[ 0, 'desc' ]],
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        });
 
-        return
-      }
-
-      if (confirm('{{ trans('global.areYouSure') }}')) {
-        $.ajax({
-          headers: {'x-csrf-token': _token},
-          method: 'POST',
-          url: config.url,
-          data: { ids: ids, _method: 'DELETE' }})
-          .done(function () { location.reload() })
-      }
-    }
-  }
-  dtButtons.push(deleteButton)
-@endcan
-
-    $.extend(true, $.fn.dataTable.defaults, {
-        orderCellsTop: true,
-        order: [[ 1, 'desc' ]],
-        pageLength: 10,
-        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-    });
-  let table = $('.datatable-User:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-  $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
-      $($.fn.dataTable.tables(true)).DataTable()
-          .columns.adjust();
-  });
-  
-})
+        let table = $('.datatable-User:not(.ajaxTable)').DataTable({
+            buttons: dtButtons,
+            // Disable row selection / checkboxes for this table
+            select: false,
+            columnDefs: [
+                { targets: -1, orderable: false, searchable: false, responsivePriority: 1 }
+            ]
+        })
+        $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
+            $($.fn.dataTable.tables(true)).DataTable()
+                .columns.adjust();
+        });
+    })
 
 </script>
 @endsection
