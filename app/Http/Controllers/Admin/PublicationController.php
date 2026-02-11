@@ -393,29 +393,31 @@ class PublicationController extends Controller
                 $workflow = $this->workflowService->createWorkflow('publication', $publication->id, $publication->submitter ?? auth()->user());
                 
                 // If publication is already submitted (not draft), submit the workflow
-                if (in_array($publication->status, ['submitted', 'pending_coordinator', 'pending_dean'])) {
+                if (in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])) {
+                    $workflow = $this->workflowService->submitWorkflow($workflow);
+                }
+            } else {
+                // If workflow exists but was never properly submitted/assigned, ensure it is submitted
+                if (
+                    in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']) &&
+                    in_array($workflow->status, ['draft', 'submitted']) &&
+                    empty($workflow->assigned_to)
+                ) {
                     $workflow = $this->workflowService->submitWorkflow($workflow);
                 }
             }
 
-            // Check if user can approve this workflow step (STRICT - NO ADMIN BYPASS)
+            // Check if user can approve this workflow step (STRICT - must be current assignee)
             $user = auth()->user();
-            $canApprove = false;
-            
-            // User must be assigned to the workflow step OR have the correct role for the step
-            if ($workflow->assigned_to == $user->id) {
-                $canApprove = true; // User is assigned to this workflow step
-            } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
-                $canApprove = true; // Coordinator can approve coordinator step
-            } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
-                $canApprove = true; // Dean can approve dean step
-            }
-            // Admins CANNOT bypass workflow - they must be assigned or have coordinator/dean role
+            $canApprove = !empty($workflow)
+                && !empty($workflow->assigned_to)
+                && intval($workflow->assigned_to) === intval($user->id)
+                && in_array($workflow->status, ['pending_coordinator', 'pending_dean'], true);
             
             if (!$canApprove) {
                 \DB::rollBack();
                 return redirect()->back()
-                    ->with('error', 'You are not authorized to approve this publication. Only the assigned Coordinator or Dean can approve at the current workflow step.');
+                    ->with('error', 'You are not authorized to approve this publication. Only the currently assigned approver can approve at the current workflow step.');
             }
 
             if ($workflow) {
@@ -510,15 +512,42 @@ class PublicationController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Find workflow if exists
+            // Find workflow - create/submit if doesn't exist (to determine current assignee)
             $workflow = ApprovalWorkflow::where('submission_type', 'publication')
                 ->where('submission_id', $publication->id)
                 ->first();
 
-            if ($workflow) {
-                // Use workflow service to reject
-                $this->workflowService->rejectWorkflow($workflow, auth()->user(), $request->reason ?? 'Rejected by admin');
+            if (!$workflow) {
+                $workflow = $this->workflowService->createWorkflow('publication', $publication->id, $publication->submitter ?? auth()->user());
+
+                if (in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])) {
+                    $workflow = $this->workflowService->submitWorkflow($workflow);
+                }
+            } else {
+                if (
+                    in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']) &&
+                    in_array($workflow->status, ['draft', 'submitted']) &&
+                    empty($workflow->assigned_to)
+                ) {
+                    $workflow = $this->workflowService->submitWorkflow($workflow);
+                }
             }
+
+            // Authorization: only current assignee can reject at current step
+            $user = auth()->user();
+            $canReject = !empty($workflow)
+                && !empty($workflow->assigned_to)
+                && intval($workflow->assigned_to) === intval($user->id)
+                && in_array($workflow->status, ['pending_coordinator', 'pending_dean'], true);
+
+            if (!$canReject) {
+                \DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'You are not authorized to reject this publication. Only the currently assigned approver can reject at the current workflow step.');
+            }
+
+            // Use workflow service to reject
+            $this->workflowService->rejectWorkflow($workflow, $user, $request->reason ?? 'Rejected at workflow step');
 
             // Update publication status
             $oldStatus = $publication->status;

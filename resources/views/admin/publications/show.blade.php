@@ -315,8 +315,70 @@
                 <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
                 <span style="vertical-align: middle;">Back to List</span>
             </a>
+            @php
+                $authUser = auth()->user();
+                $isAwaitingApproval = in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']);
+                $canApproveAtCurrentStep = false;
+
+                // STRICT WORKFLOW UI:
+                // - If workflow exists: only the current assignee can approve/reject
+                // - If workflow does not exist yet: predict default/fallback assignee from WorkflowAssignment
+                if ($isAwaitingApproval) {
+                    if ($workflow) {
+                        $canApproveAtCurrentStep = !empty($workflow->assigned_to) && intval($workflow->assigned_to) === intval($authUser->id);
+                    } else {
+                        $college = $publication->college ?? ($publication->submitter->college->name ?? null);
+                        $department = $publication->department ?? ($publication->submitter->department->name ?? null);
+
+                        // Predict coordinator (default workflow)
+                        $coordinatorAssignment = \App\Models\WorkflowAssignment::active()
+                            ->forRole('research_coordinator')
+                            ->where('college', $college)
+                            ->where('department', $department)
+                            ->first();
+
+                        if (!$coordinatorAssignment) {
+                            $coordinatorAssignment = \App\Models\WorkflowAssignment::active()
+                                ->forRole('research_coordinator')
+                                ->where('college', $college)
+                                ->whereNull('department')
+                                ->first();
+                        }
+
+                        if (!$coordinatorAssignment) {
+                            $coordinatorAssignment = \App\Models\WorkflowAssignment::active()
+                                ->forRole('research_coordinator')
+                                ->whereNull('college')
+                                ->whereNull('department')
+                                ->first();
+                        }
+
+                        if ($coordinatorAssignment) {
+                            $canApproveAtCurrentStep = intval($coordinatorAssignment->user_id) === intval($authUser->id);
+                        } else {
+                            // Fallback workflow: no coordinator assigned -> dean
+                            $deanAssignment = \App\Models\WorkflowAssignment::active()
+                                ->forRole('dean')
+                                ->where('college', $college)
+                                ->first();
+
+                            if (!$deanAssignment) {
+                                $deanAssignment = \App\Models\WorkflowAssignment::active()
+                                    ->forRole('dean')
+                                    ->whereNull('college')
+                                    ->first();
+                            }
+
+                            if ($deanAssignment) {
+                                $canApproveAtCurrentStep = intval($deanAssignment->user_id) === intval($authUser->id);
+                            }
+                        }
+                    }
+                }
+            @endphp
+
             @can('publication_approve')
-                @if(in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
+                @if($canApproveAtCurrentStep)
                     <form action="{{ route('admin.publications.approve', $publication->id) }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Approve this publication? This will calculate and assign points.')">
