@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .researcher-profile-body {
-        padding: 3.75rem 0 3.5rem;
+        padding: 6.75rem 0 3.5rem;
         background: #f3f4f6;
     }
     .researcher-profile-card {

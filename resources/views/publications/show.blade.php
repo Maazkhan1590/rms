@@ -2,311 +2,535 @@
 
 @section('title', $publication->title . ' | Academic Research Portal')
 
-@section('content')
-<section class="auth-section" style="padding-top: 4rem; padding-bottom: 4rem;">
-    <div class="container">
-        <div class="auth-container" style="max-width: 960px; box-shadow: 0 18px 40px rgba(15,23,42,0.12); border-radius: 18px;">
-            <div class="auth-header" style="margin-bottom: 1.5rem;">
-                <a href="{{ route('publications.index') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-light); text-decoration: none; margin-bottom: 1.25rem; font-weight: 500;">
-                    <i class="fas fa-arrow-left"></i> Back to Publications
-                </a>
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1.5rem;">
-                    <div style="flex:1;">
-                        <h1 style="font-size: 2rem; margin-bottom: 0.35rem; color: var(--text-color); line-height: 1.3;">
-                            {{ $publication->title ?? 'Untitled Publication' }}
-                        </h1>
-            @php
-                $authorNames = [];
-                if ($publication->authors && is_array($publication->authors)) {
-                    foreach ($publication->authors as $author) {
-                        $authorNames[] = $author['name'] ?? (is_string($author) ? $author : '');
-                    }
-                }
-                if (empty($authorNames) && $publication->submitter) {
-                    $authorNames[] = $publication->submitter->name;
-                }
-                if (empty($authorNames) && $publication->primaryAuthor) {
-                    $authorNames[] = $publication->primaryAuthor->name;
-                }
-            @endphp
-                        @if(!empty($authorNames))
-                        <div style="display:flex; flex-wrap:wrap; gap:0.75rem; color: var(--text-light); margin-bottom: .5rem; font-size:.95rem;">
-                            <span style="font-weight:600;">Authors:</span>
-                            <span>{{ implode(', ', array_filter($authorNames)) }}</span>
-                        </div>
-                        @endif
-                        <div style="display:flex; flex-wrap:wrap; gap:1.25rem; color: var(--text-light); font-size: 0.9rem; margin-top:.35rem;">
-                            @if($publication->publication_year || $publication->year)
-                                <div><strong>Year:</strong> {{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</div>
-                            @endif
-                            @if($publication->journal_name)
-                                <div><strong>Journal:</strong> {{ $publication->journal_name }}</div>
-                            @endif
-                            @if($publication->conference_name)
-                                <div><strong>Conference:</strong> {{ $publication->conference_name }}</div>
-                            @endif
-                        </div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="margin-bottom:.5rem;">
-                            <span style="display:inline-block; padding:.35rem .9rem; border-radius:999px; background:#eff6ff; color:#1d4ed8; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em;">
-                                {{ strtoupper(str_replace('_', ' ', $publication->publication_type ?? 'Publication')) }}
-                            </span>
-                        </div>
-                        @if($publication->status)
-                            <span style="display:inline-block; padding:.35rem .9rem; border-radius:999px; background: {{ $publication->status === 'approved' ? '#22c55e' : ($publication->status === 'submitted' || $publication->status === 'pending' ? '#eab308' : '#6b7280') }}; color:#fff; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em;">
-                                {{ ucfirst($publication->status) }}
-                            </span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Main Content -->
-            <div style="margin-top: 2rem;">
-                <!-- Abstract Section -->
-                <div style="margin-bottom: 3rem;">
-                    <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.75rem;">
-                        <i class="fas fa-file-alt" style="color: var(--accent-color);"></i>
-                        Abstract
-                    </h2>
-                    @if($publication->abstract)
-                    <p style="color: var(--text-color); line-height: 1.9; font-size: 1.05rem; text-align: justify;">
-                        {{ $publication->abstract }}
-                    </p>
-                    @else
-                    <p style="color: var(--text-light); font-style: italic; line-height: 1.9; font-size: 1.05rem;">
-                        No abstract available for this publication.
-                    </p>
-                    @endif
-                </div>
-
-                <!-- Publication Details Grid -->
-                @php
-                    $hasDetails = $publication->journal_name || $publication->journal || $publication->conference_name || 
-                                  $publication->publisher || $publication->doi || $publication->isbn || $publication->status;
-                @endphp
-                @if($hasDetails)
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; padding: 1.75rem 2rem; background: var(--light-color); border-radius: 15px; border: 1px solid var(--border-color);">
-                    @if($publication->journal_name || $publication->journal)
-                    <div style="padding: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            <i class="fas fa-book" style="color: var(--accent-color); font-size: 1.25rem;"></i>
-                            <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Journal</strong>
-                        </div>
-                        <p style="color: var(--text-light); margin: 0; font-size: 1rem; line-height: 1.6;">{{ $publication->journal_name ?? $publication->journal ?? 'N/A' }}</p>
-                        @if($publication->journal_category)
-                        <span style="display: inline-block; margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: var(--accent-color); color: var(--primary-color); border-radius: 15px; font-size: 0.8rem; font-weight: 600;">
-                            {{ ucfirst(str_replace('_', ' ', $publication->journal_category)) }}
-                        </span>
-                        @endif
-                        @if($publication->quartile)
-                        <span style="display: inline-block; margin-top: 0.5rem; margin-left: 0.5rem; padding: 0.25rem 0.75rem; background: var(--primary-color); color: white; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">
-                            {{ $publication->quartile }}
-                        </span>
-                        @endif
-                    </div>
-                    @endif
-
-                    @if($publication->conference_name)
-                    <div style="padding: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            <i class="fas fa-users" style="color: var(--accent-color); font-size: 1.25rem;"></i>
-                            <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Conference</strong>
-                        </div>
-                        <p style="color: var(--text-light); margin: 0; font-size: 1rem; line-height: 1.6;">{{ $publication->conference_name }}</p>
-                    </div>
-                    @endif
-
-                    @if($publication->publisher)
-                    <div style="padding: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            <i class="fas fa-building" style="color: var(--accent-color); font-size: 1.25rem;"></i>
-                            <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Publisher</strong>
-                        </div>
-                        <p style="color: var(--text-light); margin: 0; font-size: 1rem; line-height: 1.6;">{{ $publication->publisher }}</p>
-                    </div>
-                    @endif
-
-                    @if($publication->doi)
-                    <div style="padding: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            <i class="fas fa-hashtag" style="color: var(--accent-color); font-size: 1.25rem;"></i>
-                            <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">DOI</strong>
-                        </div>
-                        <p style="color: var(--text-light); margin: 0; font-size: 1rem; line-height: 1.6;">
-                            <a href="https://doi.org/{{ $publication->doi }}" target="_blank" style="color: var(--accent-color); text-decoration: none; word-break: break-all;">
-                                {{ $publication->doi }}
-                                <i class="fas fa-external-link-alt" style="font-size: 0.75rem; margin-left: 0.25rem;"></i>
-                            </a>
-                        </p>
-                    </div>
-                    @endif
-
-                    @if($publication->isbn)
-                    <div style="padding: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            <i class="fas fa-barcode" style="color: var(--accent-color); font-size: 1.25rem;"></i>
-                            <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">ISBN</strong>
-                        </div>
-                        <p style="color: var(--text-light); margin: 0; font-size: 1rem; line-height: 1.6;">{{ $publication->isbn }}</p>
-                    </div>
-                    @endif
-
-                    @if($publication->status)
-                    <div style="padding: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            <i class="fas fa-info-circle" style="color: var(--accent-color); font-size: 1.25rem;"></i>
-                            <strong style="color: var(--primary-color); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Status</strong>
-                        </div>
-                        <span style="display: inline-block; padding: 0.5rem 1rem; background: {{ $publication->status === 'approved' ? '#22c55e' : ($publication->status === 'pending' || $publication->status === 'submitted' ? '#eab308' : ($publication->status === 'rejected' ? '#ef4444' : '#6b7280')) }}; color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">
-                            {{ ucfirst($publication->status) }}
-                        </span>
-                    </div>
-                    @endif
-                </div>
-                @endif
-
-                <!-- Authors Section -->
-                @php
-                    $allAuthors = [];
-                    if ($publication->authors && is_array($publication->authors)) {
-                        foreach ($publication->authors as $author) {
-                            $name = $author['name'] ?? (is_string($author) ? $author : '');
-                            if ($name) $allAuthors[] = $name;
-                        }
-                    }
-                    if ($publication->co_authors && is_array($publication->co_authors)) {
-                        foreach ($publication->co_authors as $coAuthor) {
-                            $name = $coAuthor['name'] ?? (is_string($coAuthor) ? $coAuthor : '');
-                            if ($name && !in_array($name, $allAuthors)) $allAuthors[] = $name;
-                        }
-                    }
-                    if (empty($allAuthors) && $publication->submitter) {
-                        $allAuthors[] = $publication->submitter->name;
-                    }
-                    if (empty($allAuthors) && $publication->primaryAuthor) {
-                        $allAuthors[] = $publication->primaryAuthor->name;
-                    }
-                @endphp
-                @if(!empty($allAuthors))
-                <div style="margin-bottom: 3rem;">
-                    <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.75rem;">
-                        <i class="fas fa-users" style="color: var(--accent-color);"></i>
-                        Authors
-                    </h2>
-                    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-                        @foreach($allAuthors as $authorName)
-                        <div style="background: var(--light-color); padding: 1rem 1.5rem; border-radius: 15px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
-                            <i class="fas fa-user-circle" style="color: var(--accent-color); font-size: 1.5rem;"></i>
-                            <span style="color: var(--text-color); font-weight: 500; font-size: 1rem;">
-                                {{ $authorName }}
-                            </span>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-
-                <!-- Submission Info -->
-                @if($publication->submitter || $publication->college || $publication->department)
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1.5rem; margin-bottom:2.25rem;">
-                    @if($publication->submitter)
-                    <div style="padding: 1.5rem; background: var(--light-color); border-radius: 12px; border-left: 4px solid var(--accent-color);">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            <i class="fas fa-user-check" style="color: var(--accent-color);"></i>
-                            <strong style="color: var(--primary-color);">Submitted by</strong>
-                        </div>
-                        <p style="color: var(--text-light); margin: 0; font-size: 1rem;">{{ $publication->submitter->name }}</p>
-                        @if($publication->submitted_at)
-                        <p style="color: var(--text-lighter); margin: 0.5rem 0 0 0; font-size: 0.9rem;">
-                            <i class="far fa-calendar"></i> {{ $publication->submitted_at->format('F d, Y') }}
-                        </p>
-                        @endif
-                    </div>
-                    @endif
-                    @if($publication->college || $publication->department)
-                    <div style="padding: 1.5rem; background: var(--light-color); border-radius: 12px;">
-                        <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.5rem;">
-                            <i class="fas fa-university" style="color:var(--accent-color);"></i>
-                            <strong style="color: var(--primary-color);">Affiliation</strong>
-                        </div>
-                        @if($publication->college)
-                            <p style="color: var(--text-color); margin: 0 0 .25rem 0; font-size: .95rem;">{{ $publication->college }}</p>
-                        @endif
-                        @if($publication->department)
-                            <p style="color: var(--text-light); margin: 0; font-size: .9rem;">{{ $publication->department }}</p>
-                        @endif
-                    </div>
-                    @endif
-                </div>
-                @endif
-
-                <!-- Action Buttons -->
-                @if($publication->published_link || $publication->proceedings_link)
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap; padding-top: 2rem; border-top: 2px solid var(--border-color);">
-                    @if($publication->published_link)
-                    <a href="{{ $publication->published_link }}" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: var(--primary-color); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.3s; box-shadow: var(--shadow-sm);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
-                        <i class="fas fa-external-link-alt"></i>
-                        View Publication
-                    </a>
-                    @endif
-                    @if($publication->proceedings_link)
-                    <a href="{{ $publication->proceedings_link }}" target="_blank" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: transparent; color: var(--accent-color); text-decoration: none; border: 2px solid var(--accent-color); border-radius: 10px; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='var(--accent-color)'; this.style.color='var(--primary-color)';" onmouseout="this.style.background='transparent'; this.style.color='var(--accent-color)';">
-                        <i class="fas fa-file-pdf"></i>
-                        View Proceedings
-                    </a>
-                    @endif
-                </div>
-                @endif
-                
-                <!-- Additional Info -->
-                @if($publication->college || $publication->department || $publication->points_allocated)
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
-                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary-color);">
-                        Additional Information
-                    </h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-                    @if($publication->college)
-                    <div>
-                        <strong style="color: var(--text-light); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">College</strong>
-                        <p style="color: var(--text-color); margin: 0.5rem 0 0 0; font-size: 1rem;">{{ $publication->college }}</p>
-                    </div>
-                    @endif
-                    @if($publication->department)
-                    <div>
-                        <strong style="color: var(--text-light); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Department</strong>
-                        <p style="color: var(--text-color); margin: 0.5rem 0 0 0; font-size: 1rem;">{{ $publication->department }}</p>
-                    </div>
-                    @endif
-                    @if($publication->points_allocated)
-                    <div>
-                        <strong style="color: var(--text-light); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Research Points</strong>
-                        <p style="color: var(--text-color); margin: 0.5rem 0 0 0; font-size: 1rem; font-weight: 600;">{{ number_format($publication->points_allocated, 2) }}</p>
-                    </div>
-                    @endif
-                </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</section>
-
 @push('styles')
 <style>
-    .auth-container a:hover {
-        opacity: 1;
+    .publication-detail-page {
+        padding: 6.75rem 0 3.5rem;
+        background: #f3f4f6;
     }
-    
+
+    .publication-detail-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(15,23,42,0.10);
+        padding: 2.5rem 3rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .publication-header {
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 1.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .publication-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+
+    .publication-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .publication-badges {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+    }
+
+    .badge-pill {
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .detail-item {
+        padding: 1.25rem;
+        background: #f9fafb;
+        border-radius: 10px;
+        border-left: 3px solid #3b82f6;
+    }
+
+    .detail-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+
+    .detail-value {
+        font-size: 1rem;
+        color: #111827;
+        font-weight: 500;
+    }
+
+    .evidence-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .evidence-table th {
+        background: #f9fafb;
+        padding: 0.875rem 1rem;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .evidence-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        color: #4b5563;
+        font-size: 0.9rem;
+    }
+
+    .evidence-table tr:hover {
+        background: #f9fafb;
+    }
+
+    .author-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        margin: 0.5rem 0.5rem 0.5rem 0;
+    }
+
     @media (max-width: 768px) {
-        .auth-container h1 {
-            font-size: 1.75rem !important;
+        .publication-detail-card {
+            padding: 1.5rem 1.5rem;
         }
-        
-        .auth-container {
-            padding: 2rem !important;
+        .publication-title {
+            font-size: 1.5rem;
         }
     }
 </style>
 @endpush
+
+@section('content')
+<section class="publication-detail-page">
+    <div class="container">
+        <div class="publication-detail-card">
+            <!-- Back Link -->
+            <a href="{{ route('publications.index') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #6b7280; text-decoration: none; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> Back to Publications
+            </a>
+
+            <!-- Publication Header -->
+            <div class="publication-header">
+                <h1 class="publication-title">{{ $publication->title ?? 'Untitled Publication' }}</h1>
+                
+                @php
+                    $authorNames = [];
+                    if ($publication->authors && is_array($publication->authors)) {
+                        foreach ($publication->authors as $author) {
+                            $authorNames[] = $author['name'] ?? (is_string($author) ? $author : '');
+                        }
+                    }
+                    if (empty($authorNames) && $publication->submitter) {
+                        $authorNames[] = $publication->submitter->name;
+                    }
+                    if (empty($authorNames) && $publication->primaryAuthor) {
+                        $authorNames[] = $publication->primaryAuthor->name;
+                    }
+                @endphp
+
+                @if(!empty($authorNames))
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #374151; font-size: 0.9rem;">Authors:</strong>
+                    <span style="color: #6b7280; font-size: 0.95rem; margin-left: 0.5rem;">{{ implode(', ', array_filter($authorNames)) }}</span>
+                </div>
+                @endif
+
+                <div class="publication-meta">
+                    @if($publication->publication_year || $publication->year)
+                        <div><strong>Year:</strong> {{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</div>
+                    @endif
+                    @if($publication->journal_name)
+                        <div><strong>Journal:</strong> {{ $publication->journal_name }}</div>
+                    @endif
+                    @if($publication->conference_name)
+                        <div><strong>Conference:</strong> {{ $publication->conference_name }}</div>
+                    @endif
+                    @if($publication->publisher)
+                        <div><strong>Publisher:</strong> {{ $publication->publisher }}</div>
+                    @endif
+                </div>
+
+                <div class="publication-badges">
+                    <span class="badge-pill" style="background: #eff6ff; color: #1d4ed8;">
+                        {{ strtoupper(str_replace('_', ' ', $publication->publication_type ?? 'Publication')) }}
+                    </span>
+                    @if($publication->status)
+                        <span class="badge-pill" style="background: {{ $publication->status === 'approved' ? '#22c55e' : ($publication->status === 'submitted' || $publication->status === 'pending' ? '#eab308' : '#6b7280') }}; color: #fff;">
+                            {{ ucfirst($publication->status) }}
+                        </span>
+                    @endif
+                    @if($publication->journal_category)
+                        <span class="badge-pill" style="background: #fef3c7; color: #92400e;">
+                            {{ ucfirst(str_replace('_', ' ', $publication->journal_category)) }}
+                        </span>
+                    @endif
+                    @if($publication->quartile)
+                        <span class="badge-pill" style="background: #dbeafe; color: #1e40af;">
+                            {{ $publication->quartile }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Abstract Section -->
+            @if($publication->abstract)
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-file-alt" style="color: #3b82f6; margin-right: 0.5rem;"></i>Abstract
+                </h2>
+                <p style="color: #374151; line-height: 1.8; font-size: 1.05rem; text-align: justify;">
+                    {{ $publication->abstract }}
+                </p>
+            </div>
+            @endif
+
+            <!-- Publication Details Grid -->
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 0.5rem;"></i>Publication Details
+                </h2>
+                <div class="detail-grid">
+                    @if($publication->journal_name || $publication->journal)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-book" style="margin-right: 0.5rem;"></i>Journal</div>
+                        <div class="detail-value">{{ $publication->journal_name ?? $publication->journal ?? 'N/A' }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->conference_name)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-users" style="margin-right: 0.5rem;"></i>Conference</div>
+                        <div class="detail-value">{{ $publication->conference_name }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->publisher)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-building" style="margin-right: 0.5rem;"></i>Publisher</div>
+                        <div class="detail-value">{{ $publication->publisher }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->doi)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-hashtag" style="margin-right: 0.5rem;"></i>DOI</div>
+                        <div class="detail-value">
+                            <a href="https://doi.org/{{ $publication->doi }}" target="_blank" style="color: #3b82f6; text-decoration: none;">
+                                {{ $publication->doi }} <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($publication->isbn)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-barcode" style="margin-right: 0.5rem;"></i>ISBN</div>
+                        <div class="detail-value">{{ $publication->isbn }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->indexing_db)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-database" style="margin-right: 0.5rem;"></i>Indexing Database</div>
+                        <div class="detail-value">{{ $publication->indexing_db }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->publication_year || $publication->year)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar" style="margin-right: 0.5rem;"></i>Publication Year</div>
+                        <div class="detail-value">{{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->submission_year)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar-alt" style="margin-right: 0.5rem;"></i>Submission Year</div>
+                        <div class="detail-value">{{ $publication->submission_year }}</div>
+                    </div>
+                    @endif
+
+                    @if(!is_null($publication->sohar_affiliation))
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Sohar Affiliation</div>
+                        <div class="detail-value">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: {{ $publication->sohar_affiliation ? '#d1fae5' : '#f3f4f6' }}; color: {{ $publication->sohar_affiliation ? '#065f46' : '#6b7280' }};">
+                                {{ $publication->sohar_affiliation ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!is_null($publication->percent_contribution))
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-percentage" style="margin-right: 0.5rem;"></i>Contribution</div>
+                        <div class="detail-value">{{ number_format($publication->percent_contribution, 2) }}%</div>
+                    </div>
+                    @endif
+
+                    @if($publication->su_author_type)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-tag" style="margin-right: 0.5rem;"></i>SU Author Type</div>
+                        <div class="detail-value">{{ $publication->su_author_type }}</div>
+                    </div>
+                    @endif
+
+                    @if(!is_null($publication->student_coauthor))
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-graduate" style="margin-right: 0.5rem;"></i>Student Co-author</div>
+                        <div class="detail-value">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: {{ $publication->student_coauthor ? '#d1fae5' : '#f3f4f6' }}; color: {{ $publication->student_coauthor ? '#065f46' : '#6b7280' }};">
+                                {{ $publication->student_coauthor ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($publication->student_level)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-graduation-cap" style="margin-right: 0.5rem;"></i>Student Level</div>
+                        <div class="detail-value">{{ $publication->student_level }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->points_allocated)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-star" style="margin-right: 0.5rem;"></i>Research Points</div>
+                        <div class="detail-value" style="font-weight: 700; color: #059669;">{{ number_format($publication->points_allocated, 2) }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Authors Section -->
+            @php
+                $allAuthors = [];
+                if ($publication->authors && is_array($publication->authors)) {
+                    foreach ($publication->authors as $author) {
+                        $name = $author['name'] ?? (is_string($author) ? $author : '');
+                        if ($name) $allAuthors[] = $name;
+                    }
+                }
+                if ($publication->co_authors && is_array($publication->co_authors)) {
+                    foreach ($publication->co_authors as $coAuthor) {
+                        $name = $coAuthor['name'] ?? (is_string($coAuthor) ? $coAuthor : '');
+                        if ($name && !in_array($name, $allAuthors)) $allAuthors[] = $name;
+                    }
+                }
+                if (empty($allAuthors) && $publication->submitter) {
+                    $allAuthors[] = $publication->submitter->name;
+                }
+                if (empty($allAuthors) && $publication->primaryAuthor) {
+                    $allAuthors[] = $publication->primaryAuthor->name;
+                }
+            @endphp
+            @if(!empty($allAuthors))
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-users" style="color: #3b82f6; margin-right: 0.5rem;"></i>Authors
+                </h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                    @foreach($allAuthors as $authorName)
+                    <div class="author-card">
+                        <i class="fas fa-user-circle" style="color: #3b82f6; font-size: 1.25rem;"></i>
+                        <span style="color: #111827; font-weight: 500;">{{ $authorName }}</span>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <!-- Evidence Files Section -->
+            @php
+                $evidenceFiles = $publication->evidenceFiles ?? collect();
+                $hasLinkEvidence = !empty($publication->published_link) || !empty($publication->proceedings_link);
+                $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
+            @endphp
+            @if($hasAnyEvidence)
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-paperclip" style="color: #3b82f6; margin-right: 0.5rem;"></i>Evidence & Attachments
+                </h2>
+                <table class="evidence-table">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Uploaded By</th>
+                            <th>Upload Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($evidenceFiles as $file)
+                        <tr>
+                            <td style="font-weight: 500;">{{ $file->file_name }}</td>
+                            <td>
+                                @if($file->file_type === 'text/url')
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 0.8rem; font-weight: 600;">URL</span>
+                                @elseif(str_contains($file->file_type, 'image'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #d1fae5; color: #065f46; font-size: 0.8rem; font-weight: 600;">Image</span>
+                                @elseif(str_contains($file->file_type, 'pdf'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #fee2e2; color: #991b1b; font-size: 0.8rem; font-weight: 600;">PDF</span>
+                                @else
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #f3f4f6; color: #374151; font-size: 0.8rem; font-weight: 600;">{{ $file->file_type }}</span>
+                                @endif
+                            </td>
+                            <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                            <td>{{ $file->uploader->name ?? 'N/A' }}</td>
+                            <td>{{ $file->uploaded_at ? $file->uploaded_at->format('M d, Y') : 'N/A' }}</td>
+                            <td>
+                                @if($file->file_type === 'text/url')
+                                    <a href="{{ $file->file_path }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                        <i class="fas fa-external-link-alt"></i> Open
+                                    </a>
+                                @else
+                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+
+                        @if($publication->published_link)
+                        <tr>
+                            <td style="font-weight: 500;">Published Link</td>
+                            <td><span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 0.8rem; font-weight: 600;">URL</span></td>
+                            <td>Published Link</td>
+                            <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                            <td>{{ $publication->submitted_at ? $publication->submitted_at->format('M d, Y') : 'N/A' }}</td>
+                            <td>
+                                <a href="{{ $publication->published_link }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                    <i class="fas fa-external-link-alt"></i> Open
+                                </a>
+                            </td>
+                        </tr>
+                        @endif
+
+                        @if($publication->proceedings_link)
+                        <tr>
+                            <td style="font-weight: 500;">Proceedings Link</td>
+                            <td><span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 0.8rem; font-weight: 600;">URL</span></td>
+                            <td>Proceedings Link</td>
+                            <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                            <td>{{ $publication->submitted_at ? $publication->submitted_at->format('M d, Y') : 'N/A' }}</td>
+                            <td>
+                                <a href="{{ $publication->proceedings_link }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                    <i class="fas fa-external-link-alt"></i> Open
+                                </a>
+                            </td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+            @endif
+
+            <!-- Submission & Affiliation Info -->
+            @if($publication->submitter || $publication->college || $publication->department)
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-info" style="color: #3b82f6; margin-right: 0.5rem;"></i>Additional Information
+                </h2>
+                <div class="detail-grid">
+                    @if($publication->submitter)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Submitted By</div>
+                        <div class="detail-value">{{ $publication->submitter->name }}</div>
+                        @if($publication->submitted_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $publication->submitted_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($publication->college)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>College</div>
+                        <div class="detail-value">{{ $publication->college }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->department)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-building" style="margin-right: 0.5rem;"></i>Department</div>
+                        <div class="detail-value">{{ $publication->department }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <!-- External Links -->
+            @if($publication->published_link || $publication->proceedings_link)
+            <div style="padding-top: 2rem; border-top: 2px solid #e5e7eb;">
+                <h2 class="section-title" style="margin-bottom: 1rem;">
+                    <i class="fas fa-link" style="color: #3b82f6; margin-right: 0.5rem;"></i>External Links
+                </h2>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    @if($publication->published_link)
+                    <a href="{{ $publication->published_link }}" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.75rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s;">
+                        <i class="fas fa-external-link-alt"></i> View Publication
+                    </a>
+                    @endif
+                    @if($publication->proceedings_link)
+                    <a href="{{ $publication->proceedings_link }}" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.75rem; background: #f3f4f6; color: #374151; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid #e5e7eb; transition: all 0.3s;">
+                        <i class="fas fa-file-pdf"></i> View Proceedings
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+</section>
 @endsection
