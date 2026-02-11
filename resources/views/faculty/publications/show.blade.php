@@ -34,7 +34,11 @@
                 @php
                     $workflow = $publication->workflow;
                     $authors = is_array($publication->authors ?? null) ? $publication->authors : [];
-                    $evidenceFiles = $publication->evidenceFiles ?? collect();
+                    // Load evidence files directly to avoid any lazy-loading issues
+                    $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'publication')
+                        ->where('submission_id', $publication->id)
+                        ->with('uploader')
+                        ->get();
                     $status = $publication->status ?? 'draft';
                 @endphp
 
