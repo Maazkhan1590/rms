@@ -31,6 +31,47 @@
                 </div>
             </div>
             <div class="card-body">
+                @php
+                    $workflow = $publication->workflow;
+                    $workflowStatus = $workflow->status ?? $publication->status;
+                    $currentStep = $workflow->current_step ?? 1;
+
+                    // Build dynamic visual steps based on workflow configuration
+                    // Default: Faculty → Coordinator → Dean
+                    // Fallback: Faculty → Dean (coordinator skipped, current_step jumps to 3)
+                    if ($workflow && $workflow->fallback_used) {
+                        $steps = [
+                            1 => ['label' => 'Faculty Submission', 'db_step' => 1],
+                            2 => ['label' => 'Dean Review', 'db_step' => 3],
+                        ];
+                    } else {
+                        $steps = [
+                            1 => ['label' => 'Faculty Submission', 'db_step' => 1],
+                            2 => ['label' => 'Coordinator Review', 'db_step' => 2],
+                            3 => ['label' => 'Dean Review', 'db_step' => 3],
+                        ];
+                    }
+                @endphp
+
+                <!-- Workflow Stepper (dynamic based on workflow / fallback) -->
+                <div class="mb-4">
+                    <div class="stepper d-flex justify-content-between align-items-center">
+                        @foreach($steps as $visualStep => $step)
+                            @php
+                                $dbStep = $step['db_step'];
+                                $isCompleted = $workflowStatus === 'approved' || $currentStep > $dbStep;
+                                $isActive = $currentStep === $dbStep && $workflowStatus !== 'approved';
+                            @endphp
+                            <div class="step-item text-center flex-fill">
+                                <div class="step-circle {{ $isCompleted ? 'completed' : '' }} {{ $isActive ? 'active' : '' }}">
+                                    {{ $visualStep }}
+                                </div>
+                                <div class="step-label">{{ $step['label'] }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <strong>Status:</strong>
@@ -129,6 +170,14 @@
                 </div>
                 @endif
 
+                @if($publication->proceedings_link)
+                <hr>
+                <div>
+                    <strong>Proceedings Link:</strong>
+                    <a href="{{ $publication->proceedings_link }}" target="_blank">{{ $publication->proceedings_link }}</a>
+                </div>
+                @endif
+
                 @if($publication->workflow)
                 <hr>
                 <div>
@@ -137,6 +186,43 @@
                     @if($publication->workflow->assignee)
                         <p>Assigned to: {{ $publication->workflow->assignee->name }}</p>
                     @endif
+                </div>
+                @endif
+
+                @php
+                    $authors = $publication->authors ?? [];
+                @endphp
+
+                @if(is_array($authors) && count($authors) > 0)
+                <hr>
+                <div class="mt-3">
+                    <h5>Authors</h5>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Primary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($authors as $author)
+                                <tr>
+                                    <td>{{ $author['name'] ?? 'N/A' }}</td>
+                                    <td>{{ $author['email'] ?? '-' }}</td>
+                                    <td>
+                                        @if(!empty($author['is_primary']))
+                                            <span class="badge badge-success">Primary</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 @endif
 
@@ -278,6 +364,62 @@
     .timeline-content {
         padding-left: 20px;
     }
+
+/* Simple stepper styling for workflow progress */
+.stepper {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 1;
+}
+
+.step-item {
+    position: relative;
+    z-index: 2;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.25rem;
+    font-weight: 600;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.step-circle.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.step-circle.completed {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+.step-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #4b5563;
+}
 </style>
 @endsection
 
