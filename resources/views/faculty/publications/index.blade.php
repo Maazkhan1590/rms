@@ -8,7 +8,8 @@
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="card-title">My Publications</h3>
             <a href="{{ route('faculty.publications.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Submit New Publication
+                <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">add</span>
+                <span style="vertical-align: middle;">Submit New Publication</span>
             </a>
         </div>
     </div>
@@ -78,16 +79,16 @@
                         <td>
                             <div class="btn-group">
                                 <a href="{{ route('faculty.publications.show', $publication) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i>
+                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">visibility</span>
                                 </a>
                                 @if($publication->status === 'draft')
                                 <a href="{{ route('faculty.publications.edit', $publication) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
+                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">edit</span>
                                 </a>
                                 <form action="{{ route('faculty.publications.submit', $publication) }}" method="POST" class="d-inline">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Submit this publication for approval?')">
-                                        <i class="fas fa-paper-plane"></i>
+                                        <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">send</span>
                                     </button>
                                 </form>
                                 @endif
