@@ -122,51 +122,92 @@
 
 <!-- Stats Section -->
 <section class="stats-section" style="padding: 3rem 0; background: #f8f9fa;">
-    <div class="container" style="max-width: 900px;">
+    <div class="container" style="max-width: 1100px;">
         <div class="section-intro" style="text-align: center; margin-bottom: 2rem;">
             <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 0.5rem;">By The Numbers</h2>
             <p class="section-subtitle" style="font-size: 0.95rem; color: #6b7280;">Our impact in the global research community</p>
         </div>
-        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+        @php
+            // Count faculty users - try multiple approaches to ensure we get the count
+            try {
+                // Method 1: Using whereHas (standard Laravel approach)
+                $facultyCount = \App\Models\User::whereHas('roles', function($q) { 
+                    $q->where('title', 'Faculty'); 
+                })->count();
+                
+                // Method 2: If count is 0, try direct join (fallback)
+                if ($facultyCount == 0) {
+                    $facultyCount = \App\Models\User::join('role_user', 'users.id', '=', 'role_user.user_id')
+                        ->join('roles', 'role_user.role_id', '=', 'roles.id')
+                        ->where('roles.title', 'Faculty')
+                        ->distinct('users.id')
+                        ->count('users.id');
+                }
+            } catch (\Exception $e) {
+                // Fallback: count all users if there's an error
+                $facultyCount = \App\Models\User::count();
+            }
+            
+            $publicationsCount = \App\Models\Publication::where('status', 'approved')->count();
+            $grantsCount = \App\Models\Grant::where('status', 'approved')->count();
+            $rtnCount = \App\Models\RtnSubmission::where('status', 'approved')->count();
+            $bonusCount = \App\Models\BonusRecognition::where('status', 'approved')->count();
+        @endphp
+        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem;">
             <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                 <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
                     <i class="fas fa-file-alt"></i>
                 </div>
                 <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ \App\Models\Publication::where('status', 'approved')->count() }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <h3 class="stat-number" data-count="{{ $publicationsCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
                     <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Published Papers</p>
                 </div>
             </div>
             <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #10b981; margin-bottom: 0.75rem;">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ $grantsCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Grants</p>
+                </div>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #8b5cf6; margin-bottom: 0.75rem;">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ $rtnCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">RTN Submissions</p>
+                </div>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #f59e0b; margin-bottom: 0.75rem;">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ $bonusCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Recognitions</p>
+                </div>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #ef4444; margin-bottom: 0.75rem;">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ \App\Models\User::count() }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <h3 class="stat-number" data-count="{{ $facultyCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
                     <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Active Researchers</p>
-                </div>
-            </div>
-            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
-                    <i class="fas fa-university"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ \App\Models\College::where('is_active', true)->count() }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
-                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Partner Institutions</p>
-                </div>
-            </div>
-            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
-                    <i class="fas fa-globe"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="1" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
-                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Countries Represented</p>
                 </div>
             </div>
         </div>
     </div>
     <style>
+        @media (max-width: 1024px) {
+            .stats-section .stats-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 1rem !important;
+            }
+        }
         @media (max-width: 768px) {
             .stats-section .stats-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
