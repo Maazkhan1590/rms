@@ -7,10 +7,10 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="card-title">My Publications</h3>
-            <a href="{{ route('faculty.publications.create') }}" class="btn btn-primary">
-                <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">add</span>
-                <span style="vertical-align: middle;">Submit New Publication</span>
-            </a>
+{{--            <a href="{{ route('faculty.publications.create') }}" class="btn btn-primary">--}}
+{{--                <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">add</span>--}}
+{{--                <span style="vertical-align: middle;">Submit New Publication</span>--}}
+{{--            </a>--}}
         </div>
     </div>
     <div class="card-body">

@@ -360,12 +360,12 @@
                                 <span class="nav-label">All Publications</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('faculty.publications.create') }}" class="nav-link {{ request()->routeIs('faculty.publications.create') ? 'active' : '' }}">
-                                <span class="nav-icon">➕</span>
-                                <span class="nav-label">Submit Publication</span>
-                            </a>
-                        </li>
+{{--                        <li>--}}
+{{--                            <a href="{{ route('faculty.publications.create') }}" class="nav-link {{ request()->routeIs('faculty.publications.create') ? 'active' : '' }}">--}}
+{{--                                <span class="nav-icon">➕</span>--}}
+{{--                                <span class="nav-label">Submit Publication</span>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
                         <li>
                             <a href="{{ route('admin.grants.index') }}" class="nav-link {{ request()->routeIs('admin.grants.*') ? 'active' : '' }}">
                                 <span class="nav-icon">💰</span>
