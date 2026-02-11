@@ -57,6 +57,7 @@ Route::post('publications/{publication}/submit', 'PublicationController@submit')
 
 // Public Grants Routes
 Route::get('grants', 'GrantController@index')->name('grants.index');
+Route::get('grants/load-more', 'GrantController@loadMore')->name('grants.load-more');
 Route::get('grants/create', 'GrantController@create')->name('grants.create');
 Route::post('grants', 'GrantController@store')->name('grants.store');
 Route::get('grants/{grant}', 'GrantController@show')->name('grants.show');
@@ -64,6 +65,7 @@ Route::post('grants/{grant}/submit', 'GrantController@submit')->name('grants.sub
 
 // Public RTN Submissions Routes
 Route::get('rtn-submissions', 'RtnSubmissionController@index')->name('rtn-submissions.index');
+Route::get('rtn-submissions/load-more', 'RtnSubmissionController@loadMore')->name('rtn-submissions.load-more');
 Route::get('rtn-submissions/create', 'RtnSubmissionController@create')->name('rtn-submissions.create');
 Route::post('rtn-submissions', 'RtnSubmissionController@store')->name('rtn-submissions.store');
 Route::get('rtn-submissions/{rtn}', 'RtnSubmissionController@show')->name('rtn-submissions.show');
@@ -71,6 +73,7 @@ Route::post('rtn-submissions/{rtn}/submit', 'RtnSubmissionController@submit')->n
 
 // Public Bonus Recognitions Routes
 Route::get('bonus-recognitions', 'BonusRecognitionController@index')->name('bonus-recognitions.index');
+Route::get('bonus-recognitions/load-more', 'BonusRecognitionController@loadMore')->name('bonus-recognitions.load-more');
 Route::get('bonus-recognitions/create', 'BonusRecognitionController@create')->name('bonus-recognitions.create');
 Route::post('bonus-recognitions', 'BonusRecognitionController@store')->name('bonus-recognitions.store');
 Route::get('bonus-recognitions/{bonus}', 'BonusRecognitionController@show')->name('bonus-recognitions.show');

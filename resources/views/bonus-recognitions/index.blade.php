@@ -2,99 +2,280 @@
 
 @section('title', 'Bonus Recognitions | Academic Research Portal')
 
-@push('styles')
-<style>
-    .bonus-page {
-        padding: 6rem 0 3rem;
-        background: #f3f4f6;
-    }
-    .page-header-section {
-        background: #ffffff;
-        padding: 2rem 0;
-        color: #111827;
-        margin-bottom: 1.5rem;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .page-header-section h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0.375rem;
-        color: #111827;
-    }
-    .page-header-section p {
-        font-size: 1rem;
-        color: #6b7280;
-        margin: 0;
-    }
-    .search-section {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        margin-bottom: 1.5rem;
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="bonus-page">
-    <header class="page-header-section">
-        <div class="container">
-            <h1>Bonus Recognitions</h1>
-            <p>Browse approved bonus recognitions and achievements</p>
-        </div>
-    </header>
+<!-- Bonus Recognitions Header -->
+<header class="page-header">
+    <div class="container">
+        <h1>Bonus Recognitions</h1>
+        <p>Browse approved bonus recognitions and achievements</p>
+    </div>
+</header>
 
-    <section class="search-section">
-        <div class="container">
-            <form action="{{ route('bonus-recognitions.index') }}" method="GET" style="display: flex; gap: 0.75rem; max-width: 700px; margin: 0 auto;">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search recognitions..." style="flex: 1; padding: 0.75rem 1rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
-                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem;">Search</button>
-            </form>
-        </div>
-    </section>
+<!-- Bonus Recognitions Filter -->
+<section class="publications-filter">
+    <div class="container">
+        <form action="{{ route('bonus-recognitions.index') }}" method="GET" class="filter-container">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search recognitions..." style="flex: 1; min-width: 300px; padding: 1rem 1.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 1rem;">
+            <div class="filter-options">
+                <select name="recognition_type" style="padding: 1rem 1.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: white; font-size: 0.95rem;">
+                    <option value="">All Recognition Types</option>
+                    @foreach($bonusRecognitions->pluck('recognition_type')->unique()->filter() as $type)
+                        <option value="{{ $type }}" {{ request('recognition_type') == $type ? 'selected' : '' }}>
+                            {{ ucfirst(str_replace('_', ' ', $type)) }}
+                        </option>
+                    @endforeach
+                </select>
+                <select name="year" style="padding: 1rem 1.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: white; font-size: 0.95rem;">
+                    <option value="">All Years</option>
+                    @foreach($bonusRecognitions->pluck('year')->unique()->filter()->sortDesc() as $year)
+                        <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>
+                            {{ $year }}
+                        </option>
+                    @endforeach
+                </select>
+                <select name="sort" style="padding: 1rem 1.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: white; font-size: 0.95rem;">
+                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest First</option>
+                    <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest First</option>
+                    <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Title A-Z</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+</section>
 
-    <section class="publications-grid-section">
-        <div class="container">
-            @if($bonusRecognitions->count() > 0)
-            <div class="bonus-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
-                @foreach($bonusRecognitions as $bonus)
-                <div class="bonus-card" style="background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease; cursor: pointer; border: 1px solid #e5e7eb;" onclick="window.location.href='{{ route('bonus-recognitions.show', $bonus->id) }}'" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.style.borderColor='#f59e0b'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'; this.style.borderColor='#e5e7eb'">
-                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #f59e0b; color: white; font-size: 0.75rem; font-weight: 600;">{{ ucfirst(str_replace('_', ' ', $bonus->recognition_type)) }}</span>
-                    </div>
-                    <h3 style="font-size: 1.15rem; font-weight: 600; margin: 0 0 0.75rem 0; color: #111827; line-height: 1.4;">{{ $bonus->title }}</h3>
-                    @if($bonus->user)
-                        <p style="color: #6b7280; font-size: 0.875rem; margin: 0 0 0.5rem 0;"><i class="fas fa-user" style="margin-right: 0.25rem;"></i>{{ $bonus->user->name }}</p>
-                    @endif
-                    @if($bonus->organization)
-                        <p style="color: #6b7280; font-size: 0.85rem; margin: 0 0 0.5rem 0;"><i class="fas fa-building" style="margin-right: 0.25rem;"></i>{{ $bonus->organization }}</p>
-                    @endif
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
-                        @if($bonus->year)
-                            <div style="font-size: 0.8rem; color: #6b7280;"><i class="fas fa-calendar" style="margin-right: 0.25rem;"></i>{{ $bonus->year }}</div>
-                        @endif
-                        @if($bonus->points)
-                            <div style="font-size: 0.8rem; color: #f59e0b; font-weight: 600;"><i class="fas fa-star" style="margin-right: 0.25rem;"></i>{{ number_format($bonus->points, 2) }} Points</div>
-                        @endif
-                    </div>
-                </div>
-                @endforeach
-            </div>
-
-            <div style="margin-top: 2rem; display: flex; justify-content: center;">
-                {{ $bonusRecognitions->links() }}
-            </div>
-            @else
-            <div style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <i class="fas fa-award" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
-                <p style="font-size: 1.125rem; color: #6b7280; font-weight: 500;">No bonus recognitions found.</p>
-                @if(request('search'))
-                    <p style="font-size: 0.95rem; color: #9ca3af; margin-top: 0.5rem;">Try adjusting your search criteria.</p>
-                @endif
-            </div>
-            @endif
+<!-- Bonus Recognitions Grid -->
+<section class="publications-grid-section">
+    <div class="container">
+        @if($bonusRecognitions->count() > 0)
+        <div class="publications-grid-full" id="bonus-container">
+            @include('bonus-recognitions.partials.bonus-card', ['bonusRecognitions' => $bonusRecognitions])
         </div>
-    </section>
+        @if($hasMore ?? false)
+        <div style="text-align: center; margin-top: 3rem;">
+            <button id="load-more-btn" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.1rem;">
+                <i class="fas fa-arrow-down"></i> Load More Recognitions
+            </button>
+            <div id="loading-indicator" style="display: none; margin-top: 1rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                <p style="margin-top: 0.5rem; color: var(--text-light);">Loading more recognitions...</p>
+            </div>
+        </div>
+        @endif
+        @else
+        <div style="text-align: center; padding: 4rem; background: white; border-radius: 15px;">
+            <i class="fas fa-award" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+            <p style="color: var(--text-secondary); font-size: 1.125rem;">No bonus recognitions available yet.</p>
+        </div>
+        @endif
+    </div>
+</section>
+
+<!-- Bonus Recognition Detail Modal -->
+<div class="modal" id="bonus-modal">
+    <div class="modal-content">
+        <button class="modal-close" id="modal-close">&times;</button>
+        <div class="modal-body" id="modal-body">
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-color);"></i>
+                <p>Loading recognition details...</p>
+            </div>
+        </div>
+    </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('bonus-modal');
+    const modalClose = document.getElementById('modal-close');
+    const modalBody = document.getElementById('modal-body');
+    const viewButtons = document.querySelectorAll('.view-bonus-btn');
+
+    // Open modal and load bonus recognition details
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const bonusId = this.getAttribute('data-id');
+            loadBonusDetails(bonusId);
+        });
+    });
+
+    // Close modal handlers
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+    }
+
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    function loadBonusDetails(id) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        modalBody.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-color);"></i>
+                <p>Loading recognition details...</p>
+            </div>
+        `;
+
+        const baseUrl = window.BASE_URL || '';
+        fetch(`${baseUrl}/bonus-recognitions/${id}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                }
+                return response.text().then(html => ({ html }));
+            })
+            .then(data => {
+                if (data.html) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.html, 'text/html');
+                    const content = doc.querySelector('.publication-detail-content') || doc.body;
+                    modalBody.innerHTML = `<div class="publication-detail-modal">${content.innerHTML}</div>`;
+                } else if (data.bonus) {
+                    const bonus = data.bonus;
+                    
+                    modalBody.innerHTML = `
+                        <div class="publication-detail-modal">
+                            <div class="publication-detail-header">
+                                <span class="publication-detail-category">${(bonus.recognition_type || 'Recognition').toUpperCase().replace('_', ' ')}</span>
+                                <h2>${bonus.title}</h2>
+                                <div class="publication-detail-authors">
+                                    <i class="fas fa-user-edit"></i> ${bonus.user?.name || 'Anonymous'}
+                                </div>
+                            </div>
+                            <div class="publication-detail-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Year: ${bonus.year || 'N/A'}</span>
+                                </div>
+                                ${bonus.organization ? `<div class="meta-item"><i class="fas fa-building"></i> <span>Organization: ${bonus.organization}</span></div>` : ''}
+                                ${bonus.journal_conference_name ? `<div class="meta-item"><i class="fas fa-book"></i> <span>Journal/Conference: ${bonus.journal_conference_name}</span></div>` : ''}
+                                ${bonus.points ? `<div class="meta-item"><i class="fas fa-star"></i> <span>Points: ${bonus.points}</span></div>` : ''}
+                            </div>
+                            ${bonus.description ? `<div class="publication-detail-abstract"><h3><i class="fas fa-file-alt"></i> Description</h3><p>${bonus.description}</p></div>` : ''}
+                            <div class="publication-detail-actions">
+                                <a href="${window.BASE_URL || ''}/bonus-recognitions/${bonus.id}" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> Full Page View</a>
+                            </div>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading bonus recognition:', error);
+                modalBody.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                        <p>Error loading recognition details. Please try again.</p>
+                        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+                    </div>
+                `;
+            });
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    window.closeModal = closeModal;
+
+    // Load More functionality
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const bonusContainer = document.getElementById('bonus-container');
+    let currentOffset = {{ $bonusRecognitions->count() }};
+    let isLoading = false;
+
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            loadMoreBtn.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const params = {
+                offset: currentOffset,
+                search: urlParams.get('search') || '',
+                recognition_type: urlParams.get('recognition_type') || '',
+                year: urlParams.get('year') || '',
+                sort: urlParams.get('sort') || 'newest',
+            };
+
+            fetch('{{ route("bonus-recognitions.load-more") }}?' + new URLSearchParams(params), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.html) {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.html;
+                    
+                    const cards = tempDiv.querySelectorAll('.publication-card');
+                    cards.forEach(card => {
+                        bonusContainer.appendChild(card);
+                    });
+
+                    const newViewButtons = tempDiv.querySelectorAll('.view-bonus-btn');
+                    newViewButtons.forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const bonusId = this.getAttribute('data-id');
+                            loadBonusDetails(bonusId);
+                        });
+                    });
+
+                    currentOffset += cards.length;
+
+                    if (data.hasMore) {
+                        loadMoreBtn.style.display = 'block';
+                    } else {
+                        const allLoadedMsg = document.createElement('div');
+                        allLoadedMsg.style.textAlign = 'center';
+                        allLoadedMsg.style.marginTop = '2rem';
+                        allLoadedMsg.style.padding = '1rem';
+                        allLoadedMsg.style.color = 'var(--text-light)';
+                        allLoadedMsg.innerHTML = '<i class="fas fa-check-circle"></i> All recognitions loaded';
+                        loadingIndicator.parentElement.appendChild(allLoadedMsg);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading more recognitions:', error);
+                loadMoreBtn.style.display = 'block';
+                loadMoreBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error loading. Click to retry';
+            })
+            .finally(() => {
+                isLoading = false;
+                loadingIndicator.style.display = 'none';
+            });
+        });
+    }
+});
+</script>
+@endpush
 @endsection

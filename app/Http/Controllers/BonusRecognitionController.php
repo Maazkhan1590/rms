@@ -51,11 +51,80 @@ class BonusRecognitionController extends Controller
             $query->where('recognition_type', $request->recognition_type);
         }
 
-        $bonusRecognitions = $query->orderBy('year', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Handle sorting
+        $sort = $request->get('sort', 'newest');
+        switch($sort) {
+            case 'oldest':
+                $query->oldest('year')->oldest('created_at');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('year', 'desc')->orderBy('created_at', 'desc');
+                break;
+        }
 
-        return view('bonus-recognitions.index', compact('bonusRecognitions'));
+        // For initial load, get first 12 bonus recognitions
+        $totalCount = $query->count();
+        $bonusRecognitions = $query->take(12)->get();
+        $hasMore = $totalCount > 12;
+
+        return view('bonus-recognitions.index', compact('bonusRecognitions', 'hasMore'));
+    }
+
+    /**
+     * Load more bonus recognitions via AJAX
+     */
+    public function loadMore(Request $request)
+    {
+        $offset = $request->get('offset', 12);
+        $limit = 12;
+
+        $query = BonusRecognition::with(['user'])
+            ->where('status', 'approved');
+
+        // Apply same filters as index
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('organization', 'like', "%{$search}%")
+                  ->orWhere('journal_conference_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('year') && $request->year) {
+            $query->where('year', $request->year);
+        }
+
+        if ($request->has('recognition_type') && $request->recognition_type) {
+            $query->where('recognition_type', $request->recognition_type);
+        }
+
+        $sort = $request->get('sort', 'newest');
+        switch($sort) {
+            case 'oldest':
+                $query->oldest('year')->oldest('created_at');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('year', 'desc')->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $totalCount = $query->count();
+        $bonusRecognitions = $query->skip($offset)->take($limit)->get();
+        $hasMore = ($offset + $limit) < $totalCount;
+
+        return response()->json([
+            'html' => view('bonus-recognitions.partials.bonus-card', ['bonusRecognitions' => $bonusRecognitions])->render(),
+            'hasMore' => $hasMore,
+        ]);
     }
 
     /**
@@ -172,6 +241,25 @@ class BonusRecognitionController extends Controller
         // Allow public viewing for approved bonus, or if user owns it, or if admin/coordinator/dean
         if ($bonus->status !== 'approved' && auth()->check() && $bonus->user_id !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {
             return redirect()->route('welcome')->with('error', 'You are not authorized to view this bonus recognition.');
+        }
+
+        // If AJAX request, return JSON for modal
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'bonus' => [
+                    'id' => $bonus->id,
+                    'title' => $bonus->title,
+                    'description' => $bonus->description,
+                    'recognition_type' => $bonus->recognition_type,
+                    'year' => $bonus->year,
+                    'organization' => $bonus->organization,
+                    'journal_conference_name' => $bonus->journal_conference_name,
+                    'points' => $bonus->points,
+                    'user' => $bonus->user ? [
+                        'name' => $bonus->user->name,
+                    ] : null,
+                ],
+            ]);
         }
 
         return view('bonus-recognitions.show', compact('bonus'));

@@ -50,11 +50,79 @@ class RtnSubmissionController extends Controller
             $query->where('rtn_type', $request->rtn_type);
         }
 
-        $rtnSubmissions = $query->orderBy('year', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Handle sorting
+        $sort = $request->get('sort', 'newest');
+        switch($sort) {
+            case 'oldest':
+                $query->oldest('year')->oldest('created_at');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('year', 'desc')->orderBy('created_at', 'desc');
+                break;
+        }
 
-        return view('rtn-submissions.index', compact('rtnSubmissions'));
+        // For initial load, get first 12 RTN submissions
+        $totalCount = $query->count();
+        $rtnSubmissions = $query->take(12)->get();
+        $hasMore = $totalCount > 12;
+
+        return view('rtn-submissions.index', compact('rtnSubmissions', 'hasMore'));
+    }
+
+    /**
+     * Load more RTN submissions via AJAX
+     */
+    public function loadMore(Request $request)
+    {
+        $offset = $request->get('offset', 12);
+        $limit = 12;
+
+        $query = RtnSubmission::with(['user'])
+            ->where('status', 'approved');
+
+        // Apply same filters as index
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('year') && $request->year) {
+            $query->where('year', $request->year);
+        }
+
+        if ($request->has('rtn_type') && $request->rtn_type) {
+            $query->where('rtn_type', $request->rtn_type);
+        }
+
+        $sort = $request->get('sort', 'newest');
+        switch($sort) {
+            case 'oldest':
+                $query->oldest('year')->oldest('created_at');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('year', 'desc')->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $totalCount = $query->count();
+        $rtnSubmissions = $query->skip($offset)->take($limit)->get();
+        $hasMore = ($offset + $limit) < $totalCount;
+
+        return response()->json([
+            'html' => view('rtn-submissions.partials.rtn-card', ['rtnSubmissions' => $rtnSubmissions])->render(),
+            'hasMore' => $hasMore,
+        ]);
     }
 
     /**
@@ -174,6 +242,23 @@ class RtnSubmissionController extends Controller
         // Allow public viewing for approved RTN, or if user owns it, or if admin/coordinator/dean
         if ($rtn->status !== 'approved' && auth()->check() && $rtn->user_id !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {
             return redirect()->route('welcome')->with('error', 'You are not authorized to view this RTN submission.');
+        }
+
+        // If AJAX request, return JSON for modal
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'rtn' => [
+                    'id' => $rtn->id,
+                    'title' => $rtn->title,
+                    'description' => $rtn->description,
+                    'rtn_type' => $rtn->rtn_type,
+                    'year' => $rtn->year,
+                    'amount_omr' => $rtn->amount_omr,
+                    'user' => $rtn->user ? [
+                        'name' => $rtn->user->name,
+                    ] : null,
+                ],
+            ]);
         }
 
         return view('rtn-submissions.show', compact('rtn'));

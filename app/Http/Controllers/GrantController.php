@@ -47,11 +47,85 @@ class GrantController extends Controller
             $query->where('award_year', $request->year);
         }
 
-        $grants = $query->orderBy('award_year', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Filter by grant type
+        if ($request->has('type') && $request->type) {
+            $query->where('grant_type', $request->type);
+        }
 
-        return view('grants.index', compact('grants'));
+        // Handle sorting
+        $sort = $request->get('sort', 'newest');
+        switch($sort) {
+            case 'oldest':
+                $query->oldest('award_year')->oldest('created_at');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('award_year', 'desc')->orderBy('created_at', 'desc');
+                break;
+        }
+
+        // For initial load, get first 12 grants
+        $totalCount = $query->count();
+        $grants = $query->take(12)->get();
+        $hasMore = $totalCount > 12;
+
+        return view('grants.index', compact('grants', 'hasMore'));
+    }
+
+    /**
+     * Load more grants via AJAX
+     */
+    public function loadMore(Request $request)
+    {
+        $offset = $request->get('offset', 12);
+        $limit = 12;
+
+        $query = Grant::with(['submitter'])
+            ->where('status', 'approved');
+
+        // Apply same filters as index
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('sponsor', 'like', "%{$search}%")
+                  ->orWhere('sponsor_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('year') && $request->year) {
+            $query->where('award_year', $request->year);
+        }
+
+        if ($request->has('type') && $request->type) {
+            $query->where('grant_type', $request->type);
+        }
+
+        $sort = $request->get('sort', 'newest');
+        switch($sort) {
+            case 'oldest':
+                $query->oldest('award_year')->oldest('created_at');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('award_year', 'desc')->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $totalCount = $query->count();
+        $grants = $query->skip($offset)->take($limit)->get();
+        $hasMore = ($offset + $limit) < $totalCount;
+
+        return response()->json([
+            'html' => view('grants.partials.grant-card', ['grants' => $grants])->render(),
+            'hasMore' => $hasMore,
+        ]);
     }
 
     /**
@@ -210,6 +284,25 @@ class GrantController extends Controller
         // Allow public viewing for approved grants, or if user owns it, or if admin/coordinator/dean
         if ($grant->status !== 'approved' && auth()->check() && $grant->submitted_by !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {
             return redirect()->route('welcome')->with('error', 'You are not authorized to view this grant.');
+        }
+
+        // If AJAX request, return JSON for modal
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'grant' => [
+                    'id' => $grant->id,
+                    'title' => $grant->title,
+                    'summary' => $grant->summary,
+                    'grant_type' => $grant->grant_type,
+                    'role' => $grant->role,
+                    'award_year' => $grant->award_year,
+                    'sponsor' => $grant->sponsor ?? $grant->sponsor_name,
+                    'amount_omr' => $grant->amount_omr,
+                    'submitter' => $grant->submitter ? [
+                        'name' => $grant->submitter->name,
+                    ] : null,
+                ],
+            ]);
         }
 
         return view('grants.show', compact('grant'));
