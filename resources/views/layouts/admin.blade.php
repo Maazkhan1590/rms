@@ -9,6 +9,11 @@
 
     <title>@yield('title', trans('panel.site_title'))</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
     <!-- Material Icons for modern action buttons -->
