@@ -26,8 +26,11 @@ class HomeController
     public function index(Request $request)
     {
         $user = auth()->user();
-        
-        // Faculty users have access to admin dashboard
+
+        // Prevent pure faculty users from accessing the admin dashboard at all
+        if ($user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
+            return redirect()->route('faculty-members.show', $user->id);
+        }
 
         $currentYear = $request->get('year', now()->year);
 

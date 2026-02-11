@@ -133,6 +133,26 @@
                         <i class="fas fa-envelope"></i> {{ $user->email }}
                     </p>
                 @endif
+
+                @if($user->orcid || $user->google_scholar || $user->research_gate)
+                    <div style="margin-top: 0.75rem; display:flex; flex-wrap:wrap; gap:0.85rem; font-size:0.85rem;">
+                        @if($user->orcid)
+                            <a href="{{ $user->orcid }}" target="_blank" style="color:#a5b4fc; text-decoration:none;">
+                                <i class="fab fa-orcid"></i> ORCID
+                            </a>
+                        @endif
+                        @if($user->google_scholar)
+                            <a href="{{ $user->google_scholar }}" target="_blank" style="color:#bfdbfe; text-decoration:none;">
+                                <i class="fas fa-graduation-cap"></i> Google Scholar
+                            </a>
+                        @endif
+                        @if($user->research_gate)
+                            <a href="{{ $user->research_gate }}" target="_blank" style="color:#7dd3fc; text-decoration:none;">
+                                <i class="fas fa-project-diagram"></i> ResearchGate
+                            </a>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -141,6 +161,24 @@
 <!-- Profile Tabs: Publications / Grants / RTN / Recognitions -->
 <section class="researcher-profile-body">
     <div class="container researcher-profile-card">
+        @auth
+            @if(auth()->id() === $user->id && auth()->user()->hasRole('Faculty'))
+                <div style="display:flex; flex-wrap:wrap; gap:.75rem; justify-content:flex-end; margin-bottom:1rem;">
+                    <a href="{{ route('publications.create') }}" class="btn btn-sm" style="background:#111827; color:#f9fafb; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
+                        <i class="fas fa-plus-circle"></i> Submit Publication
+                    </a>
+                    <a href="{{ route('grants.create') }}" class="btn btn-sm" style="background:#0f766e; color:#ecfeff; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
+                        <i class="fas fa-coins"></i> Submit Grant
+                    </a>
+                    <a href="{{ route('rtn-submissions.create') }}" class="btn btn-sm" style="background:#4338ca; color:#e0e7ff; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
+                        <i class="fas fa-chalkboard-teacher"></i> Submit RTN
+                    </a>
+                    <a href="{{ route('bonus-recognitions.create') }}" class="btn btn-sm" style="background:#854d0e; color:#fffbeb; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
+                        <i class="fas fa-award"></i> Submit Recognition
+                    </a>
+                </div>
+            @endif
+        @endauth
         <div class="profile-tabs">
             <button type="button" class="profile-tab active" data-tab="publications">
                 <span>Publications</span>

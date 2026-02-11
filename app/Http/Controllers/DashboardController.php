@@ -22,6 +22,14 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // Gate: faculty should not see global dashboard, send to profile instead
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
+                return redirect()->route('faculty-members.show', $user->id);
+            }
+        }
+
         $currentYear = now()->year;
         $currentMonth = now()->month;
         $lastMonth = $currentMonth - 1;
