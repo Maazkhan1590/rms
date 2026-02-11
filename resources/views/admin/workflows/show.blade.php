@@ -202,7 +202,11 @@
             <a href="{{ route('admin.workflows.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back to List
             </a>
-            @if(in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted']))
+            @php
+                $isPendingStep = in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted']);
+                $isAssignedToMe = $workflow->assignee && $workflow->assignee->id === auth()->id();
+            @endphp
+            @if($isPendingStep && $isAssignedToMe)
                 <form action="{{ route('admin.workflows.approve', $workflow->id) }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" class="btn btn-success" onclick="return confirm('Approve this workflow? This will calculate and assign points if fully approved.');">
@@ -220,6 +224,10 @@
                     <i class="fas fa-user-edit"></i> Reassign Workflow
                 </button>
                 @endcan
+            @elseif($isPendingStep && !$workflow->assignee)
+                <span class="text-muted" style="margin-left: 10px;">This workflow is currently <strong>unassigned</strong>. Please assign it to an approver first.</span>
+            @elseif($isPendingStep)
+                <span class="text-muted" style="margin-left: 10px;">This workflow is assigned to <strong>{{ $workflow->assignee->name ?? 'another user' }}</strong>.</span>
             @endif
         </div>
     </div>

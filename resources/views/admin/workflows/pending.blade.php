@@ -149,19 +149,29 @@
                                 {{ $workflow->created_at->format('M d, Y') }}
                             </td>
                             <td>
+                                @php
+                                    $isPendingStep = in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted']);
+                                    $isAssignedToMe = $workflow->assignee && $workflow->assignee->id === auth()->id();
+                                @endphp
                                 <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
                                     <a class="btn btn-sm btn-info" href="{{ route('admin.workflows.show', $workflow->id) }}" title="View" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px;">
                                         <i class="fas fa-eye"></i> View
                                     </a>
-                                    <form action="{{ route('admin.workflows.approve', $workflow->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this workflow?');">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-success" title="Approve" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #22c55e; color: white; border: none; cursor: pointer;">
-                                            <i class="fas fa-check"></i> Approve
+                                    @if($isPendingStep && $isAssignedToMe)
+                                        <form action="{{ route('admin.workflows.approve', $workflow->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this workflow?');">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-success" title="Approve" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #22c55e; color: white; border: none; cursor: pointer;">
+                                                <i class="fas fa-check"></i> Approve
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal({{ $workflow->id }})" title="Reject" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #ef4444; color: white; border: none; cursor: pointer;">
+                                            <i class="fas fa-times"></i> Reject
                                         </button>
-                                    </form>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal({{ $workflow->id }})" title="Reject" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #ef4444; color: white; border: none; cursor: pointer;">
-                                        <i class="fas fa-times"></i> Reject
-                                    </button>
+                                    @elseif($isPendingStep && !$workflow->assignee)
+                                        <span class="text-muted" style="font-size: 12px;">Unassigned – please assign via Workflow Assignments.</span>
+                                    @elseif($isPendingStep)
+                                        <span class="text-muted" style="font-size: 12px;">Assigned to {{ $workflow->assignee->name ?? 'another user' }}</span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

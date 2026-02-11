@@ -157,6 +157,19 @@ class WorkflowController extends Controller
         try {
             \DB::beginTransaction();
 
+            // Only the currently assigned approver can approve at this step
+            $user = auth()->user();
+            if (!empty($workflow->assigned_to) && $workflow->assigned_to !== $user->id) {
+                \DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'This workflow is assigned to another approver. Only the assigned user can approve it.');
+            }
+            if (empty($workflow->assigned_to)) {
+                \DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'This workflow is currently unassigned. Please assign it to an approver before approving.');
+            }
+
             // Approve workflow
             $workflow = $this->workflowService->approveWorkflow(
                 $workflow,
