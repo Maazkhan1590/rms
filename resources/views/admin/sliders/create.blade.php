@@ -132,7 +132,7 @@
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Create Slider
+                    <span class="material-icons-outlined" style="font-size: 16px; vertical-align: middle;">save</span> Create Slider
                 </button>
                 <a href="{{ route('admin.sliders.index') }}" class="btn btn-secondary">
                     Cancel
