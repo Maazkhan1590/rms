@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('page-title', 'Publication Details')
 
 @section('content')
@@ -12,12 +16,14 @@
                     <div>
                         @if($publication->status === 'draft')
                             <a href="{{ route('faculty.publications.edit', $publication) }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-edit"></i> Edit
+                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">edit</span>
+                                <span style="vertical-align: middle;">Edit</span>
                             </a>
                             <form action="{{ route('faculty.publications.submit', $publication) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Submit this publication for approval?')">
-                                    <i class="fas fa-paper-plane"></i> Submit for Approval
+                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">send</span>
+                                    <span style="vertical-align: middle;">Submit for Approval</span>
                                 </button>
                             </form>
                         @endif
@@ -54,6 +60,12 @@
                         <p><strong>Quartile:</strong> <span class="badge badge-success">{{ $publication->quartile }}</span></p>
                         @endif
                         <p><strong>Year:</strong> {{ $publication->year ?? 'N/A' }}</p>
+                        @if($publication->submission_year)
+                        <p><strong>Submission Year:</strong> {{ $publication->submission_year }}</p>
+                        @endif
+                        @if($publication->publisher)
+                        <p><strong>Publisher:</strong> {{ $publication->publisher }}</p>
+                        @endif
                     </div>
                     <div class="col-md-6">
                         @if($publication->journal_name)
@@ -67,6 +79,36 @@
                         @endif
                         @if($publication->isbn)
                         <p><strong>ISBN:</strong> {{ $publication->isbn }}</p>
+                        @endif
+                        @if($publication->indexing_db)
+                        <p><strong>Indexing DB:</strong> {{ $publication->indexing_db }}</p>
+                        @endif
+                        <p><strong>Sohar Affiliation:</strong>
+                            @if(!is_null($publication->sohar_affiliation))
+                                <span class="badge badge-{{ $publication->sohar_affiliation ? 'success' : 'secondary' }}">
+                                    {{ $publication->sohar_affiliation ? 'Yes' : 'No' }}
+                                </span>
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif
+                        </p>
+                        @if(!is_null($publication->percent_contribution))
+                        <p><strong>% Contribution:</strong> {{ number_format($publication->percent_contribution, 2) }}%</p>
+                        @endif
+                        @if($publication->su_author_type)
+                        <p><strong>SU Author Type:</strong> {{ $publication->su_author_type }}</p>
+                        @endif
+                        <p><strong>Student Co-author:</strong>
+                            @if(!is_null($publication->student_coauthor))
+                                <span class="badge badge-{{ $publication->student_coauthor ? 'success' : 'secondary' }}">
+                                    {{ $publication->student_coauthor ? 'Yes' : 'No' }}
+                                </span>
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif
+                        </p>
+                        @if($publication->student_level)
+                        <p><strong>Student Level:</strong> {{ $publication->student_level }}</p>
                         @endif
                     </div>
                 </div>
@@ -95,6 +137,68 @@
                     @if($publication->workflow->assignee)
                         <p>Assigned to: {{ $publication->workflow->assignee->name }}</p>
                     @endif
+                </div>
+                @endif
+
+                @php
+                    $evidenceFiles = $publication->evidenceFiles ?? collect();
+                @endphp
+
+                @if($evidenceFiles->count() > 0)
+                <hr>
+                <div class="mt-3">
+                    <h5>
+                        <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">attach_file</span>
+                        <span style="vertical-align: middle;">Evidence Files ({{ $evidenceFiles->count() }})</span>
+                    </h5>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Uploaded By</th>
+                                    <th>Upload Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($evidenceFiles as $file)
+                                <tr>
+                                    <td>{{ $file->file_name }}</td>
+                                    <td>
+                                        @if($file->file_type === 'text/url')
+                                            <span class="badge badge-info">URL</span>
+                                        @elseif(str_contains($file->file_type, 'image'))
+                                            <span class="badge badge-success">Image</span>
+                                        @elseif(str_contains($file->file_type, 'pdf'))
+                                            <span class="badge badge-danger">PDF</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ $file->file_type }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                                    <td>{{ $file->uploader->name ?? 'N/A' }}</td>
+                                    <td>{{ $file->uploaded_at ? $file->uploaded_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                    <td>
+                                        @if($file->file_type === 'text/url')
+                                            <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                <span style="vertical-align: middle;">Open</span>
+                                            </a>
+                                        @else
+                                            <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">download</span>
+                                                <span style="vertical-align: middle;">Download</span>
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 @endif
             </div>
@@ -135,11 +239,13 @@
             </div>
             <div class="card-body">
                 <a href="{{ route('faculty.publications.index') }}" class="btn btn-secondary btn-block">
-                    <i class="fas fa-arrow-left"></i> Back to List
+                    <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
+                    <span style="vertical-align: middle;">Back to List</span>
                 </a>
                 @if($publication->status === 'draft')
                 <a href="{{ route('faculty.publications.edit', $publication) }}" class="btn btn-primary btn-block">
-                    <i class="fas fa-edit"></i> Edit Publication
+                    <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">edit</span>
+                    <span style="vertical-align: middle;">Edit Publication</span>
                 </a>
                 @endif
             </div>

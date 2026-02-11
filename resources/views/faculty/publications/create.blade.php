@@ -157,7 +157,8 @@
 
             <div class="form-group mt-4">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Save as Draft
+                    <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">save</span>
+                    <span style="vertical-align: middle;">Save as Draft</span>
                 </button>
                 <a href="{{ route('faculty.publications.index') }}" class="btn btn-secondary">
                     Cancel
