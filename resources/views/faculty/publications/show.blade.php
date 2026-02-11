@@ -566,20 +566,21 @@
     border-top: 1px solid #e5e7eb;
 }
 </style>
+@endsection
 
-@push('scripts')
+@section('scripts')
 <script>
     let submissionCurrentStep = 1;
     const submissionTotalSteps = 4;
 
     function updateSubmissionStepper() {
-        // content
-        document.querySelectorAll('.submission-step-content').forEach(el => {
+        // Show only the current step content
+        document.querySelectorAll('.submission-step-content').forEach(function(el) {
             el.style.display = el.getAttribute('data-step') == submissionCurrentStep ? 'block' : 'none';
         });
 
-        // step circles
-        document.querySelectorAll('.submission-step-item').forEach(item => {
+        // Update step circles
+        document.querySelectorAll('.submission-step-item').forEach(function(item) {
             const stepNum = parseInt(item.getAttribute('data-step'), 10);
             const circle = item.querySelector('.submission-step-circle');
             circle.classList.remove('active', 'completed');
@@ -591,13 +592,13 @@
             }
         });
 
-        // progress line (0..100 mapped to 80% width like create)
+        // Update progress line
         const line = document.getElementById('submissionStepperLine');
         if (!line) return;
         if (submissionCurrentStep <= 1) {
             line.style.width = '0%';
         } else {
-            const progress = ((submissionCurrentStep - 1) / (submissionTotalSteps - 1)) * 84; // 84% matches left/right 8%
+            const progress = ((submissionCurrentStep - 1) / (submissionTotalSteps - 1)) * 84; // match left/right 8%
             line.style.width = progress + '%';
         }
     }
@@ -616,10 +617,8 @@
         goSubmissionStep(submissionCurrentStep - 1);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', function() {
         updateSubmissionStepper();
     });
 </script>
-@endpush
 @endsection
-
