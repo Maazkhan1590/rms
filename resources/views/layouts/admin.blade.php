@@ -1121,6 +1121,46 @@
     <!-- SweetAlert2 for nicer confirmation dialogs -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+
+    <!-- Global handler for "Submit for Approval" buttons (faculty publications) -->
+    <script>
+        if (window.jQuery) {
+            jQuery(function($) {
+                $(document).on('click', '.btn-submit-publication', function (e) {
+                    e.preventDefault();
+
+                    const $button = $(this);
+                    const form = $button.closest('form');
+                    const title = $button.data('title') || 'this publication';
+
+                    if (!form.length) {
+                        return;
+                    }
+
+                    if (window.Swal) {
+                        Swal.fire({
+                            title: 'Submit for approval?',
+                            text: 'You are about to submit "' + title + '" for workflow approval. You will not be able to edit it while under review.',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, submit',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#16a34a',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.trigger('submit');
+                            }
+                        });
+                    } else {
+                        if (confirm('Submit this publication for approval?')) {
+                            form.trigger('submit');
+                        }
+                    }
+                });
+            });
+        }
+    </script>
+
     @yield('scripts')
 </body>
 </html>
