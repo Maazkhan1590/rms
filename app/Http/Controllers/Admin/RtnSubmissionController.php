@@ -32,6 +32,12 @@ class RtnSubmissionController extends Controller
 
         $query = RtnSubmission::with(['user']);
 
+        // If current user is Faculty (non-admin), always show only their own RTN submissions
+        $user = auth()->user();
+        if ($user && $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $query->where('user_id', $user->id);
+        }
+
         // Filter by status
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);

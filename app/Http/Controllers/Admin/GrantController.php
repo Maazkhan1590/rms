@@ -35,6 +35,12 @@ class GrantController extends Controller
 
         $query = Grant::with(['submitter', 'approver']);
 
+        // If current user is Faculty (non-admin), always show only their own grants
+        $user = auth()->user();
+        if ($user && $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
+            $query->where('submitted_by', $user->id);
+        }
+
         // Filter by status
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
