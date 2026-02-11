@@ -266,7 +266,15 @@ class WorkflowService
             ->whereNull('department')
             ->first();
 
-        return $globalAssignment ? $globalAssignment->user : null;
+        if ($globalAssignment) {
+            return $globalAssignment->user;
+        }
+
+        // Ultimate fallback: use any user with Coordinator role
+        return User::whereHas('roles', function ($q) {
+                $q->where('title', 'Coordinator');
+            })
+            ->first();
     }
 
     /**
@@ -298,7 +306,15 @@ class WorkflowService
             ->whereNull('college')
             ->first();
 
-        return $globalAssignment ? $globalAssignment->user : null;
+        if ($globalAssignment) {
+            return $globalAssignment->user;
+        }
+
+        // Ultimate fallback: use any user with Dean role
+        return User::whereHas('roles', function ($q) {
+                $q->where('title', 'Dean');
+            })
+            ->first();
     }
     
     /**
