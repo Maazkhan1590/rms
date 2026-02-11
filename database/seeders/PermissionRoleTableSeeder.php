@@ -264,11 +264,31 @@ class PermissionRoleTableSeeder extends Seeder
             $selfService
         );
 
-        // Faculty gets create/read access to their own submissions
+        // Faculty gets "My Research" access plus read-level access to research modules
         $facultyPermissions = array_merge(
             [
                 'research_access', // My Research section access
-
+                // Publications (handled via public/faculty flows, but allow admin views where needed)
+                'publication_access',
+                'publication_read',
+                // Grants
+                'grant_access',
+                'grant_read',
+                // RTN
+                'rtn_access',
+                'rtn_read',
+                // Bonus recognitions
+                'bonus_access',
+                'bonus_read',
+                // Consultancies
+                'consultancy_access',
+                'consultancy_read',
+                // Commercializations
+                'commercialization_access',
+                'commercialization_read',
+                // Conferences
+                'conference_access',
+                'conference_read',
             ],
             $selfService
         );

@@ -78,45 +78,48 @@
                 </div>
                 @endcan
 
-                @canany(['publication_access', 'grant_access', 'rtn_access', 'bonus_access'])
-                <div class="nav-section">
-                    <h3 class="nav-section-title">Research Submissions</h3>
-                    <ul>
-                        @can('publication_access')
-                        <li>
-                            <a href="{{ route('admin.publications.index') }}" class="nav-link {{ request()->routeIs('admin.publications.*') ? 'active' : '' }}">
-                                <span class="nav-icon">📚</span>
-                                <span class="nav-label">Publications</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('grant_access')
-                        <li>
-                            <a href="{{ route('admin.grants.index') }}" class="nav-link {{ request()->routeIs('admin.grants.*') ? 'active' : '' }}">
-                                <span class="nav-icon">💰</span>
-                                <span class="nav-label">Grants</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('rtn_access')
-                        <li>
-                            <a href="{{ route('admin.rtn-submissions.index') }}" class="nav-link {{ request()->routeIs('admin.rtn-submissions.*') ? 'active' : '' }}">
-                                <span class="nav-icon">📖</span>
-                                <span class="nav-label">RTN Submissions</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('bonus_access')
-                        <li>
-                            <a href="{{ route('admin.bonus-recognitions.index') }}" class="nav-link {{ request()->routeIs('admin.bonus-recognitions.*') ? 'active' : '' }}">
-                                <span class="nav-icon">🏆</span>
-                                <span class="nav-label">Bonus Recognition</span>
-                            </a>
-                        </li>
-                        @endcan
-                    </ul>
-                </div>
-                @endcanany
+                {{-- Research Submissions (Admin / Dean / Coordinator only - NOT Faculty) --}}
+                @unless(auth()->user()->hasRole('Faculty'))
+                    @canany(['publication_access', 'grant_access', 'rtn_access', 'bonus_access'])
+                    <div class="nav-section">
+                        <h3 class="nav-section-title">Research Submissions</h3>
+                        <ul>
+                            @can('publication_access')
+                            <li>
+                                <a href="{{ route('admin.publications.index') }}" class="nav-link {{ request()->routeIs('admin.publications.*') ? 'active' : '' }}">
+                                    <span class="nav-icon">📚</span>
+                                    <span class="nav-label">Publications</span>
+                                </a>
+                            </li>
+                            @endcan
+                            @can('grant_access')
+                            <li>
+                                <a href="{{ route('admin.grants.index') }}" class="nav-link {{ request()->routeIs('admin.grants.*') ? 'active' : '' }}">
+                                    <span class="nav-icon">💰</span>
+                                    <span class="nav-label">Grants</span>
+                                </a>
+                            </li>
+                            @endcan
+                            @can('rtn_access')
+                            <li>
+                                <a href="{{ route('admin.rtn-submissions.index') }}" class="nav-link {{ request()->routeIs('admin.rtn-submissions.*') ? 'active' : '' }}">
+                                    <span class="nav-icon">📖</span>
+                                    <span class="nav-label">RTN Submissions</span>
+                                </a>
+                            </li>
+                            @endcan
+                            @can('bonus_access')
+                            <li>
+                                <a href="{{ route('admin.bonus-recognitions.index') }}" class="nav-link {{ request()->routeIs('admin.bonus-recognitions.*') ? 'active' : '' }}">
+                                    <span class="nav-icon">🏆</span>
+                                    <span class="nav-label">Bonus Recognition</span>
+                                </a>
+                            </li>
+                            @endcan
+                        </ul>
+                    </div>
+                    @endcanany
+                @endunless
 
                 @canany(['consultancy_access', 'commercialization_access', 'partnership_access', 'conference_access', 'investment_access'])
                 <div class="nav-section" style="display: none">
