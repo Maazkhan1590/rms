@@ -56,9 +56,19 @@
 
         <!-- Action Buttons -->
         <div class="d-grid gap-2">
+            @php
+                $user = auth()->user();
+                $isPureFaculty = $user && $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean();
+            @endphp
+            @if($isPureFaculty)
+            <a href="{{ route('faculty-members.show', $user->id) }}" class="btn btn-primary py-2">
+                <i class="bi bi-person-circle me-2"></i>My Profile
+            </a>
+            @else
             <a href="{{ route('dashboard') }}" class="btn btn-primary py-2">
                 <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
             </a>
+            @endif
             <form method="POST" action="{{ route('logout') }}" class="d-inline">
                 @csrf
                 <button type="submit" class="btn btn-outline-secondary w-100 py-2">

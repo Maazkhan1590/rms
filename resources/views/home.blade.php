@@ -38,9 +38,19 @@
                             <a href="{{ route('publications.create') }}" class="btn btn-primary">
                                 <i class="fas fa-rocket"></i> Submit Paper
                             </a>
+                            @php
+                                $user = auth()->user();
+                                $isPureFaculty = $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean();
+                            @endphp
+                            @if($isPureFaculty)
+                            <a href="{{ route('faculty-members.show', $user->id) }}" class="btn btn-primary" style="margin-left: 1rem;">
+                                <i class="fas fa-user-circle"></i> My Profile
+                            </a>
+                            @else
                             <a href="{{ route('admin.home') }}" class="btn btn-primary" style="margin-left: 1rem;">
                                 <i class="fas fa-tachometer-alt"></i> Go to Dashboard
                             </a>
+                            @endif
                             @endguest
                             <a href="{{ route('publications.index') }}" class="btn btn-outline">
                                 <i class="fas fa-book-reader"></i> Explore Publications
@@ -272,9 +282,16 @@
                     <i class="fas fa-paper-plane"></i> Submit Your Paper
                 </a>
                 @else
-                @if(auth()->user()->hasRole('Faculty'))
+                @php
+                    $user = auth()->user();
+                    $isPureFaculty = $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean();
+                @endphp
+                @if($isPureFaculty)
                 <a href="{{ route('publications.create') }}" class="btn btn-primary">
                     <i class="fas fa-paper-plane"></i> Submit Your Paper
+                </a>
+                <a href="{{ route('faculty-members.show', $user->id) }}" class="btn btn-primary" style="margin-left: 1rem;">
+                    <i class="fas fa-user-circle"></i> My Profile
                 </a>
                 @else
                 <a href="{{ route('admin.home') }}" class="btn btn-primary">
