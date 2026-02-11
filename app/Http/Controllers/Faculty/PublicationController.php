@@ -100,8 +100,9 @@ class PublicationController extends Controller
      */
     public function show(Publication $publication)
     {
-        // Check authorization
-        if ($publication->primary_author_id !== auth()->id()) {
+        // Check authorization: user must be the primary author OR the original submitter
+        $userId = auth()->id();
+        if ($publication->primary_author_id !== $userId && $publication->submitted_by !== $userId) {
             abort(403, 'Unauthorized');
         }
 
@@ -116,7 +117,8 @@ class PublicationController extends Controller
     public function edit(Publication $publication)
     {
         // Check authorization
-        if ($publication->primary_author_id !== auth()->id()) {
+        $userId = auth()->id();
+        if ($publication->primary_author_id !== $userId && $publication->submitted_by !== $userId) {
             abort(403, 'Unauthorized');
         }
 
@@ -134,7 +136,8 @@ class PublicationController extends Controller
     public function update(UpdatePublicationRequest $request, Publication $publication)
     {
         // Check authorization
-        if ($publication->primary_author_id !== auth()->id()) {
+        $userId = auth()->id();
+        if ($publication->primary_author_id !== $userId && $publication->submitted_by !== $userId) {
             abort(403, 'Unauthorized');
         }
 
@@ -166,7 +169,8 @@ class PublicationController extends Controller
     public function submit(Publication $publication)
     {
         // Check authorization
-        if ($publication->primary_author_id !== auth()->id()) {
+        $userId = auth()->id();
+        if ($publication->primary_author_id !== $userId && $publication->submitted_by !== $userId) {
             abort(403, 'Unauthorized');
         }
 
