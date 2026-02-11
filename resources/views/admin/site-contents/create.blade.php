@@ -13,36 +13,62 @@
 
             <div class="form-group">
                 <label for="key">Key <span class="text-danger">*</span></label>
-                <div class="row">
-                    <div class="col-md-6">
-                        <select class="form-control @error('key') is-invalid @enderror" 
-                                id="key_select" onchange="document.getElementById('key').value = this.value; updateLabelFromKey();">
-                            <option value="">-- Select Predefined Key --</option>
-                            @foreach($predefinedKeys as $section => $keys)
-                                <optgroup label="{{ ucfirst($section) }} Section">
-                                    @foreach($keys as $keyValue => $keyLabel)
-                                        <option value="{{ $keyValue }}" data-label="{{ $keyLabel }}" data-section="{{ $section }}" data-type="{{ 
-                                            strpos($keyValue, 'email') !== false ? 'email' : 
-                                            (strpos($keyValue, 'phone') !== false ? 'phone' : 
-                                            (strpos($keyValue, 'link') !== false || strpos($keyValue, 'social_') !== false ? 'url' : 
-                                            (strpos($keyValue, 'description') !== false ? 'html' : 'text'))) 
-                                        }}">
-                                            {{ $keyValue }} ({{ $keyLabel }})
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" class="form-control @error('key') is-invalid @enderror" 
-                               id="key" name="key" value="{{ old('key') }}" required placeholder="Or enter custom key">
+                
+                <!-- Toggle between predefined and custom -->
+                <div class="mb-2">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active" id="btn-predefined" onclick="toggleKeyMode('predefined')">
+                            <span class="material-icons-outlined" style="font-size: 16px;">list</span> Predefined Key
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="btn-custom" onclick="toggleKeyMode('custom')">
+                            <span class="material-icons-outlined" style="font-size: 16px;">edit</span> Custom Key
+                        </button>
                     </div>
                 </div>
+
+                <!-- Predefined Key Dropdown -->
+                <div id="predefined-key-section">
+                    <select class="form-control @error('key') is-invalid @enderror" 
+                            id="key_select" onchange="document.getElementById('key').value = this.value; updateLabelFromKey();">
+                        <option value="">-- Select Predefined Key --</option>
+                        @foreach($predefinedKeys as $section => $keys)
+                            <optgroup label="{{ ucfirst($section) }} Section">
+                                @foreach($keys as $keyValue => $keyLabel)
+                                    <option value="{{ $keyValue }}" data-label="{{ $keyLabel }}" data-section="{{ $section }}" data-type="{{ 
+                                        strpos($keyValue, 'email') !== false ? 'email' : 
+                                        (strpos($keyValue, 'phone') !== false ? 'phone' : 
+                                        (strpos($keyValue, 'link') !== false || strpos($keyValue, 'social_') !== false ? 'url' : 
+                                        (strpos($keyValue, 'description') !== false ? 'html' : 'text'))) 
+                                    }}">
+                                        {{ $keyValue }} ({{ $keyLabel }})
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
+                    </select>
+                    <small class="form-text text-muted mt-1">Select from commonly used keys for footer, header, or general content</small>
+                </div>
+
+                <!-- Custom Key Input -->
+                <div id="custom-key-section" style="display: none;">
+                    <input type="text" class="form-control @error('key') is-invalid @enderror" 
+                           id="key" name="key" value="{{ old('key') }}" required 
+                           placeholder="e.g., custom_feature_text, my_custom_setting">
+                    <small class="form-text text-muted mt-1">
+                        <strong>Custom Key Guidelines:</strong><br>
+                        • Use lowercase letters only<br>
+                        • Separate words with underscores (e.g., <code>custom_feature_name</code>)<br>
+                        • Must be unique across all site content<br>
+                        • Examples: <code>homepage_banner_text</code>, <code>about_us_description</code>, <code>custom_widget_content</code>
+                    </small>
+                </div>
+
+                <!-- Hidden input that actually submits -->
+                <input type="hidden" id="key_hidden" name="key" value="{{ old('key') }}" required>
+
                 @error('key')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                <small class="form-text text-muted">Select a predefined key or enter a custom one (use lowercase with underscores)</small>
             </div>
 
             <div class="form-group">
@@ -137,11 +163,58 @@
 
 @push('scripts')
 <script>
+    function toggleKeyMode(mode) {
+        const predefinedSection = document.getElementById('predefined-key-section');
+        const customSection = document.getElementById('custom-key-section');
+        const btnPredefined = document.getElementById('btn-predefined');
+        const btnCustom = document.getElementById('btn-custom');
+        const keySelect = document.getElementById('key_select');
+        const keyInput = document.getElementById('key');
+        const keyHidden = document.getElementById('key_hidden');
+
+        if (mode === 'predefined') {
+            predefinedSection.style.display = 'block';
+            customSection.style.display = 'none';
+            btnPredefined.classList.add('active');
+            btnPredefined.classList.remove('btn-outline-primary');
+            btnPredefined.classList.add('btn-primary');
+            btnCustom.classList.remove('active', 'btn-primary');
+            btnCustom.classList.add('btn-outline-secondary');
+            keySelect.required = true;
+            keyInput.required = false;
+            keyInput.name = '';
+            keySelect.name = 'key';
+            keySelect.onchange = function() {
+                keyHidden.value = this.value;
+                updateLabelFromKey();
+            };
+        } else {
+            predefinedSection.style.display = 'none';
+            customSection.style.display = 'block';
+            btnCustom.classList.add('active');
+            btnCustom.classList.remove('btn-outline-secondary');
+            btnCustom.classList.add('btn-primary');
+            btnPredefined.classList.remove('active', 'btn-primary');
+            btnPredefined.classList.add('btn-outline-primary');
+            keySelect.required = false;
+            keyInput.required = true;
+            keySelect.name = '';
+            keyInput.name = 'key';
+            keyInput.oninput = function() {
+                keyHidden.value = this.value;
+            };
+            keyInput.focus();
+        }
+    }
+
     function updateLabelFromKey() {
         const select = document.getElementById('key_select');
         const selectedOption = select.options[select.selectedIndex];
         
         if (selectedOption.value) {
+            // Update hidden input
+            document.getElementById('key_hidden').value = selectedOption.value;
+            
             // Update label field
             const labelInput = document.getElementById('label');
             if (labelInput && !labelInput.value) {
@@ -162,11 +235,29 @@
         }
     }
     
-    // Also update when typing custom key
-    document.getElementById('key').addEventListener('input', function() {
-        if (this.value && !document.getElementById('key_select').value) {
-            // User is typing custom key, clear the select
-            document.getElementById('key_select').value = '';
+    // Initialize - check if old value exists and set mode accordingly
+    document.addEventListener('DOMContentLoaded', function() {
+        const oldKey = '{{ old("key") }}';
+        if (oldKey) {
+            const keySelect = document.getElementById('key_select');
+            let found = false;
+            for (let i = 0; i < keySelect.options.length; i++) {
+                if (keySelect.options[i].value === oldKey) {
+                    keySelect.value = oldKey;
+                    found = true;
+                    toggleKeyMode('predefined');
+                    updateLabelFromKey();
+                    break;
+                }
+            }
+            if (!found) {
+                document.getElementById('key').value = oldKey;
+                document.getElementById('key_hidden').value = oldKey;
+                toggleKeyMode('custom');
+            }
+        } else {
+            // Default to predefined mode
+            toggleKeyMode('predefined');
         }
     });
 </script>
