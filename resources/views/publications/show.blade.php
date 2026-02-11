@@ -1,5 +1,9 @@
 @extends('layouts.public')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('title', $publication->title . ' | Academic Research Portal')
 
 @push('styles')
@@ -151,8 +155,21 @@
     <div class="container">
         <div class="publication-detail-card">
             <!-- Back Link -->
-            <a href="{{ route('publications.index') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #6b7280; text-decoration: none; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem;">
-                <i class="fas fa-arrow-left"></i> Back to Publications
+            @php
+                $backUrl = request()->headers->get('referer');
+                $backText = 'Back';
+                if ($backUrl) {
+                    if (str_contains($backUrl, '/faculty-members/')) {
+                        $backText = 'Back to Profile';
+                    } elseif (str_contains($backUrl, '/publications')) {
+                        $backText = 'Back to Publications';
+                    } elseif (str_contains($backUrl, '/faculty/publications')) {
+                        $backText = 'Back to My Publications';
+                    }
+                }
+            @endphp
+            <a href="{{ $backUrl ?? route('publications.index') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #6b7280; text-decoration: none; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> {{ $backText }}
             </a>
 
             <!-- Publication Header -->
@@ -388,7 +405,11 @@
 
             <!-- Evidence Files Section -->
             @php
-                $evidenceFiles = $publication->evidenceFiles ?? collect();
+                // Load evidence files directly from database to ensure they're loaded
+                $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'publication')
+                    ->where('submission_id', $publication->id)
+                    ->with('uploader')
+                    ->get();
                 $hasLinkEvidence = !empty($publication->published_link) || !empty($publication->proceedings_link);
                 $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
             @endphp
@@ -428,11 +449,11 @@
                             <td>{{ $file->uploaded_at ? $file->uploaded_at->format('M d, Y') : 'N/A' }}</td>
                             <td>
                                 @if($file->file_type === 'text/url')
-                                    <a href="{{ $file->file_path }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                    <a href="{{ $file->file_path }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
                                         <i class="fas fa-external-link-alt"></i> Open
                                     </a>
                                 @else
-                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" download="{{ $file->file_name }}" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
                                         <i class="fas fa-download"></i> Download
                                     </a>
                                 @endif
@@ -448,7 +469,7 @@
                             <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
                             <td>{{ $publication->submitted_at ? $publication->submitted_at->format('M d, Y') : 'N/A' }}</td>
                             <td>
-                                <a href="{{ $publication->published_link }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                <a href="{{ $publication->published_link }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
                                     <i class="fas fa-external-link-alt"></i> Open
                                 </a>
                             </td>
@@ -463,7 +484,7 @@
                             <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
                             <td>{{ $publication->submitted_at ? $publication->submitted_at->format('M d, Y') : 'N/A' }}</td>
                             <td>
-                                <a href="{{ $publication->proceedings_link }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                <a href="{{ $publication->proceedings_link }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
                                     <i class="fas fa-external-link-alt"></i> Open
                                 </a>
                             </td>

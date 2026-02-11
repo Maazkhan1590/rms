@@ -1,65 +1,500 @@
 @extends('layouts.public')
 
-@section('title', 'Grant Details - RMS')
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
+@section('title', $grant->title . ' | Grant Details - RMS')
+
+@push('styles')
+<style>
+    .publication-detail-page {
+        padding: 6.75rem 0 3.5rem;
+        background: #f3f4f6;
+    }
+
+    .publication-detail-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(15,23,42,0.10);
+        padding: 2.5rem 3rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .publication-header {
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 1.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .publication-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+
+    .publication-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .publication-badges {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+    }
+
+    .badge-pill {
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .detail-item {
+        padding: 1.25rem;
+        background: #f9fafb;
+        border-radius: 10px;
+        border-left: 3px solid #3b82f6;
+    }
+
+    .detail-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+
+    .detail-value {
+        font-size: 1rem;
+        color: #111827;
+        font-weight: 500;
+    }
+
+    .evidence-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .evidence-table th {
+        background: #f9fafb;
+        padding: 0.875rem 1rem;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .evidence-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        color: #4b5563;
+        font-size: 0.9rem;
+    }
+
+    .evidence-table tr:hover {
+        background: #f9fafb;
+    }
+
+    @media (max-width: 768px) {
+        .publication-detail-card {
+            padding: 1.5rem 1.5rem;
+        }
+        .publication-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+@endpush
 
 @section('content')
-<div style="max-width: 1000px; margin: 2rem auto; padding: 0 2rem;">
-    <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h1 style="margin-bottom: 1rem;">{{ $grant->title }}</h1>
-        
-        <div style="margin-bottom: 1.5rem;">
-            <strong>Status:</strong> 
-            @if($grant->status == 'approved')
-                <span style="color: green;">Approved</span>
-            @elseif($grant->status == 'pending' || $grant->status == 'submitted')
-                <span style="color: orange;">Pending</span>
-            @elseif($grant->status == 'rejected')
-                <span style="color: red;">Rejected</span>
-            @else
-                <span style="color: gray;">{{ ucfirst($grant->status) }}</span>
+<section class="publication-detail-page">
+    <div class="container">
+        <div class="publication-detail-card">
+            <!-- Back Link -->
+            @php
+                $backUrl = request()->headers->get('referer');
+                $backText = 'Back';
+                if ($backUrl) {
+                    if (str_contains($backUrl, '/faculty-members/')) {
+                        $backText = 'Back to Profile';
+                    } elseif (str_contains($backUrl, '/grants')) {
+                        $backText = 'Back to Grants';
+                    } elseif (str_contains($backUrl, '/publications')) {
+                        $backText = 'Back to Publications';
+                    }
+                } else {
+                    $backUrl = route('welcome');
+                    $backText = 'Back to Home';
+                }
+            @endphp
+            <a href="{{ $backUrl }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #6b7280; text-decoration: none; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> {{ $backText }}
+            </a>
+
+            <!-- Grant Header -->
+            <div class="publication-header">
+                <h1 class="publication-title">{{ $grant->title ?? 'Untitled Grant' }}</h1>
+                
+                @if($grant->submitter)
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #374151; font-size: 0.9rem;">Submitted by:</strong>
+                    <span style="color: #6b7280; font-size: 0.95rem; margin-left: 0.5rem;">{{ $grant->submitter->name }}</span>
+                </div>
+                @endif
+
+                <div class="publication-meta">
+                    @if($grant->grant_type)
+                        <div><strong>Grant Type:</strong> {{ ucfirst(str_replace('_', ' ', $grant->grant_type)) }}</div>
+                    @endif
+                    @if($grant->role)
+                        <div><strong>Role:</strong> {{ $grant->role }}</div>
+                    @endif
+                    @if($grant->award_year)
+                        <div><strong>Award Year:</strong> {{ $grant->award_year }}</div>
+                    @endif
+                    @if($grant->sponsor_name || $grant->sponsor)
+                        <div><strong>Sponsor:</strong> {{ $grant->sponsor_name ?? $grant->sponsor ?? 'N/A' }}</div>
+                    @endif
+                    @if($grant->amount_omr)
+                        <div><strong>Amount:</strong> {{ number_format($grant->amount_omr, 2) }} OMR</div>
+                    @endif
+                </div>
+
+                <div class="publication-badges">
+                    @if($grant->grant_type)
+                        <span class="badge-pill" style="background: #eff6ff; color: #1d4ed8;">
+                            {{ strtoupper(str_replace('_', ' ', $grant->grant_type)) }}
+                        </span>
+                    @endif
+                    @if($grant->status)
+                        <span class="badge-pill" style="background: {{ $grant->status === 'approved' ? '#22c55e' : ($grant->status === 'submitted' || $grant->status === 'pending' ? '#eab308' : '#6b7280') }}; color: #fff;">
+                            {{ ucfirst($grant->status) }}
+                        </span>
+                    @endif
+                    @if($grant->grant_status)
+                        <span class="badge-pill" style="background: #fef3c7; color: #92400e;">
+                            {{ ucfirst(str_replace('_', ' ', $grant->grant_status)) }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            @if($grant->summary)
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-file-alt" style="color: #3b82f6; margin-right: 0.5rem;"></i>Summary
+                </h2>
+                <p style="color: #374151; line-height: 1.8; font-size: 1.05rem; text-align: justify;">
+                    {{ $grant->summary }}
+                </p>
+            </div>
             @endif
-        </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-            <div>
-                <strong>Grant Type:</strong><br>
-                {{ ucfirst(str_replace('_', ' ', $grant->grant_type ?? 'N/A')) }}
+            <!-- Grant Details Grid -->
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 0.5rem;"></i>Grant Details
+                </h2>
+                <div class="detail-grid">
+                    @if($grant->grant_type)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-tag" style="margin-right: 0.5rem;"></i>Grant Type</div>
+                        <div class="detail-value">{{ ucfirst(str_replace('_', ' ', $grant->grant_type)) }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->role)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-tie" style="margin-right: 0.5rem;"></i>Role</div>
+                        <div class="detail-value">{{ $grant->role }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->award_year)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar" style="margin-right: 0.5rem;"></i>Award Year</div>
+                        <div class="detail-value">{{ $grant->award_year }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->submission_year)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar-alt" style="margin-right: 0.5rem;"></i>Submission Year</div>
+                        <div class="detail-value">{{ $grant->submission_year }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->sponsor_name || $grant->sponsor)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-building" style="margin-right: 0.5rem;"></i>Sponsor</div>
+                        <div class="detail-value">{{ $grant->sponsor_name ?? $grant->sponsor ?? 'N/A' }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->sponsor_type)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-industry" style="margin-right: 0.5rem;"></i>Sponsor Type</div>
+                        <div class="detail-value">{{ ucfirst(str_replace('_', ' ', $grant->sponsor_type)) }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->amount_omr)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-money-bill-wave" style="margin-right: 0.5rem;"></i>Amount (OMR)</div>
+                        <div class="detail-value" style="font-weight: 700; color: #059669;">{{ number_format($grant->amount_omr, 2) }} OMR</div>
+                    </div>
+                    @endif
+
+                    @if($grant->amount_received_omr)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>Amount Received (OMR)</div>
+                        <div class="detail-value" style="font-weight: 700; color: #059669;">{{ number_format($grant->amount_received_omr, 2) }} OMR</div>
+                    </div>
+                    @endif
+
+                    @if($grant->units)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calculator" style="margin-right: 0.5rem;"></i>Units</div>
+                        <div class="detail-value">{{ $grant->units }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->reference_code)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-hashtag" style="margin-right: 0.5rem;"></i>Reference Code</div>
+                        <div class="detail-value">{{ $grant->reference_code }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->start_date)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar-check" style="margin-right: 0.5rem;"></i>Start Date</div>
+                        <div class="detail-value">{{ $grant->start_date->format('F d, Y') }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->end_date)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar-times" style="margin-right: 0.5rem;"></i>End Date</div>
+                        <div class="detail-value">{{ $grant->end_date->format('F d, Y') }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->application_date)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-file-alt" style="margin-right: 0.5rem;"></i>Application Date</div>
+                        <div class="detail-value">{{ $grant->application_date->format('F d, Y') }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->grant_status)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>Grant Status</div>
+                        <div class="detail-value">{{ ucfirst(str_replace('_', ' ', $grant->grant_status)) }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->reporting_period)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-chart-line" style="margin-right: 0.5rem;"></i>Reporting Period</div>
+                        <div class="detail-value">{{ $grant->reporting_period }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->patent_registration_number)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-certificate" style="margin-right: 0.5rem;"></i>Patent Registration</div>
+                        <div class="detail-value">{{ $grant->patent_registration_number }}</div>
+                    </div>
+                    @endif
+
+                    @if(!is_null($grant->patent_su_registered))
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>SU Registered Patent</div>
+                        <div class="detail-value">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: {{ $grant->patent_su_registered ? '#d1fae5' : '#f3f4f6' }}; color: {{ $grant->patent_su_registered ? '#065f46' : '#6b7280' }};">
+                                {{ $grant->patent_su_registered ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!is_null($grant->kt_income))
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-handshake" style="margin-right: 0.5rem;"></i>KT Income</div>
+                        <div class="detail-value">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: {{ $grant->kt_income ? '#d1fae5' : '#f3f4f6' }}; color: {{ $grant->kt_income ? '#065f46' : '#6b7280' }};">
+                                {{ $grant->kt_income ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($grant->matching_grant_moa)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-file-contract" style="margin-right: 0.5rem;"></i>Matching Grant MOA</div>
+                        <div class="detail-value">{{ $grant->matching_grant_moa }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->points_allocated)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-star" style="margin-right: 0.5rem;"></i>Research Points</div>
+                        <div class="detail-value" style="font-weight: 700; color: #059669;">{{ number_format($grant->points_allocated, 2) }}</div>
+                    </div>
+                    @endif
+
+                    @if($grant->sdgs && is_array($grant->sdgs) && count($grant->sdgs) > 0)
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <div class="detail-label"><i class="fas fa-globe" style="margin-right: 0.5rem;"></i>Sustainable Development Goals (SDGs)</div>
+                        <div class="detail-value">
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                                @foreach($grant->sdgs as $sdg)
+                                    <span style="padding: 0.35rem 0.85rem; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 0.85rem; font-weight: 600;">{{ $sdg }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
             </div>
-            <div>
-                <strong>Role:</strong><br>
-                {{ $grant->role ?? 'N/A' }}
-            </div>
-            <div>
-                <strong>Award Year:</strong><br>
-                {{ $grant->award_year ?? 'N/A' }}
-            </div>
-            @if($grant->amount_omr)
-            <div>
-                <strong>Amount:</strong><br>
-                {{ number_format($grant->amount_omr, 2) }} OMR
+
+            <!-- Evidence Files Section -->
+            @php
+                $evidenceFiles = $grant->evidenceFiles ?? collect();
+                $hasLinkEvidence = !empty($grant->award_letter_path);
+                $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
+            @endphp
+            @if($hasAnyEvidence)
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-paperclip" style="color: #3b82f6; margin-right: 0.5rem;"></i>Evidence & Attachments
+                </h2>
+                <table class="evidence-table">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Uploaded By</th>
+                            <th>Upload Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($evidenceFiles as $file)
+                        <tr>
+                            <td style="font-weight: 500;">{{ $file->file_name }}</td>
+                            <td>
+                                @if($file->file_type === 'text/url')
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 0.8rem; font-weight: 600;">URL</span>
+                                @elseif(str_contains($file->file_type, 'image'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #d1fae5; color: #065f46; font-size: 0.8rem; font-weight: 600;">Image</span>
+                                @elseif(str_contains($file->file_type, 'pdf'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #fee2e2; color: #991b1b; font-size: 0.8rem; font-weight: 600;">PDF</span>
+                                @else
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #f3f4f6; color: #374151; font-size: 0.8rem; font-weight: 600;">{{ $file->file_type }}</span>
+                                @endif
+                            </td>
+                            <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                            <td>{{ $file->uploader->name ?? 'N/A' }}</td>
+                            <td>{{ $file->uploaded_at ? $file->uploaded_at->format('M d, Y') : 'N/A' }}</td>
+                            <td>
+                                @if($file->file_type === 'text/url')
+                                    <a href="{{ $file->file_path }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                        <i class="fas fa-external-link-alt"></i> Open
+                                    </a>
+                                @else
+                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" download="{{ $file->file_name }}" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+
+                        @if($grant->award_letter_path)
+                        <tr>
+                            <td style="font-weight: 500;">Award Letter</td>
+                            <td><span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #fee2e2; color: #991b1b; font-size: 0.8rem; font-weight: 600;">PDF</span></td>
+                            <td>Award Letter</td>
+                            <td>{{ $grant->submitter->name ?? 'N/A' }}</td>
+                            <td>{{ $grant->submitted_at ? $grant->submitted_at->format('M d, Y') : 'N/A' }}</td>
+                            <td>
+                                <a href="{{ Storage::disk('public')->url($grant->award_letter_path) }}" download style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
             </div>
             @endif
-        </div>
 
-        @if($grant->summary)
-        <div style="margin-bottom: 1.5rem;">
-            <strong>Summary:</strong>
-            <p>{{ $grant->summary }}</p>
-        </div>
-        @endif
+            <!-- Submission & Affiliation Info -->
+            @if($grant->submitter || $grant->faculty)
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-info" style="color: #3b82f6; margin-right: 0.5rem;"></i>Additional Information
+                </h2>
+                <div class="detail-grid">
+                    @if($grant->submitter)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Submitted By</div>
+                        <div class="detail-value">{{ $grant->submitter->name }}</div>
+                        @if($grant->submitted_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $grant->submitted_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
 
-        @if($grant->status == 'draft')
-        <form action="{{ route('grants.submit', $grant->id) }}" method="POST" style="margin-top: 2rem;">
-            @csrf
-            <button type="submit" style="background: #0056b3; color: white; padding: 0.75rem 2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                Submit for Approval
-            </button>
-        </form>
-        @endif
-
-        <div style="margin-top: 2rem;">
-            <a href="{{ route('welcome') }}" style="color: #0056b3; text-decoration: none;">← Back to Home</a>
+                    @if($grant->faculty)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Faculty</div>
+                        <div class="detail-value">{{ $grant->faculty }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
     </div>
-</div>
+</section>
 @endsection

@@ -135,9 +135,10 @@ class RtnSubmissionController extends Controller
      */
     public function show($id)
     {
-        $rtn = RtnSubmission::with(['user', 'workflow'])->findOrFail($id);
+        $rtn = RtnSubmission::with(['user', 'workflow', 'evidenceFiles.uploader'])->findOrFail($id);
         
-        if ($rtn->user_id !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {
+        // Allow public viewing for approved RTN, or if user owns it, or if admin/coordinator/dean
+        if ($rtn->status !== 'approved' && auth()->check() && $rtn->user_id !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {
             return redirect()->route('welcome')->with('error', 'You are not authorized to view this RTN submission.');
         }
 
