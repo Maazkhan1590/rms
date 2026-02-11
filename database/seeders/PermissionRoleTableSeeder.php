@@ -281,14 +281,14 @@ class PermissionRoleTableSeeder extends Seeder
                 'bonus_access',
                 'bonus_read',
                 // Consultancies
-                'consultancy_access',
-                'consultancy_read',
+//                'consultancy_access',
+//                'consultancy_read',
                 // Commercializations
-                'commercialization_access',
-                'commercialization_read',
+//                'commercialization_access',
+//                'commercialization_read',
                 // Conferences
-                'conference_access',
-                'conference_read',
+//                'conference_access',
+//                'conference_read',
             ],
             $selfService
         );
