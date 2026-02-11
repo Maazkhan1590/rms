@@ -11,7 +11,7 @@
             @method('PUT')
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="user_id">User <span class="text-danger">*</span></label>
                         <select class="form-control @error('user_id') is-invalid @enderror" 
@@ -28,7 +28,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="role">Role <span class="text-danger">*</span></label>
                         <select class="form-control @error('role') is-invalid @enderror" 
@@ -40,6 +40,23 @@
                             @endforeach
                         </select>
                         @error('role')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="submission_type">Submission Type</label>
+                        <select class="form-control @error('submission_type') is-invalid @enderror"
+                                id="submission_type" name="submission_type">
+                            <option value="">All Types (Publications, Grants, RTN, Bonus)</option>
+                            <option value="publication" {{ old('submission_type', $workflowAssignment->submission_type) == 'publication' ? 'selected' : '' }}>Publications</option>
+                            <option value="grant" {{ old('submission_type', $workflowAssignment->submission_type) == 'grant' ? 'selected' : '' }}>Grants</option>
+                            <option value="rtn" {{ old('submission_type', $workflowAssignment->submission_type) == 'rtn' ? 'selected' : '' }}>RTN</option>
+                            <option value="bonus" {{ old('submission_type', $workflowAssignment->submission_type) == 'bonus' ? 'selected' : '' }}>Bonus Recognitions</option>
+                        </select>
+                        @error('submission_type')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

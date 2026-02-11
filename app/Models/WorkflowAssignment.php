@@ -14,6 +14,7 @@ class WorkflowAssignment extends Model
     protected $fillable = [
         'user_id',
         'role',
+        'submission_type',
         'college',
         'department',
         'is_active',
@@ -56,6 +57,21 @@ class WorkflowAssignment extends Model
     public function scopeForRole($query, string $role)
     {
         return $query->where('role', $role);
+    }
+
+    /**
+     * Scope to filter by submission type (or apply to all when NULL)
+     *
+     * NULL submission_type means "all types"
+     */
+    public function scopeForSubmissionType($query, ?string $type)
+    {
+        return $query->where(function ($q) use ($type) {
+            $q->whereNull('submission_type');
+            if ($type) {
+                $q->orWhere('submission_type', $type);
+            }
+        });
     }
 }
 

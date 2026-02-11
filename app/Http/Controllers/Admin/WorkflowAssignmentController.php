@@ -85,6 +85,7 @@ class WorkflowAssignmentController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'role' => 'required|in:research_coordinator,dean,admin',
+            'submission_type' => 'nullable|in:publication,grant,rtn,bonus',
             'college' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'is_active' => 'boolean',
@@ -106,6 +107,7 @@ class WorkflowAssignmentController extends Controller
         $assignment = WorkflowAssignment::create([
             'user_id' => $validated['user_id'],
             'role' => $validated['role'],
+            'submission_type' => $validated['submission_type'] ?? null,
             'college' => $validated['college'] ?? null,
             'department' => $validated['department'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
@@ -156,6 +158,7 @@ class WorkflowAssignmentController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'role' => 'required|in:research_coordinator,dean,admin',
+            'submission_type' => 'nullable|in:publication,grant,rtn,bonus',
             'college' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'is_active' => 'boolean',

@@ -237,9 +237,10 @@ class WorkflowService
      */
     private function findCoordinator(ApprovalWorkflow $workflow): ?User
     {
-        // First try to find specific assignment (college + department match)
+        // First try to find specific assignment (college + department match + submission type)
         $specificAssignment = WorkflowAssignment::active()
             ->forRole('research_coordinator')
+            ->forSubmissionType($workflow->submission_type)
             ->where('college', $workflow->college)
             ->where('department', $workflow->department)
             ->first();
@@ -251,6 +252,7 @@ class WorkflowService
         // Then try college-level assignment (department is NULL = all departments in college)
         $collegeAssignment = WorkflowAssignment::active()
             ->forRole('research_coordinator')
+            ->forSubmissionType($workflow->submission_type)
             ->where('college', $workflow->college)
             ->whereNull('department')
             ->first();
@@ -262,6 +264,7 @@ class WorkflowService
         // Finally try global assignment (both college and department are NULL = all)
         $globalAssignment = WorkflowAssignment::active()
             ->forRole('research_coordinator')
+            ->forSubmissionType($workflow->submission_type)
             ->whereNull('college')
             ->whereNull('department')
             ->first();
@@ -293,6 +296,7 @@ class WorkflowService
         // First try to find college-specific assignment
         $collegeAssignment = WorkflowAssignment::active()
             ->forRole('dean')
+            ->forSubmissionType($workflow->submission_type)
             ->where('college', $workflow->college)
             ->first();
         
@@ -303,6 +307,7 @@ class WorkflowService
         // Then try global assignment (college is NULL = all colleges)
         $globalAssignment = WorkflowAssignment::active()
             ->forRole('dean')
+            ->forSubmissionType($workflow->submission_type)
             ->whereNull('college')
             ->first();
 

@@ -47,6 +47,24 @@
                         @enderror
                     </div>
                 </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="submission_type">Submission Type</label>
+                        <select class="form-control @error('submission_type') is-invalid @enderror"
+                                id="submission_type" name="submission_type">
+                            <option value="">All Types (Publications, Grants, RTN, Bonus)</option>
+                            <option value="publication" {{ old('submission_type') == 'publication' ? 'selected' : '' }}>Publications</option>
+                            <option value="grant" {{ old('submission_type') == 'grant' ? 'selected' : '' }}>Grants</option>
+                            <option value="rtn" {{ old('submission_type') == 'rtn' ? 'selected' : '' }}>RTN</option>
+                            <option value="bonus" {{ old('submission_type') == 'bonus' ? 'selected' : '' }}>Bonus Recognitions</option>
+                        </select>
+                        <small class="form-text text-muted">Leave empty to apply this assignment to all submission types.</small>
+                        @error('submission_type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
             </div>
 
             <div class="row">
