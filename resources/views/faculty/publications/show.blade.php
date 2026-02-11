@@ -33,260 +33,319 @@
             <div class="card-body">
                 @php
                     $workflow = $publication->workflow;
-                    $workflowStatus = $workflow->status ?? $publication->status;
-                    $currentStep = $workflow->current_step ?? 1;
-
-                    // Build dynamic visual steps based on workflow configuration
-                    // Default: Faculty → Coordinator → Dean
-                    // Fallback: Faculty → Dean (coordinator skipped, current_step jumps to 3)
-                    if ($workflow && $workflow->fallback_used) {
-                        $steps = [
-                            1 => ['label' => 'Faculty Submission', 'db_step' => 1],
-                            2 => ['label' => 'Dean Review', 'db_step' => 3],
-                        ];
-                    } else {
-                        $steps = [
-                            1 => ['label' => 'Faculty Submission', 'db_step' => 1],
-                            2 => ['label' => 'Coordinator Review', 'db_step' => 2],
-                            3 => ['label' => 'Dean Review', 'db_step' => 3],
-                        ];
-                    }
-                @endphp
-
-                <!-- Workflow Stepper (dynamic based on workflow / fallback) -->
-                <div class="mb-4">
-                    <div class="stepper d-flex justify-content-between align-items-center">
-                        @foreach($steps as $visualStep => $step)
-                            @php
-                                $dbStep = $step['db_step'];
-                                $isCompleted = $workflowStatus === 'approved' || $currentStep > $dbStep;
-                                $isActive = $currentStep === $dbStep && $workflowStatus !== 'approved';
-                            @endphp
-                            <div class="step-item text-center flex-fill">
-                                <div class="step-circle {{ $isCompleted ? 'completed' : '' }} {{ $isActive ? 'active' : '' }}">
-                                    {{ $visualStep }}
-                                </div>
-                                <div class="step-label">{{ $step['label'] }}</div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <strong>Status:</strong>
-                        @if($publication->status === 'approved')
-                            <span class="badge badge-success">Approved</span>
-                        @elseif($publication->status === 'submitted')
-                            <span class="badge badge-warning">Pending Approval</span>
-                        @elseif($publication->status === 'rejected')
-                            <span class="badge badge-danger">Rejected</span>
-                        @else
-                            <span class="badge badge-secondary">Draft</span>
-                        @endif
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Points Allocated:</strong>
-                        <span class="badge badge-info">{{ number_format($publication->points_allocated ?? 0, 1) }}</span>
-                    </div>
-                </div>
-
-                <hr>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Publication Type:</strong> {{ ucfirst(str_replace('_', ' ', $publication->publication_type ?? 'N/A')) }}</p>
-                        <p><strong>Journal Category:</strong> {{ ucfirst(str_replace('_', ' ', $publication->journal_category ?? 'N/A')) }}</p>
-                        @if($publication->quartile)
-                        <p><strong>Quartile:</strong> <span class="badge badge-success">{{ $publication->quartile }}</span></p>
-                        @endif
-                        <p><strong>Year:</strong> {{ $publication->year ?? 'N/A' }}</p>
-                        @if($publication->submission_year)
-                        <p><strong>Submission Year:</strong> {{ $publication->submission_year }}</p>
-                        @endif
-                        @if($publication->publisher)
-                        <p><strong>Publisher:</strong> {{ $publication->publisher }}</p>
-                        @endif
-                    </div>
-                    <div class="col-md-6">
-                        @if($publication->journal_name)
-                        <p><strong>Journal:</strong> {{ $publication->journal_name }}</p>
-                        @endif
-                        @if($publication->conference_name)
-                        <p><strong>Conference:</strong> {{ $publication->conference_name }}</p>
-                        @endif
-                        @if($publication->doi)
-                        <p><strong>DOI:</strong> <a href="https://doi.org/{{ $publication->doi }}" target="_blank">{{ $publication->doi }}</a></p>
-                        @endif
-                        @if($publication->isbn)
-                        <p><strong>ISBN:</strong> {{ $publication->isbn }}</p>
-                        @endif
-                        @if($publication->indexing_db)
-                        <p><strong>Indexing DB:</strong> {{ $publication->indexing_db }}</p>
-                        @endif
-                        <p><strong>Sohar Affiliation:</strong>
-                            @if(!is_null($publication->sohar_affiliation))
-                                <span class="badge badge-{{ $publication->sohar_affiliation ? 'success' : 'secondary' }}">
-                                    {{ $publication->sohar_affiliation ? 'Yes' : 'No' }}
-                                </span>
-                            @else
-                                <span class="text-muted">N/A</span>
-                            @endif
-                        </p>
-                        @if(!is_null($publication->percent_contribution))
-                        <p><strong>% Contribution:</strong> {{ number_format($publication->percent_contribution, 2) }}%</p>
-                        @endif
-                        @if($publication->su_author_type)
-                        <p><strong>SU Author Type:</strong> {{ $publication->su_author_type }}</p>
-                        @endif
-                        <p><strong>Student Co-author:</strong>
-                            @if(!is_null($publication->student_coauthor))
-                                <span class="badge badge-{{ $publication->student_coauthor ? 'success' : 'secondary' }}">
-                                    {{ $publication->student_coauthor ? 'Yes' : 'No' }}
-                                </span>
-                            @else
-                                <span class="text-muted">N/A</span>
-                            @endif
-                        </p>
-                        @if($publication->student_level)
-                        <p><strong>Student Level:</strong> {{ $publication->student_level }}</p>
-                        @endif
-                    </div>
-                </div>
-
-                @if($publication->abstract)
-                <hr>
-                <div>
-                    <strong>Abstract:</strong>
-                    <p>{{ $publication->abstract }}</p>
-                </div>
-                @endif
-
-                @if($publication->published_link)
-                <hr>
-                <div>
-                    <strong>Published Link:</strong>
-                    <a href="{{ $publication->published_link }}" target="_blank">{{ $publication->published_link }}</a>
-                </div>
-                @endif
-
-                @if($publication->proceedings_link)
-                <hr>
-                <div>
-                    <strong>Proceedings Link:</strong>
-                    <a href="{{ $publication->proceedings_link }}" target="_blank">{{ $publication->proceedings_link }}</a>
-                </div>
-                @endif
-
-                @if($publication->workflow)
-                <hr>
-                <div>
-                    <strong>Approval Status:</strong>
-                    <p>Current Step: {{ $publication->workflow->current_step == 1 ? 'Faculty' : ($publication->workflow->current_step == 2 ? 'Coordinator' : 'Dean') }}</p>
-                    @if($publication->workflow->assignee)
-                        <p>Assigned to: {{ $publication->workflow->assignee->name }}</p>
-                    @endif
-                </div>
-                @endif
-
-                @php
-                    $authors = $publication->authors ?? [];
-                @endphp
-
-                @if(is_array($authors) && count($authors) > 0)
-                <hr>
-                <div class="mt-3">
-                    <h5>Authors</h5>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Primary</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($authors as $author)
-                                <tr>
-                                    <td>{{ $author['name'] ?? 'N/A' }}</td>
-                                    <td>{{ $author['email'] ?? '-' }}</td>
-                                    <td>
-                                        @if(!empty($author['is_primary']))
-                                            <span class="badge badge-success">Primary</span>
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                @endif
-
-                @php
+                    $authors = is_array($publication->authors ?? null) ? $publication->authors : [];
                     $evidenceFiles = $publication->evidenceFiles ?? collect();
+                    $status = $publication->status ?? 'draft';
                 @endphp
 
-                @if($evidenceFiles->count() > 0)
-                <hr>
-                <div class="mt-3">
-                    <h5>
-                        <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">attach_file</span>
-                        <span style="vertical-align: middle;">Evidence Files ({{ $evidenceFiles->count() }})</span>
-                    </h5>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>File Name</th>
-                                    <th>Type</th>
-                                    <th>Category</th>
-                                    <th>Uploaded By</th>
-                                    <th>Upload Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($evidenceFiles as $file)
-                                <tr>
-                                    <td>{{ $file->file_name }}</td>
-                                    <td>
-                                        @if($file->file_type === 'text/url')
-                                            <span class="badge badge-info">URL</span>
-                                        @elseif(str_contains($file->file_type, 'image'))
-                                            <span class="badge badge-success">Image</span>
-                                        @elseif(str_contains($file->file_type, 'pdf'))
-                                            <span class="badge badge-danger">PDF</span>
-                                        @else
-                                            <span class="badge badge-secondary">{{ $file->file_type }}</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
-                                    <td>{{ $file->uploader->name ?? 'N/A' }}</td>
-                                    <td>{{ $file->uploaded_at ? $file->uploaded_at->format('Y-m-d H:i') : 'N/A' }}</td>
-                                    <td>
-                                        @if($file->file_type === 'text/url')
-                                            <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
-                                                <span style="vertical-align: middle;">Open</span>
-                                            </a>
-                                        @else
-                                            <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">download</span>
-                                                <span style="vertical-align: middle;">Download</span>
-                                            </a>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                <!-- Summary strip -->
+                <div class="submission-summary">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between" style="gap: 0.75rem;">
+                        <div>
+                            <span class="text-muted">Status</span><br>
+                            @if($status === 'approved')
+                                <span class="badge badge-success">Approved</span>
+                            @elseif(in_array($status, ['pending_coordinator', 'pending_dean', 'submitted']))
+                                <span class="badge badge-warning">In Review</span>
+                            @elseif($status === 'rejected')
+                                <span class="badge badge-danger">Rejected</span>
+                            @else
+                                <span class="badge badge-secondary">Draft</span>
+                            @endif
+                        </div>
+                        <div>
+                            <span class="text-muted">Points Allocated</span><br>
+                            <span class="badge badge-info">{{ number_format($publication->points_allocated ?? 0, 1) }}</span>
+                        </div>
+                        <div>
+                            <span class="text-muted">Submitted At</span><br>
+                            <span>{{ $publication->submitted_at ? $publication->submitted_at->format('M d, Y') : '—' }}</span>
+                        </div>
+                        <div>
+                            <span class="text-muted">Approval</span><br>
+                            @if($workflow)
+                                <span class="badge badge-{{ $workflow->status === 'approved' ? 'success' : (in_array($workflow->status, ['pending_coordinator','pending_dean']) ? 'warning' : 'secondary') }}">
+                                    {{ ucfirst(str_replace('_', ' ', $workflow->status)) }}
+                                </span>
+                            @else
+                                <span class="badge badge-secondary">Not Started</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
-                @endif
+
+                <!-- Read-only Submission Stepper (like create form) -->
+                <div class="submission-stepper-container">
+                    <div class="submission-stepper">
+                        <div class="submission-stepper-line" id="submissionStepperLine"></div>
+                        <button type="button" class="submission-step-item active" data-step="1" onclick="goSubmissionStep(1)">
+                            <div class="submission-step-circle active">1</div>
+                            <div class="submission-step-label">Basic Info</div>
+                        </button>
+                        <button type="button" class="submission-step-item" data-step="2" onclick="goSubmissionStep(2)">
+                            <div class="submission-step-circle">2</div>
+                            <div class="submission-step-label">Details</div>
+                        </button>
+                        <button type="button" class="submission-step-item" data-step="3" onclick="goSubmissionStep(3)">
+                            <div class="submission-step-circle">3</div>
+                            <div class="submission-step-label">Authors</div>
+                        </button>
+                        <button type="button" class="submission-step-item" data-step="4" onclick="goSubmissionStep(4)">
+                            <div class="submission-step-circle">4</div>
+                            <div class="submission-step-label">Evidence</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 1: Basic Info -->
+                <div class="submission-step-content" data-step="1">
+                    <h5 class="submission-step-title">Basic Information</h5>
+                    <table class="table table-bordered table-sm mb-0">
+                        <tr>
+                            <th width="220">Publication Title</th>
+                            <td>{{ $publication->title }}</td>
+                        </tr>
+                        <tr>
+                            <th>Publication Type</th>
+                            <td>{{ ucfirst(str_replace('_', ' ', $publication->publication_type ?? 'N/A')) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Publication Year</th>
+                            <td>{{ $publication->year ?? $publication->publication_year ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Abstract</th>
+                            <td>{{ $publication->abstract ?: '—' }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="submission-step-actions">
+                        <div></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="nextSubmissionStep()">
+                            <span>Next</span>
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Details -->
+                <div class="submission-step-content" data-step="2" style="display:none;">
+                    <h5 class="submission-step-title">Publication Details</h5>
+                    <table class="table table-bordered table-sm mb-0">
+                        <tr>
+                            <th width="220">Journal Category</th>
+                            <td>{{ $publication->journal_category ? ucfirst(str_replace('_', ' ', $publication->journal_category)) : '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Quartile</th>
+                            <td>{{ $publication->quartile ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Journal Name</th>
+                            <td>{{ $publication->journal_name ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Conference Name</th>
+                            <td>{{ $publication->conference_name ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Publisher</th>
+                            <td>{{ $publication->publisher ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>DOI</th>
+                            <td>
+                                @if($publication->doi)
+                                    <a href="https://doi.org/{{ $publication->doi }}" target="_blank">{{ $publication->doi }}</a>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ISBN</th>
+                            <td>{{ $publication->isbn ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Indexing DB</th>
+                            <td>{{ $publication->indexing_db ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sohar Affiliation</th>
+                            <td>
+                                @if(!is_null($publication->sohar_affiliation))
+                                    <span class="badge badge-{{ $publication->sohar_affiliation ? 'success' : 'secondary' }}">{{ $publication->sohar_affiliation ? 'Yes' : 'No' }}</span>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>% Contribution</th>
+                            <td>{{ !is_null($publication->percent_contribution) ? number_format($publication->percent_contribution, 2) . '%' : '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>SU Author Type</th>
+                            <td>{{ $publication->su_author_type ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Student Co-author</th>
+                            <td>
+                                @if(!is_null($publication->student_coauthor))
+                                    <span class="badge badge-{{ $publication->student_coauthor ? 'success' : 'secondary' }}">{{ $publication->student_coauthor ? 'Yes' : 'No' }}</span>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Student Level</th>
+                            <td>{{ $publication->student_level ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Published Link</th>
+                            <td>
+                                @if($publication->published_link)
+                                    <a href="{{ $publication->published_link }}" target="_blank">{{ $publication->published_link }}</a>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Proceedings Link</th>
+                            <td>
+                                @if($publication->proceedings_link)
+                                    <a href="{{ $publication->proceedings_link }}" target="_blank">{{ $publication->proceedings_link }}</a>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="submission-step-actions">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevSubmissionStep()">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
+                            <span>Previous</span>
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="nextSubmissionStep()">
+                            <span>Next</span>
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Authors -->
+                <div class="submission-step-content" data-step="3" style="display:none;">
+                    <h5 class="submission-step-title">Authors</h5>
+                    @if(count($authors) > 0)
+                        <div class="table-responsive">
+                            <table class="table table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Primary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($authors as $author)
+                                        <tr>
+                                            <td>{{ $author['name'] ?? '—' }}</td>
+                                            <td>{{ $author['email'] ?? '—' }}</td>
+                                            <td>
+                                                @if(!empty($author['is_primary']))
+                                                    <span class="badge badge-success">Primary</span>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="alert alert-secondary mb-0">No authors were provided.</div>
+                    @endif
+
+                    <div class="submission-step-actions">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevSubmissionStep()">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
+                            <span>Previous</span>
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="nextSubmissionStep()">
+                            <span>Next</span>
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Evidence -->
+                <div class="submission-step-content" data-step="4" style="display:none;">
+                    <h5 class="submission-step-title">Evidence / Attachments</h5>
+                    @if($evidenceFiles->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Uploaded By</th>
+                                        <th>Upload Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($evidenceFiles as $file)
+                                        <tr>
+                                            <td>{{ $file->file_name }}</td>
+                                            <td>
+                                                @if($file->file_type === 'text/url')
+                                                    <span class="badge badge-info">URL</span>
+                                                @elseif(str_contains($file->file_type, 'image'))
+                                                    <span class="badge badge-success">Image</span>
+                                                @elseif(str_contains($file->file_type, 'pdf'))
+                                                    <span class="badge badge-danger">PDF</span>
+                                                @else
+                                                    <span class="badge badge-secondary">{{ $file->file_type }}</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                                            <td>{{ $file->uploader->name ?? 'N/A' }}</td>
+                                            <td>{{ $file->uploaded_at ? $file->uploaded_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                            <td>
+                                                @if($file->file_type === 'text/url')
+                                                    <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                        <span style="vertical-align: middle;">Open</span>
+                                                    </a>
+                                                @else
+                                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">download</span>
+                                                        <span style="vertical-align: middle;">Download</span>
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="alert alert-secondary mb-0">No evidence/attachments uploaded.</div>
+                    @endif
+
+                    <div class="submission-step-actions">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevSubmissionStep()">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
+                            <span>Previous</span>
+                        </button>
+                        <div></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -336,6 +395,38 @@
                 @endif
             </div>
         </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">Approval Progress</h3>
+            </div>
+            <div class="card-body">
+                @if($workflow)
+                    <p class="mb-1"><strong>Workflow Status:</strong> {{ ucfirst(str_replace('_', ' ', $workflow->status)) }}</p>
+                    <p class="mb-1"><strong>Current Step:</strong>
+                        @if($workflow->current_step == 1)
+                            Faculty Submission
+                        @elseif($workflow->current_step == 2)
+                            Coordinator Review
+                        @elseif($workflow->current_step == 3)
+                            Dean Review
+                        @else
+                            Step {{ $workflow->current_step }}
+                        @endif
+                    </p>
+                    @if($workflow->fallback_used)
+                        <p class="mb-1"><span class="badge badge-warning">Fallback Workflow</span> Coordinator step skipped.</p>
+                    @endif
+                    @if($workflow->assignee)
+                        <p class="mb-0"><strong>Assigned To:</strong> {{ $workflow->assignee->name }}</p>
+                    @else
+                        <p class="mb-0 text-muted">Not assigned yet.</p>
+                    @endif
+                @else
+                    <p class="mb-0 text-muted">Workflow not started yet. It will begin after you submit for approval.</p>
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 
@@ -365,61 +456,170 @@
         padding-left: 20px;
     }
 
-/* Simple stepper styling for workflow progress */
-.stepper {
-    position: relative;
-    margin-bottom: 1rem;
+/* Summary strip */
+.submission-summary {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.25rem;
 }
 
-.stepper::before {
+/* Read-only submission stepper (matches create experience) */
+.submission-stepper-container {
+    margin: 1rem 0 1.25rem;
+}
+
+.submission-stepper {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+}
+
+.submission-stepper::before {
     content: '';
     position: absolute;
-    top: 24px;
-    left: 10%;
-    right: 10%;
-    height: 2px;
+    top: 22px;
+    left: 8%;
+    right: 8%;
+    height: 3px;
     background: #e5e7eb;
+    border-radius: 2px;
     z-index: 1;
 }
 
-.step-item {
-    position: relative;
+.submission-stepper-line {
+    position: absolute;
+    top: 22px;
+    left: 8%;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 2px;
     z-index: 2;
+    width: 0%;
+    transition: width 0.25s ease;
 }
 
-.step-circle {
-    width: 40px;
-    height: 40px;
+.submission-step-item {
+    background: transparent;
+    border: none;
+    padding: 0;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+    z-index: 3;
+    text-align: center;
+}
+
+.submission-step-circle {
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 0.25rem;
-    font-weight: 600;
+    margin: 0 auto 0.4rem;
+    font-weight: 700;
     background: #f3f4f6;
     color: #6b7280;
-    border: 2px solid #e5e7eb;
+    border: 3px solid #e5e7eb;
     transition: all 0.2s ease;
 }
 
-.step-circle.active {
+.submission-step-circle.active {
     background: #2563eb;
     border-color: #2563eb;
     color: #ffffff;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+    transform: scale(1.05);
 }
 
-.step-circle.completed {
+.submission-step-circle.completed {
     background: #16a34a;
     border-color: #16a34a;
     color: #ffffff;
 }
 
-.step-label {
+.submission-step-label {
     font-size: 0.85rem;
-    font-weight: 500;
-    color: #4b5563;
+    font-weight: 600;
+    color: #374151;
+    line-height: 1.1;
+}
+
+.submission-step-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    color: #111827;
+}
+
+.submission-step-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
 }
 </style>
+
+@push('scripts')
+<script>
+    let submissionCurrentStep = 1;
+    const submissionTotalSteps = 4;
+
+    function updateSubmissionStepper() {
+        // content
+        document.querySelectorAll('.submission-step-content').forEach(el => {
+            el.style.display = el.getAttribute('data-step') == submissionCurrentStep ? 'block' : 'none';
+        });
+
+        // step circles
+        document.querySelectorAll('.submission-step-item').forEach(item => {
+            const stepNum = parseInt(item.getAttribute('data-step'), 10);
+            const circle = item.querySelector('.submission-step-circle');
+            circle.classList.remove('active', 'completed');
+
+            if (stepNum < submissionCurrentStep) {
+                circle.classList.add('completed');
+            } else if (stepNum === submissionCurrentStep) {
+                circle.classList.add('active');
+            }
+        });
+
+        // progress line (0..100 mapped to 80% width like create)
+        const line = document.getElementById('submissionStepperLine');
+        if (!line) return;
+        if (submissionCurrentStep <= 1) {
+            line.style.width = '0%';
+        } else {
+            const progress = ((submissionCurrentStep - 1) / (submissionTotalSteps - 1)) * 84; // 84% matches left/right 8%
+            line.style.width = progress + '%';
+        }
+    }
+
+    function goSubmissionStep(step) {
+        submissionCurrentStep = Math.max(1, Math.min(submissionTotalSteps, step));
+        updateSubmissionStepper();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextSubmissionStep() {
+        goSubmissionStep(submissionCurrentStep + 1);
+    }
+
+    function prevSubmissionStep() {
+        goSubmissionStep(submissionCurrentStep - 1);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateSubmissionStepper();
+    });
+</script>
+@endpush
 @endsection
 
