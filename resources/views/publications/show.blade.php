@@ -202,14 +202,17 @@
                     @if($publication->publication_year || $publication->year)
                         <div><strong>Year:</strong> {{ $publication->publication_year ?? $publication->year ?? 'N/A' }}</div>
                     @endif
-                    @if($publication->journal_name)
-                        <div><strong>Journal:</strong> {{ $publication->journal_name }}</div>
+                    @if($publication->journal_name || $publication->journal)
+                        <div><strong>Journal:</strong> {{ $publication->journal_name ?? $publication->journal ?? 'N/A' }}</div>
                     @endif
                     @if($publication->conference_name)
                         <div><strong>Conference:</strong> {{ $publication->conference_name }}</div>
                     @endif
                     @if($publication->publisher)
                         <div><strong>Publisher:</strong> {{ $publication->publisher }}</div>
+                    @endif
+                    @if($publication->doi)
+                        <div><strong>DOI:</strong> <a href="https://doi.org/{{ $publication->doi }}" target="_blank" style="color: #3b82f6;">{{ $publication->doi }}</a></div>
                     @endif
                 </div>
 
@@ -306,10 +309,24 @@
                     </div>
                     @endif
 
+                    @if($publication->published_at)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar-check" style="margin-right: 0.5rem;"></i>Published Date</div>
+                        <div class="detail-value">{{ $publication->published_at->format('F d, Y') }}</div>
+                    </div>
+                    @endif
+
                     @if($publication->submission_year)
                     <div class="detail-item">
                         <div class="detail-label"><i class="fas fa-calendar-alt" style="margin-right: 0.5rem;"></i>Submission Year</div>
                         <div class="detail-value">{{ $publication->submission_year }}</div>
+                    </div>
+                    @endif
+
+                    @if($publication->approved_at)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>Approved Date</div>
+                        <div class="detail-value">{{ $publication->approved_at->format('F d, Y') }}</div>
                     </div>
                     @endif
 
@@ -410,7 +427,7 @@
                     ->where('submission_id', $publication->id)
                     ->with('uploader')
                     ->get();
-                $hasLinkEvidence = !empty($publication->published_link) || !empty($publication->proceedings_link);
+                $hasLinkEvidence = !empty($publication->published_link) || !empty($publication->proceedings_link) || !empty($publication->acceptance_letter_path);
                 $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
             @endphp
             @if($hasAnyEvidence)
@@ -490,13 +507,28 @@
                             </td>
                         </tr>
                         @endif
+
+                        @if($publication->acceptance_letter_path)
+                        <tr>
+                            <td style="font-weight: 500;">Acceptance Letter</td>
+                            <td><span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #fee2e2; color: #991b1b; font-size: 0.8rem; font-weight: 600;">PDF</span></td>
+                            <td>Acceptance Letter</td>
+                            <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                            <td>{{ $publication->submitted_at ? $publication->submitted_at->format('M d, Y') : 'N/A' }}</td>
+                            <td>
+                                <a href="{{ Storage::disk('public')->url($publication->acceptance_letter_path) }}" download style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
             @endif
 
             <!-- Submission & Affiliation Info -->
-            @if($publication->submitter || $publication->college || $publication->department)
+            @if($publication->submitter || $publication->approver || $publication->college || $publication->department)
             <div style="margin-bottom: 2.5rem;">
                 <h2 class="section-title">
                     <i class="fas fa-info" style="color: #3b82f6; margin-right: 0.5rem;"></i>Additional Information
@@ -509,6 +541,18 @@
                         @if($publication->submitted_at)
                         <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
                             <i class="far fa-calendar"></i> {{ $publication->submitted_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($publication->approver)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Approved By</div>
+                        <div class="detail-value">{{ $publication->approver->name }}</div>
+                        @if($publication->approved_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $publication->approved_at->format('F d, Y') }}
                         </div>
                         @endif
                     </div>
