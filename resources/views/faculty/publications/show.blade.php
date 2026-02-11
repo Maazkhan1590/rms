@@ -285,12 +285,16 @@
                 <!-- Step 4: Evidence -->
                 <div class="submission-step-content" data-step="4" style="display:none;">
                     <h5 class="submission-step-title">Evidence / Attachments</h5>
-                    @if($evidenceFiles->count() > 0)
+                    @php
+                        $hasLinkEvidence = !empty($publication->published_link) || !empty($publication->proceedings_link);
+                        $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
+                    @endphp
+                    @if($hasAnyEvidence)
                         <div class="table-responsive">
                             <table class="table table-striped table-sm">
                                 <thead>
                                     <tr>
-                                        <th>File Name</th>
+                                        <th>Evidence</th>
                                         <th>Type</th>
                                         <th>Category</th>
                                         <th>Uploaded By</th>
@@ -331,6 +335,38 @@
                                             </td>
                                         </tr>
                                     @endforeach
+
+                                    @if($publication->published_link)
+                                        <tr>
+                                            <td>Published Link</td>
+                                            <td><span class="badge badge-info">URL</span></td>
+                                            <td>published_link</td>
+                                            <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                                            <td>{{ $publication->submitted_at ? $publication->submitted_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                            <td>
+                                                <a href="{{ $publication->published_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                    <span style="vertical-align: middle;">Open</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endif
+
+                                    @if($publication->proceedings_link)
+                                        <tr>
+                                            <td>Proceedings Link</td>
+                                            <td><span class="badge badge-info">URL</span></td>
+                                            <td>proceedings_link</td>
+                                            <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                                            <td>{{ $publication->submitted_at ? $publication->submitted_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                            <td>
+                                                <a href="{{ $publication->proceedings_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                    <span style="vertical-align: middle;">Open</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
