@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Publication;
+use App\Models\Slider;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -71,6 +72,9 @@ class HomeController extends Controller
             ->sortDesc()
             ->values();
 
-        return view('home', compact('publications', 'publicationTypes', 'publicationYears'));
+        // Get active sliders ordered by order field
+        $sliders = Slider::active()->ordered()->get();
+
+        return view('home', compact('publications', 'publicationTypes', 'publicationYears', 'sliders'));
     }
 }

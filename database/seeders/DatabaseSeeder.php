@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
             PermissionRoleTableSeeder::class,
             UsersTableSeeder::class,
             RoleUserTableSeeder::class,
+            SliderSeeder::class,
+            SiteContentSeeder::class,
             // ResearchSystemDataSeeder::class, // Uncomment to import Excel data
         ]);
     }

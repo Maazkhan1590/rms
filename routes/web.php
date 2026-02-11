@@ -230,6 +230,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Audit & Activity Logs
     Route::resource('audit-logs', 'AuditLogController')->only(['index', 'show']);
     Route::resource('activity-logs', 'ActivityLogController')->only(['index', 'show']);
+
+    // Site Content Management
+    Route::resource('sliders', 'SliderController');
+    Route::resource('site-contents', 'SiteContentController');
 });
 
 // Faculty Portal Routes

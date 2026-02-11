@@ -21,6 +21,49 @@
 <header class="hero">
     <div class="slider-container">
         <div class="slider">
+            @forelse($sliders as $index => $slider)
+            <div class="slide {{ $index === 0 ? 'active' : '' }}">
+                <div class="slide-overlay"></div>
+                @if($slider->image_url)
+                    @if(filter_var($slider->image_url, FILTER_VALIDATE_URL))
+                        <div class="slide-image" style="background-image: url('{{ $slider->image_url }}');"></div>
+                    @else
+                        <div class="slide-image" style="background-image: url('{{ asset('storage/' . $slider->image_url) }}');"></div>
+                    @endif
+                @else
+                    <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
+                @endif
+                <div class="slide-content">
+                    <div class="container">
+                        @if($slider->tag)
+                            <div class="slide-tag">{{ $slider->tag }}</div>
+                        @endif
+                        @if($slider->title)
+                            <h1 class="slide-title">{!! $slider->title !!}</h1>
+                        @endif
+                        @if($slider->description)
+                            <p class="slide-description">{{ $slider->description }}</p>
+                        @endif
+                        <div class="hero-buttons">
+                            @if($slider->button_text && $slider->button_link)
+                                <a href="{{ $slider->button_link }}" class="btn btn-primary">
+                                    @if(strpos($slider->button_text, '<i') === false)
+                                        <i class="fas fa-rocket"></i>
+                                    @endif
+                                    {!! $slider->button_text !!}
+                                </a>
+                            @endif
+                            @if($slider->button_text_secondary && $slider->button_link_secondary)
+                                <a href="{{ $slider->button_link_secondary }}" class="btn btn-outline">
+                                    {!! $slider->button_text_secondary !!}
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <!-- Default slider if no sliders in database -->
             <div class="slide active">
                 <div class="slide-overlay"></div>
                 <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
@@ -38,19 +81,6 @@
                             <a href="{{ route('publications.create') }}" class="btn btn-primary">
                                 <i class="fas fa-rocket"></i> Submit Paper
                             </a>
-                            @php
-                                $user = auth()->user();
-                                $isPureFaculty = $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean();
-                            @endphp
-                            @if($isPureFaculty)
-                            <a href="{{ route('faculty-members.show', $user->id) }}" class="btn btn-primary" style="margin-left: 1rem;">
-                                <i class="fas fa-user-circle"></i> My Profile
-                            </a>
-                            @else
-                            <a href="{{ route('admin.home') }}" class="btn btn-primary" style="margin-left: 1rem;">
-                                <i class="fas fa-tachometer-alt"></i> Go to Dashboard
-                            </a>
-                            @endif
                             @endguest
                             <a href="{{ route('publications.index') }}" class="btn btn-outline">
                                 <i class="fas fa-book-reader"></i> Explore Publications
@@ -59,64 +89,23 @@
                     </div>
                 </div>
             </div>
-            <div class="slide">
-                <div class="slide-overlay"></div>
-                <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
-                <div class="slide-content">
-                    <div class="container">
-                        <div class="slide-tag">Open Access</div>
-                        <h1 class="slide-title">Global Knowledge <span class="highlight">Without Barriers</span></h1>
-                        <p class="slide-description">Discover thousands of peer-reviewed papers available to researchers worldwide. Access cutting-edge research across all academic fields.</p>
-                        <div class="hero-buttons">
-                            <a href="{{ route('publications.index') }}" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Browse Publications
-                            </a>
-                            <a href="#" class="btn btn-outline">
-                                <i class="fas fa-download"></i> Download Resources
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="slide">
-                <div class="slide-overlay"></div>
-                <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1554475900-7c0f4a35b8c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
-                <div class="slide-content">
-                    <div class="container">
-                        <div class="slide-tag">Collaborate</div>
-                        <h1 class="slide-title">Join a Network of <span class="highlight">Leading Experts</span></h1>
-                        <p class="slide-description">Connect with researchers from top institutions around the world. Collaborate on groundbreaking projects and share knowledge across disciplines.</p>
-                        <div class="hero-buttons">
-                            @guest
-                            <a href="{{ route('register') }}" class="btn btn-primary">
-                                <i class="fas fa-users"></i> Join Our Community
-                            </a>
-                            @else
-                            <a href="{{ route('publications.index') }}" class="btn btn-primary">
-                                <i class="fas fa-book-open"></i> View Publications
-                            </a>
-                            @endguest
-                            <a href="#" class="btn btn-outline">
-                                <i class="fas fa-calendar-alt"></i> View Events
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
+        @if($sliders->count() > 0)
         <div class="slider-controls">
             <button class="slider-prev" aria-label="Previous slide">
                 <i class="fas fa-chevron-left"></i>
             </button>
             <div class="slider-dots">
-                <span class="dot active"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
+                @foreach($sliders as $index => $slider)
+                    <span class="dot {{ $index === 0 ? 'active' : '' }}"></span>
+                @endforeach
             </div>
             <button class="slider-next" aria-label="Next slide">
                 <i class="fas fa-chevron-right"></i>
             </button>
         </div>
+        @endif
     </div>
 </header>
 

@@ -13,24 +13,41 @@
                     </div>
                 </a>
                 <p class="footer-description">
-                    A premier platform for academic research submission, peer review, and open-access publication. Advancing knowledge through collaboration and innovation.
+                    {!! \App\Models\SiteContent::getByKey('footer_description', 'A premier platform for academic research submission, peer review, and open-access publication. Advancing knowledge through collaboration and innovation.') !!}
                 </p>
                 <div class="social-links">
-                    <a href="#" class="social-link" aria-label="Twitter">
+                    @php
+                        $twitter = \App\Models\SiteContent::getByKey('social_twitter');
+                        $linkedin = \App\Models\SiteContent::getByKey('social_linkedin');
+                        $youtube = \App\Models\SiteContent::getByKey('social_youtube');
+                        $github = \App\Models\SiteContent::getByKey('social_github');
+                        $orcid = \App\Models\SiteContent::getByKey('social_orcid');
+                    @endphp
+                    @if($twitter)
+                    <a href="{{ $twitter }}" class="social-link" aria-label="Twitter" target="_blank">
                         <i class="fab fa-twitter"></i>
                     </a>
-                    <a href="#" class="social-link" aria-label="LinkedIn">
+                    @endif
+                    @if($linkedin)
+                    <a href="{{ $linkedin }}" class="social-link" aria-label="LinkedIn" target="_blank">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
-                    <a href="#" class="social-link" aria-label="YouTube">
+                    @endif
+                    @if($youtube)
+                    <a href="{{ $youtube }}" class="social-link" aria-label="YouTube" target="_blank">
                         <i class="fab fa-youtube"></i>
                     </a>
-                    <a href="#" class="social-link" aria-label="GitHub">
+                    @endif
+                    @if($github)
+                    <a href="{{ $github }}" class="social-link" aria-label="GitHub" target="_blank">
                         <i class="fab fa-github"></i>
                     </a>
-                    <a href="#" class="social-link" aria-label="ORCID">
+                    @endif
+                    @if($orcid)
+                    <a href="{{ $orcid }}" class="social-link" aria-label="ORCID" target="_blank">
                         <i class="fab fa-orcid"></i>
                     </a>
+                    @endif
                 </div>
             </div>
             <div class="footer-col">
@@ -58,31 +75,56 @@
             <div class="footer-col">
                 <h3 class="footer-title">Contact Us</h3>
                 <ul class="footer-contact">
+                    @php
+                        $address = \App\Models\SiteContent::getByKey('footer_address');
+                        $phone = \App\Models\SiteContent::getByKey('footer_phone');
+                        $email = \App\Models\SiteContent::getByKey('footer_email');
+                        $hours = \App\Models\SiteContent::getByKey('footer_hours');
+                    @endphp
+                    @if($address)
                     <li>
                         <i class="fas fa-map-marker-alt"></i>
-                        <span>123 Research Avenue<br>ABCDSSSSS</span>
+                        <span>{!! nl2br(e($address)) !!}</span>
                     </li>
+                    @endif
+                    @if($phone)
                     <li>
                         <i class="fas fa-phone"></i>
-                        <span>+14545454545</span>
+                        <span><a href="tel:{{ $phone }}">{{ $phone }}</a></span>
                     </li>
+                    @endif
+                    @if($email)
                     <li>
                         <i class="fas fa-envelope"></i>
-                        <span>test@researchportal.edu</span>
+                        <span><a href="mailto:{{ $email }}">{{ $email }}</a></span>
                     </li>
+                    @endif
+                    @if($hours)
                     <li>
                         <i class="fas fa-clock"></i>
-                        <span>Mon-Fri: 9:00 AM - 5:00 PM</span>
+                        <span>{{ $hours }}</span>
                     </li>
+                    @endif
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; {{ date('Y') }} Academic Research Portal. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {!! \App\Models\SiteContent::getByKey('footer_copyright', 'Academic Research Portal. All rights reserved.') !!}</p>
             <div class="footer-legal">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Cookie Policy</a>
+                @php
+                    $privacy = \App\Models\SiteContent::getByKey('footer_privacy_link');
+                    $terms = \App\Models\SiteContent::getByKey('footer_terms_link');
+                    $cookie = \App\Models\SiteContent::getByKey('footer_cookie_link');
+                @endphp
+                @if($privacy)
+                <a href="{{ $privacy }}">Privacy Policy</a>
+                @endif
+                @if($terms)
+                <a href="{{ $terms }}">Terms of Service</a>
+                @endif
+                @if($cookie)
+                <a href="{{ $cookie }}">Cookie Policy</a>
+                @endif
             </div>
         </div>
     </div>

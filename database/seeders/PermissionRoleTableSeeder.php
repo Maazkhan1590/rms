@@ -181,6 +181,22 @@ class PermissionRoleTableSeeder extends Seeder
             'audit_read',
         ];
 
+        $sliderCrud = [
+            'slider_access',
+            'slider_create',
+            'slider_read',
+            'slider_update',
+            'slider_delete',
+        ];
+
+        $siteContentCrud = [
+            'site_content_access',
+            'site_content_create',
+            'site_content_read',
+            'site_content_update',
+            'site_content_delete',
+        ];
+
         // Dean gets full access to most modules
         $deanPermissions = array_merge(
             $managementReadOnly,
@@ -204,6 +220,8 @@ class PermissionRoleTableSeeder extends Seeder
             $reportCrud,
             $collegePermissions,
             $auditPermissions,
+            $sliderCrud,
+            $siteContentCrud,
 //            ['research_access'], // My Research section access
             $selfService
         );

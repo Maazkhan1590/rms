@@ -527,6 +527,48 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => 129,
                 'title' => 'research_access',
             ],
+            // Slider Management
+            [
+                'id'    => 130,
+                'title' => 'slider_access',
+            ],
+            [
+                'id'    => 131,
+                'title' => 'slider_create',
+            ],
+            [
+                'id'    => 132,
+                'title' => 'slider_read',
+            ],
+            [
+                'id'    => 133,
+                'title' => 'slider_update',
+            ],
+            [
+                'id'    => 134,
+                'title' => 'slider_delete',
+            ],
+            // Site Content Management
+            [
+                'id'    => 135,
+                'title' => 'site_content_access',
+            ],
+            [
+                'id'    => 136,
+                'title' => 'site_content_create',
+            ],
+            [
+                'id'    => 137,
+                'title' => 'site_content_read',
+            ],
+            [
+                'id'    => 138,
+                'title' => 'site_content_update',
+            ],
+            [
+                'id'    => 139,
+                'title' => 'site_content_delete',
+            ],
         ];
 
         // Use updateOrCreate to avoid duplicate key errors
