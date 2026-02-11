@@ -48,9 +48,9 @@
     <!-- Faculty Members Filter -->
     <section class="search-section">
         <div class="container">
-            <form action="{{ route('faculty-members.index') }}" method="GET" style="display: flex; gap: 1rem; max-width: 800px; margin: 0 auto;">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..." style="flex: 1; padding: 0.875rem 1.25rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
-                <button type="submit" class="btn btn-primary" style="padding: 0.875rem 2rem; border-radius: 8px; font-weight: 600;">Search</button>
+            <form action="{{ route('faculty-members.index') }}" method="GET" style="display: flex; gap: 0.75rem; max-width: 700px; margin: 0 auto;">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..." style="flex: 1; padding: 0.75rem 1rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem;">Search</button>
             </form>
         </div>
     </section>
@@ -107,7 +107,7 @@
         </div>
 
             <!-- Pagination -->
-            <div style="margin-top: 3rem; display: flex; justify-content: center;">
+            <div style="margin-top: 2rem; display: flex; justify-content: center;">
                 {{ $facultyMembers->links() }}
             </div>
             @else
