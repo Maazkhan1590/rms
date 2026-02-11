@@ -27,7 +27,12 @@ class PublicationController extends Controller
      */
     public function index(Request $request)
     {
-        $publications = Publication::where('primary_author_id', auth()->id())
+        $userId = auth()->id();
+
+        $publications = Publication::where(function ($query) use ($userId) {
+                $query->where('primary_author_id', $userId)
+                      ->orWhere('submitted_by', $userId);
+            })
             ->with(['workflow', 'policyVersion'])
             ->when($request->has('status'), function($query) use ($request) {
                 $query->where('status', $request->status);
