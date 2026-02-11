@@ -356,6 +356,30 @@
                 </div>
                 @endcan
 
+                @canany(['slider_access', 'site_content_access'])
+                <div class="nav-section">
+                    <h3 class="nav-section-title">Site Settings</h3>
+                    <ul>
+                        @can('slider_access')
+                        <li>
+                            <a href="{{ route('admin.sliders.index') }}" class="nav-link {{ request()->routeIs('admin.sliders.*') ? 'active' : '' }}">
+                                <span class="nav-icon">🖼️</span>
+                                <span class="nav-label">Sliders</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('site_content_access')
+                        <li>
+                            <a href="{{ route('admin.site-contents.index') }}" class="nav-link {{ request()->routeIs('admin.site-contents.*') ? 'active' : '' }}">
+                                <span class="nav-icon">⚙️</span>
+                                <span class="nav-label">Site Content</span>
+                            </a>
+                        </li>
+                        @endcan
+                    </ul>
+                </div>
+                @endcanany
+
                 <!-- Faculty Portal Links -->
                 @can('research_access')
                 <div class="nav-section">
