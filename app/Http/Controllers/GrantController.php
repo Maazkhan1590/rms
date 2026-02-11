@@ -25,6 +25,36 @@ class GrantController extends Controller
     }
 
     /**
+     * Display a listing of grants
+     */
+    public function index(Request $request)
+    {
+        $query = Grant::with(['submitter'])
+            ->where('status', 'approved');
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('sponsor', 'like', "%{$search}%")
+                  ->orWhere('sponsor_name', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by year
+        if ($request->has('year') && $request->year) {
+            $query->where('award_year', $request->year);
+        }
+
+        $grants = $query->orderBy('award_year', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('grants.index', compact('grants'));
+    }
+
+    /**
      * Show grant submission form
      */
     public function create()

@@ -56,18 +56,21 @@ Route::get('publications/{id}', 'PublicationController@show')->name('publication
 Route::post('publications/{publication}/submit', 'PublicationController@submit')->name('publications.submit');
 
 // Public Grants Routes
+Route::get('grants', 'GrantController@index')->name('grants.index');
 Route::get('grants/create', 'GrantController@create')->name('grants.create');
 Route::post('grants', 'GrantController@store')->name('grants.store');
 Route::get('grants/{grant}', 'GrantController@show')->name('grants.show');
 Route::post('grants/{grant}/submit', 'GrantController@submit')->name('grants.submit');
 
 // Public RTN Submissions Routes
+Route::get('rtn-submissions', 'RtnSubmissionController@index')->name('rtn-submissions.index');
 Route::get('rtn-submissions/create', 'RtnSubmissionController@create')->name('rtn-submissions.create');
 Route::post('rtn-submissions', 'RtnSubmissionController@store')->name('rtn-submissions.store');
 Route::get('rtn-submissions/{rtn}', 'RtnSubmissionController@show')->name('rtn-submissions.show');
 Route::post('rtn-submissions/{rtn}/submit', 'RtnSubmissionController@submit')->name('rtn-submissions.submit');
 
 // Public Bonus Recognitions Routes
+Route::get('bonus-recognitions', 'BonusRecognitionController@index')->name('bonus-recognitions.index');
 Route::get('bonus-recognitions/create', 'BonusRecognitionController@create')->name('bonus-recognitions.create');
 Route::post('bonus-recognitions', 'BonusRecognitionController@store')->name('bonus-recognitions.store');
 Route::get('bonus-recognitions/{bonus}', 'BonusRecognitionController@show')->name('bonus-recognitions.show');

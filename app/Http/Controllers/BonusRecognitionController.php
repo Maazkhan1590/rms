@@ -24,6 +24,41 @@ class BonusRecognitionController extends Controller
     }
 
     /**
+     * Display a listing of bonus recognitions
+     */
+    public function index(Request $request)
+    {
+        $query = BonusRecognition::with(['user'])
+            ->where('status', 'approved');
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('organization', 'like', "%{$search}%")
+                  ->orWhere('journal_conference_name', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by year
+        if ($request->has('year') && $request->year) {
+            $query->where('year', $request->year);
+        }
+
+        // Filter by recognition type
+        if ($request->has('recognition_type') && $request->recognition_type) {
+            $query->where('recognition_type', $request->recognition_type);
+        }
+
+        $bonusRecognitions = $query->orderBy('year', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('bonus-recognitions.index', compact('bonusRecognitions'));
+    }
+
+    /**
      * Show bonus recognition submission form
      */
     public function create()

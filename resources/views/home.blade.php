@@ -154,16 +154,18 @@
             $bonusCount = \App\Models\BonusRecognition::where('status', 'approved')->count();
         @endphp
         <div class="stats-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem;">
-            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
-                    <i class="fas fa-file-alt"></i>
+            <a href="{{ route('publications.index') }}" class="stat-card-link" style="text-decoration: none; color: inherit;">
+                <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="{{ $publicationsCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem; transition: color 0.3s ease;">0</h3>
+                        <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Published Papers</p>
+                    </div>
                 </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ $publicationsCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
-                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Published Papers</p>
-                </div>
-            </div>
-            <a href="{{ route('publications.index') }}?category=grants" class="stat-card-link" style="text-decoration: none; color: inherit;">
+            </a>
+            <a href="{{ route('grants.index') }}" class="stat-card-link" style="text-decoration: none; color: inherit;">
                 <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
                     <div class="stat-icon" style="font-size: 1.75rem; color: #10b981; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
                         <i class="fas fa-hand-holding-usd"></i>
@@ -174,7 +176,7 @@
                     </div>
                 </div>
             </a>
-            <a href="{{ route('publications.index') }}?category=rtn" class="stat-card-link" style="text-decoration: none; color: inherit;">
+            <a href="{{ route('rtn-submissions.index') }}" class="stat-card-link" style="text-decoration: none; color: inherit;">
                 <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
                     <div class="stat-icon" style="font-size: 1.75rem; color: #8b5cf6; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
                         <i class="fas fa-certificate"></i>
@@ -185,7 +187,7 @@
                     </div>
                 </div>
             </a>
-            <a href="{{ route('publications.index') }}?category=recognitions" class="stat-card-link" style="text-decoration: none; color: inherit;">
+            <a href="{{ route('bonus-recognitions.index') }}" class="stat-card-link" style="text-decoration: none; color: inherit;">
                 <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
                     <div class="stat-icon" style="font-size: 1.75rem; color: #f59e0b; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
                         <i class="fas fa-award"></i>

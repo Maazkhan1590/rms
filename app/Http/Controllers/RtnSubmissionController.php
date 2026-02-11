@@ -24,6 +24,40 @@ class RtnSubmissionController extends Controller
     }
 
     /**
+     * Display a listing of RTN submissions
+     */
+    public function index(Request $request)
+    {
+        $query = RtnSubmission::with(['user'])
+            ->where('status', 'approved');
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by year
+        if ($request->has('year') && $request->year) {
+            $query->where('year', $request->year);
+        }
+
+        // Filter by RTN type
+        if ($request->has('rtn_type') && $request->rtn_type) {
+            $query->where('rtn_type', $request->rtn_type);
+        }
+
+        $rtnSubmissions = $query->orderBy('year', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('rtn-submissions.index', compact('rtnSubmissions'));
+    }
+
+    /**
      * Show RTN submission form
      */
     public function create()
