@@ -4,28 +4,15 @@
 
 @push('styles')
 <style>
-    .researcher-profile-header {
-        padding: 3rem 0 2rem;
-        background: radial-gradient(circle at top left, rgba(37,99,235,0.25), transparent 55%), #020617;
-        color: #f9fafb;
-    }
-
-    .researcher-profile-header h1 {
-        font-size: 2.1rem;
-        letter-spacing: .02em;
-    }
-
     .researcher-profile-body {
-        padding: 2.5rem 0 3rem;
+        padding: 3.75rem 0 3.5rem;
         background: #f3f4f6;
     }
-
     .researcher-profile-card {
         background: #ffffff;
         border-radius: 14px;
-        box-shadow: 0 18px 45px rgba(15,23,42,0.12);
+        box-shadow: 0 12px 30px rgba(15,23,42,0.10);
         padding: 2rem 2.25rem;
-        margin-top: -3rem;
     }
 
     .profile-tabs {
@@ -110,76 +97,61 @@
 @endpush
 
 @section('content')
-<!-- Faculty Member Profile Header -->
-<header class="page-header researcher-profile-header">
-    <div class="container">
-        <div style="display: flex; align-items: center; gap: 2rem;">
-            <div class="member-avatar-large" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; font-weight: 700; flex-shrink: 0;">
-                {{ strtoupper(substr($user->name, 0, 1)) }}
-            </div>
-            <div>
-                <h1 style="margin-bottom: 0.5rem;">{{ $user->name }}</h1>
-                @if($user->designation)
-                    <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.25rem;">{{ $user->designation }}</p>
-                @endif
-                @if($user->college)
-                    <p style="color: var(--text-secondary); font-size: 1.125rem; margin-bottom: 0.25rem;">{{ $user->college->name }}</p>
-                @endif
-                @if($user->department)
-                    <p style="color: var(--text-secondary); font-size: 1rem;">{{ $user->department->name }}</p>
-                @endif
-                @if($user->email)
-                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.5rem;">
-                        <i class="fas fa-envelope"></i> {{ $user->email }}
-                    </p>
-                @endif
-
-                @if($user->orcid || $user->google_scholar || $user->research_gate)
-                    <div style="margin-top: 0.75rem; display:flex; flex-wrap:wrap; gap:0.85rem; font-size:0.85rem;">
-                        @if($user->orcid)
-                            <a href="{{ $user->orcid }}" target="_blank" style="color:#a5b4fc; text-decoration:none;">
-                                <i class="fab fa-orcid"></i> ORCID
-                            </a>
-                        @endif
-                        @if($user->google_scholar)
-                            <a href="{{ $user->google_scholar }}" target="_blank" style="color:#bfdbfe; text-decoration:none;">
-                                <i class="fas fa-graduation-cap"></i> Google Scholar
-                            </a>
-                        @endif
-                        @if($user->research_gate)
-                            <a href="{{ $user->research_gate }}" target="_blank" style="color:#7dd3fc; text-decoration:none;">
-                                <i class="fas fa-project-diagram"></i> ResearchGate
-                            </a>
-                        @endif
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- Profile Tabs: Publications / Grants / RTN / Recognitions -->
+<!-- Profile wrapper (single card like reference site) -->
 <section class="researcher-profile-body">
     <div class="container researcher-profile-card">
-        @auth
-            @if(auth()->id() === $user->id && auth()->user()->hasRole('Faculty'))
-                <div style="display:flex; flex-wrap:wrap; gap:.75rem; justify-content:flex-end; margin-bottom:1rem;">
-                    <a href="{{ route('publications.create') }}" class="btn btn-sm" style="background:#111827; color:#f9fafb; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
-                        <i class="fas fa-plus-circle"></i> Submit Publication
-                    </a>
-                    <a href="{{ route('grants.create') }}" class="btn btn-sm" style="background:#0f766e; color:#ecfeff; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
-                        <i class="fas fa-coins"></i> Submit Grant
-                    </a>
-                    <a href="{{ route('rtn-submissions.create') }}" class="btn btn-sm" style="background:#4338ca; color:#e0e7ff; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
-                        <i class="fas fa-chalkboard-teacher"></i> Submit RTN
-                    </a>
-                    <a href="{{ route('bonus-recognitions.create') }}" class="btn btn-sm" style="background:#854d0e; color:#fffbeb; padding:.45rem .9rem; border-radius:999px; font-size:.85rem; text-decoration:none;">
-                        <i class="fas fa-award"></i> Submit Recognition
-                    </a>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
+            <div style="display:flex; gap:1.5rem; align-items:center;">
+                <div class="member-avatar-large" style="width: 90px; height: 90px; border-radius: 12px; background: #e5e7eb; display:flex; align-items:center; justify-content:center; font-size:2.2rem; color:#4b5563; font-weight:700; flex-shrink:0;">
+                    {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
-            @endif
-        @endauth
-        <div class="profile-tabs">
+                <div>
+                    <h1 style="margin-bottom: .25rem; font-size:1.6rem; font-weight:600; color:#111827;">{{ $user->name }}</h1>
+                    @if($user->college)
+                        <p style="color:#4b5563; font-size:.95rem; margin-bottom:.1rem;">{{ $user->college->name }}</p>
+                    @endif
+                    @if($user->department)
+                        <p style="color:#6b7280; font-size:.9rem; margin-bottom:.1rem;">{{ $user->department->name }}</p>
+                    @endif
+                    @if($user->designation)
+                        <p style="color:#6b7280; font-size:.9rem; margin-top:.25rem;">{{ $user->designation }}</p>
+                    @endif
+                    @if($user->email)
+                        <p style="color:#6b7280; font-size:.85rem; margin-top:.4rem;">
+                            <i class="fas fa-envelope"></i> {{ $user->email }}
+                        </p>
+                    @endif
+                    @if($user->orcid || $user->google_scholar || $user->research_gate)
+                        <div style="margin-top: .5rem; display:flex; flex-wrap:wrap; gap:.75rem; font-size:.8rem;">
+                            @if($user->orcid)
+                                <a href="{{ $user->orcid }}" target="_blank" style="color:#4b5563; text-decoration:none;">
+                                    <i class="fab fa-orcid"></i> ORCID
+                                </a>
+                            @endif
+                            @if($user->google_scholar)
+                                <a href="{{ $user->google_scholar }}" target="_blank" style="color:#4b5563; text-decoration:none;">
+                                    <i class="fas fa-graduation-cap"></i> Google Scholar
+                                </a>
+                            @endif
+                            @if($user->research_gate)
+                                <a href="{{ $user->research_gate }}" target="_blank" style="color:#4b5563; text-decoration:none;">
+                                    <i class="fas fa-project-diagram"></i> ResearchGate
+                                </a>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div style="text-align:right; font-size:.8rem; color:#9ca3af;">
+                <div style="margin-bottom:.4rem; font-weight:500; color:#6b7280;">Detailed Information</div>
+                <div>Profile generated from RMS data</div>
+            </div>
+        </div>
+
+        <hr style="border:none; border-top:1px solid #e5e7eb; margin:0 0 1.25rem;">
+
+        <!-- Profile Tabs: Publications / Grants / RTN / Recognitions -->
+        <div class="profile-tabs" style="margin-top:.5rem;">
             <button type="button" class="profile-tab active" data-tab="publications">
                 <span>Publications</span>
                 <span class="profile-tab-count">{{ $publications->total() }}</span>
