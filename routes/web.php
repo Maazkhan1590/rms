@@ -78,12 +78,12 @@ Route::get('/home', function () {
     if (auth()->check()) {
         $user = auth()->user();
         
-        // Faculty members go to public homepage
+        // Faculty members go to their public profile page
         if ($user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean()) {
             if (session('status')) {
-                return redirect()->route('welcome')->with('status', session('status'));
+                return redirect()->route('faculty-members.show', $user->id)->with('status', session('status'));
             }
-            return redirect()->route('welcome');
+            return redirect()->route('faculty-members.show', $user->id);
         }
         
         // Admin, Coordinator, and Dean go to admin dashboard

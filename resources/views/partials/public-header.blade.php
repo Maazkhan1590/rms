@@ -25,14 +25,25 @@
                 </a>
             </li>
             @auth
+                @php
+                    $user = auth()->user();
+                    $isPureFaculty = $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean();
+                @endphp
                 <li class="nav-item">
                     <a href="{{ route('publications.create') }}" class="nav-link">
                         <i class="fas fa-plus-circle"></i> Submit Paper
-                    </li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.home') }}" class="nav-link">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
+                </li>
+                <li class="nav-item">
+                    @if($isPureFaculty)
+                        <a href="{{ route('faculty-members.show', $user->id) }}" class="nav-link">
+                            <i class="fas fa-user-circle"></i> My Profile
+                        </a>
+                    @else
+                        <a href="{{ route('admin.home') }}" class="nav-link">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    @endif
                 </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">

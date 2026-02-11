@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Publication;
+use App\Models\Grant;
+use App\Models\RtnSubmission;
+use App\Models\BonusRecognition;
 use Illuminate\Http\Request;
 
 class FacultyMemberController extends Controller
@@ -58,16 +61,43 @@ class FacultyMemberController extends Controller
             })
             ->findOrFail($id);
 
-        // Get all publications by this user
+        // Publications for this faculty member
         $publications = Publication::where(function($query) use ($user) {
-            $query->where('submitted_by', $user->id)
-                  ->orWhere('primary_author_id', $user->id);
-        })
-        ->with(['submitter', 'primaryAuthor', 'evidenceFiles'])
-        ->orderBy('publication_year', 'desc')
-        ->orderBy('created_at', 'desc')
-        ->paginate(15);
+                $query->where('submitted_by', $user->id)
+                      ->orWhere('primary_author_id', $user->id);
+            })
+            ->with(['submitter', 'primaryAuthor', 'evidenceFiles'])
+            ->orderBy('publication_year', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
-        return view('faculty-members.show', compact('user', 'publications'));
+        // Grants submitted by this faculty member
+        $grants = Grant::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('award_year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // RTN submissions by this faculty member
+        $rtnSubmissions = RtnSubmission::where('user_id', $user->id)
+            ->with(['user', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Bonus recognitions for this faculty member
+        $bonusRecognitions = BonusRecognition::where('user_id', $user->id)
+            ->with(['user', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('faculty-members.show', compact(
+            'user',
+            'publications',
+            'grants',
+            'rtnSubmissions',
+            'bonusRecognitions'
+        ));
     }
 }

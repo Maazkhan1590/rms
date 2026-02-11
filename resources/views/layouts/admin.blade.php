@@ -406,9 +406,9 @@
 {{--                            </a>--}}
 {{--                        </li>--}}
                         <li>
-                            <a href="{{ route('faculty.dashboard') }}" class="nav-link {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('faculty-members.show', auth()->id()) }}" class="nav-link {{ request()->routeIs('faculty-members.show') ? 'active' : '' }}">
                                 <span class="nav-icon">📊</span>
-                                <span class="nav-label">My Dashboard</span>
+                                <span class="nav-label">My Profile</span>
                             </a>
                         </li>
                     </ul>
