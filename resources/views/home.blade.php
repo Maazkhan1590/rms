@@ -79,7 +79,7 @@
                             </a>
                             @else
                             <a href="{{ route('publications.create') }}" class="btn btn-primary">
-                                <i class="fas fa-rocket"></i> Submit Paper
+                                <i class="fas fa-rocket"></i> Submit
                             </a>
                             @endguest
                             <a href="{{ route('publications.index') }}" class="btn btn-outline">
@@ -366,7 +366,7 @@
             <div class="cta-buttons">
                 @guest
                 <a href="{{ route('register') }}" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i> Submit Your Paper
+                    <i class="fas fa-paper-plane"></i> Submit
                 </a>
                 @else
                 @php
@@ -375,7 +375,7 @@
                 @endphp
                 @if($isPureFaculty)
                 <a href="{{ route('publications.create') }}" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i> Submit Your Paper
+                    <i class="fas fa-paper-plane"></i> Submit
                 </a>
                 <a href="{{ route('faculty-members.show', $user->id) }}" class="btn btn-primary" style="margin-left: 1rem;">
                     <i class="fas fa-user-circle"></i> My Profile

@@ -356,7 +356,7 @@
                     <h3 class="card-title">My Submissions</h3>
                     <div>
                         <a href="{{ route('publications.create') }}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus"></i> Submit Paper
+                            <i class="fas fa-plus"></i> Submit
                         </a>
                         <a href="{{ route('grants.create') }}" class="btn btn-success btn-sm">
                             <i class="fas fa-plus"></i> Submit Grant
@@ -864,7 +864,7 @@
                     </a>
                     @if(!auth()->user()->isAdmin && !auth()->user()->isResearchCoordinator() && !auth()->user()->isDean())
                     <a href="{{ route('publications.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Submit Paper
+                        <i class="fas fa-plus"></i> Submit
                     </a>
                     @endif
                 </div>

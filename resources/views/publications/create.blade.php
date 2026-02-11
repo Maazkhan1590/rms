@@ -346,7 +346,7 @@
     <div class="container">
         <div class="auth-container">
             <div class="auth-header">
-                <h1>Submit Paper</h1>
+                <h1>Submit</h1>
                 <p>Share your research work with the academic community</p>
             </div>
             
@@ -652,7 +652,7 @@
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
                         <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fas fa-paper-plane"></i> Submit Paper
+                            <i class="fas fa-paper-plane"></i> Submit
                         </button>
                     </div>
                 </div>

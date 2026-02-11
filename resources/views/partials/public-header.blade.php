@@ -31,7 +31,7 @@
                 @endphp
                 <li class="nav-item">
                     <a href="{{ route('publications.create') }}" class="nav-link">
-                        <i class="fas fa-plus-circle"></i> Submit Paper
+                        <i class="fas fa-plus-circle"></i> Submit
                     </a>
                 </li>
                 <li class="nav-item">
@@ -74,11 +74,11 @@
         <div class="nav-actions">
             @auth
                 <button class="btn-submit" onclick="window.location.href='{{ route('publications.create') }}'">
-                    <i class="fas fa-paper-plane"></i> Submit Paper
+                    <i class="fas fa-paper-plane"></i> Submit
                 </button>
             @else
                 <button class="btn-submit" onclick="window.location.href='{{ route('register') }}'">
-                    <i class="fas fa-paper-plane"></i> Submit Paper
+                    <i class="fas fa-paper-plane"></i> Submit
                 </button>
             @endauth
         </div>
