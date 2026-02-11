@@ -163,45 +163,78 @@
                     <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Published Papers</p>
                 </div>
             </div>
-            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #10b981; margin-bottom: 0.75rem;">
-                    <i class="fas fa-hand-holding-usd"></i>
+            <a href="{{ route('publications.index') }}?category=grants" class="stat-card-link" style="text-decoration: none; color: inherit;">
+                <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="stat-icon" style="font-size: 1.75rem; color: #10b981; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="{{ $grantsCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem; transition: color 0.3s ease;">0</h3>
+                        <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Grants</p>
+                    </div>
                 </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ $grantsCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
-                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Grants</p>
+            </a>
+            <a href="{{ route('publications.index') }}?category=rtn" class="stat-card-link" style="text-decoration: none; color: inherit;">
+                <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="stat-icon" style="font-size: 1.75rem; color: #8b5cf6; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="{{ $rtnCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem; transition: color 0.3s ease;">0</h3>
+                        <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">RTN Submissions</p>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #8b5cf6; margin-bottom: 0.75rem;">
-                    <i class="fas fa-certificate"></i>
+            </a>
+            <a href="{{ route('publications.index') }}?category=recognitions" class="stat-card-link" style="text-decoration: none; color: inherit;">
+                <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="stat-icon" style="font-size: 1.75rem; color: #f59e0b; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="{{ $bonusCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem; transition: color 0.3s ease;">0</h3>
+                        <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Recognitions</p>
+                    </div>
                 </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ $rtnCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
-                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">RTN Submissions</p>
+            </a>
+            <a href="{{ route('faculty-members.index') }}" class="stat-card-link" style="text-decoration: none; color: inherit;">
+                <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="stat-icon" style="font-size: 1.75rem; color: #ef4444; margin-bottom: 0.75rem; transition: transform 0.3s ease;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="{{ $facultyCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem; transition: color 0.3s ease;">0</h3>
+                        <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Active Researchers</p>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #f59e0b; margin-bottom: 0.75rem;">
-                    <i class="fas fa-award"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ $bonusCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
-                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Recognitions</p>
-                </div>
-            </div>
-            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div class="stat-icon" style="font-size: 1.75rem; color: #ef4444; margin-bottom: 0.75rem;">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ $facultyCount }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
-                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Active Researchers</p>
-                </div>
-            </div>
+            </a>
         </div>
     </div>
     <style>
+        .stat-card-link {
+            display: block;
+        }
+        .stat-card-link:hover .stat-card {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+        }
+        .stat-card-link:hover .stat-icon {
+            transform: scale(1.1);
+        }
+        .stat-card-link:nth-child(1):hover .stat-number {
+            color: #3b82f6 !important;
+        }
+        .stat-card-link:nth-child(2):hover .stat-number {
+            color: #10b981 !important;
+        }
+        .stat-card-link:nth-child(3):hover .stat-number {
+            color: #8b5cf6 !important;
+        }
+        .stat-card-link:nth-child(4):hover .stat-number {
+            color: #f59e0b !important;
+        }
+        .stat-card-link:nth-child(5):hover .stat-number {
+            color: #ef4444 !important;
+        }
         @media (max-width: 1024px) {
             .stats-section .stats-grid {
                 grid-template-columns: repeat(3, 1fr) !important;

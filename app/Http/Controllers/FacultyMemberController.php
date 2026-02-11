@@ -16,12 +16,9 @@ class FacultyMemberController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all users who have submitted publications (Faculty role)
+        // Get all faculty users (not just those with publications)
         $query = User::whereHas('roles', function($q) {
             $q->where('title', 'Faculty');
-        })->where(function($q) {
-            $q->whereHas('publications')
-              ->orWhereHas('primaryAuthorPublications');
         });
 
         // Search
@@ -38,14 +35,24 @@ class FacultyMemberController extends Controller
             $query->where('college_id', $request->college_id);
         }
 
-        $facultyMembers = $query->withCount([
-            'publications' => function($q) {
-                $q->where('status', 'approved');
-            },
-            'primaryAuthorPublications' => function($q) {
-                $q->where('status', 'approved');
-            }
-        ])->orderBy('name')->paginate(20);
+        $facultyMembers = $query->with(['college', 'department'])
+            ->withCount([
+                'publications' => function($q) {
+                    $q->where('status', 'approved');
+                },
+                'primaryAuthorPublications' => function($q) {
+                    $q->where('status', 'approved');
+                },
+                'grants' => function($q) {
+                    $q->where('status', 'approved');
+                },
+                'rtnSubmissions' => function($q) {
+                    $q->where('status', 'approved');
+                },
+                'bonusRecognitions' => function($q) {
+                    $q->where('status', 'approved');
+                }
+            ])->orderBy('name')->paginate(20);
 
         return view('faculty-members.index', compact('facultyMembers'));
     }
