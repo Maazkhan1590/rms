@@ -120,6 +120,76 @@
     </div>
 </header>
 
+<!-- Stats Section -->
+<section class="stats-section" style="padding: 3rem 0; background: #f8f9fa;">
+    <div class="container" style="max-width: 900px;">
+        <div class="section-intro" style="text-align: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 0.5rem;">By The Numbers</h2>
+            <p class="section-subtitle" style="font-size: 0.95rem; color: #6b7280;">Our impact in the global research community</p>
+        </div>
+        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ \App\Models\Publication::where('status', 'approved')->count() }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Published Papers</p>
+                </div>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ \App\Models\User::count() }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Active Researchers</p>
+                </div>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ \App\Models\College::where('is_active', true)->count() }}" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Partner Institutions</p>
+                </div>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="stat-icon" style="font-size: 1.75rem; color: #3b82f6; margin-bottom: 0.75rem;">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="1" style="font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem;">0</h3>
+                    <p class="stat-label" style="font-size: 0.85rem; color: #6b7280; margin: 0;">Countries Represented</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        @media (max-width: 768px) {
+            .stats-section .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 1rem !important;
+            }
+            .stats-section .stat-card {
+                padding: 1rem !important;
+            }
+            .stats-section .stat-icon {
+                font-size: 1.5rem !important;
+            }
+            .stats-section .stat-number {
+                font-size: 1.5rem !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats-section .stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</section>
+
 <!-- Search Section -->
 <section class="search-section">
     <div class="container">
@@ -222,54 +292,6 @@
     </div>
 </section>
 
-<!-- Stats Section -->
-<section class="stats-section">
-    <div class="container">
-        <div class="section-intro">
-            <h2 class="section-title">By The Numbers</h2>
-            <p class="section-subtitle">Our impact in the global research community</p>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ \App\Models\Publication::where('status', 'approved')->count() }}">0</h3>
-                    <p class="stat-label">Published Papers</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ \App\Models\User::count() }}">0</h3>
-                    <p class="stat-label">Active Researchers</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-university"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="{{ \App\Models\College::where('is_active', true)->count() }}">0</h3>
-                    <p class="stat-label">Partner Institutions</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-globe"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-number" data-count="1">0</h3>
-                    <p class="stat-label">Countries Represented</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- CTA Section -->
 <section class="cta-section">
     <div class="container">
@@ -322,6 +344,42 @@
 
 @push('scripts')
 <script>
+// Counter animation for stats
+document.addEventListener('DOMContentLoaded', function() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    const animateCounter = (element) => {
+        const target = parseInt(element.getAttribute('data-count'));
+        const duration = 2000; // 2 seconds
+        const increment = target / (duration / 16); // 60fps
+        let current = 0;
+        
+        const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+                element.textContent = Math.floor(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                element.textContent = target;
+            }
+        };
+        
+        // Only animate if element is in viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(element);
+    };
+    
+    statNumbers.forEach(animateCounter);
+});
+
 function loadPublicationModal(id) {
     const modal = document.getElementById('publication-modal');
     const modalBody = document.getElementById('modal-body');
