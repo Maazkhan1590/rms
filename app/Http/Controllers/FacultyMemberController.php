@@ -37,22 +37,17 @@ class FacultyMemberController extends Controller
 
         $facultyMembers = $query->with(['college', 'department'])
             ->withCount([
-                'publications' => function($q) {
-                    $q->where('status', 'approved');
-                },
-                'primaryAuthorPublications' => function($q) {
-                    $q->where('status', 'approved');
-                },
-                'grants' => function($q) {
-                    $q->where('status', 'approved');
-                },
-                'rtnSubmissions' => function($q) {
-                    $q->where('status', 'approved');
-                },
-                'bonusRecognitions' => function($q) {
-                    $q->where('status', 'approved');
-                }
-            ])->orderBy('name')->paginate(20);
+                'grants',  // Count all grants, not just approved
+                'rtnSubmissions',  // Count all RTN submissions, not just approved
+                'bonusRecognitions'  // Count all recognitions, not just approved
+            ])
+            ->selectRaw('users.*, (
+                SELECT COUNT(DISTINCT id) 
+                FROM publications 
+                WHERE (submitted_by = users.id OR primary_author_id = users.id)
+            ) as unique_publications_count')
+            ->orderBy('name')
+            ->paginate(20);
 
         return view('faculty-members.index', compact('facultyMembers'));
     }
