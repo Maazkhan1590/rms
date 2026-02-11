@@ -18,7 +18,7 @@
             <h3 class="card-title">Slider Images</h3>
             @can('slider_create')
             <a href="{{ route('admin.sliders.create') }}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus"></i> Add Slider
+                <span class="material-icons-outlined">add</span> Add Slider
             </a>
             @endcan
         </div>
@@ -68,15 +68,15 @@
                             @endif
                         </td>
                         <td>
-                            <div class="btn-group btn-group-sm" role="group">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Slider actions">
                                 @can('slider_read')
                                 <a href="{{ route('admin.sliders.show', $slider) }}" class="btn btn-outline-primary" title="View">
-                                    <i class="fas fa-eye"></i>
+                                    <span class="material-icons-outlined">visibility</span>
                                 </a>
                                 @endcan
                                 @can('slider_update')
                                 <a href="{{ route('admin.sliders.edit', $slider) }}" class="btn btn-outline-info" title="Edit">
-                                    <i class="fas fa-edit"></i>
+                                    <span class="material-icons-outlined">edit</span>
                                 </a>
                                 @endcan
                                 @can('slider_delete')
@@ -84,7 +84,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                        <i class="fas fa-trash"></i>
+                                        <span class="material-icons-outlined">delete</span>
                                     </button>
                                 </form>
                                 @endcan

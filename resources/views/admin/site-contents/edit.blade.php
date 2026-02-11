@@ -98,7 +98,7 @@
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Update Content
+                    <span class="material-icons-outlined">save</span> Update Content
                 </button>
                 <a href="{{ route('admin.site-contents.index') }}" class="btn btn-secondary">
                     Cancel

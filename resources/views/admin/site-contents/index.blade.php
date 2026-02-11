@@ -18,7 +18,7 @@
             <h3 class="card-title">Site Content Management</h3>
             @can('site_content_create')
             <a href="{{ route('admin.site-contents.create') }}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus"></i> Add Content
+                <span class="material-icons-outlined">add</span> Add Content
             </a>
             @endcan
         </div>
@@ -82,15 +82,15 @@
                             @endif
                         </td>
                         <td>
-                            <div class="btn-group btn-group-sm" role="group">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Content actions">
                                 @can('site_content_read')
                                 <a href="{{ route('admin.site-contents.show', $content) }}" class="btn btn-outline-primary" title="View">
-                                    <i class="fas fa-eye"></i>
+                                    <span class="material-icons-outlined">visibility</span>
                                 </a>
                                 @endcan
                                 @can('site_content_update')
                                 <a href="{{ route('admin.site-contents.edit', $content) }}" class="btn btn-outline-info" title="Edit">
-                                    <i class="fas fa-edit"></i>
+                                    <span class="material-icons-outlined">edit</span>
                                 </a>
                                 @endcan
                                 @can('site_content_delete')
@@ -98,7 +98,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                        <i class="fas fa-trash"></i>
+                                        <span class="material-icons-outlined">delete</span>
                                     </button>
                                 </form>
                                 @endcan

@@ -31,7 +31,44 @@ class SiteContentController extends Controller
     {
         abort_if(Gate::denies('site_content_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.site-contents.create');
+        // Predefined keys based on what's used in the site
+        $predefinedKeys = [
+            'footer' => [
+                'footer_description' => 'Footer Description',
+                'footer_address' => 'Footer Address',
+                'footer_phone' => 'Footer Phone',
+                'footer_email' => 'Footer Email',
+                'footer_hours' => 'Footer Hours',
+                'footer_copyright' => 'Footer Copyright',
+                'social_twitter' => 'Twitter URL',
+                'social_linkedin' => 'LinkedIn URL',
+                'social_youtube' => 'YouTube URL',
+                'social_github' => 'GitHub URL',
+                'social_orcid' => 'ORCID URL',
+                'social_facebook' => 'Facebook URL',
+                'social_instagram' => 'Instagram URL',
+                'footer_privacy_link' => 'Privacy Policy Link',
+                'footer_terms_link' => 'Terms of Service Link',
+                'footer_cookie_link' => 'Cookie Policy Link',
+            ],
+            'header' => [
+                'header_logo_text' => 'Header Logo Text',
+                'header_tagline' => 'Header Tagline',
+                'header_contact_email' => 'Header Contact Email',
+                'header_contact_phone' => 'Header Contact Phone',
+            ],
+            'general' => [
+                'site_name' => 'Site Name',
+                'site_tagline' => 'Site Tagline',
+                'site_description' => 'Site Description',
+                'site_keywords' => 'Site Keywords',
+                'contact_email' => 'Contact Email',
+                'contact_phone' => 'Contact Phone',
+                'contact_address' => 'Contact Address',
+            ],
+        ];
+
+        return view('admin.site-contents.create', compact('predefinedKeys'));
     }
 
     public function store(Request $request)
@@ -73,7 +110,44 @@ class SiteContentController extends Controller
     {
         abort_if(Gate::denies('site_content_update'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.site-contents.edit', compact('siteContent'));
+        // Predefined keys for reference
+        $predefinedKeys = [
+            'footer' => [
+                'footer_description' => 'Footer Description',
+                'footer_address' => 'Footer Address',
+                'footer_phone' => 'Footer Phone',
+                'footer_email' => 'Footer Email',
+                'footer_hours' => 'Footer Hours',
+                'footer_copyright' => 'Footer Copyright',
+                'social_twitter' => 'Twitter URL',
+                'social_linkedin' => 'LinkedIn URL',
+                'social_youtube' => 'YouTube URL',
+                'social_github' => 'GitHub URL',
+                'social_orcid' => 'ORCID URL',
+                'social_facebook' => 'Facebook URL',
+                'social_instagram' => 'Instagram URL',
+                'footer_privacy_link' => 'Privacy Policy Link',
+                'footer_terms_link' => 'Terms of Service Link',
+                'footer_cookie_link' => 'Cookie Policy Link',
+            ],
+            'header' => [
+                'header_logo_text' => 'Header Logo Text',
+                'header_tagline' => 'Header Tagline',
+                'header_contact_email' => 'Header Contact Email',
+                'header_contact_phone' => 'Header Contact Phone',
+            ],
+            'general' => [
+                'site_name' => 'Site Name',
+                'site_tagline' => 'Site Tagline',
+                'site_description' => 'Site Description',
+                'site_keywords' => 'Site Keywords',
+                'contact_email' => 'Contact Email',
+                'contact_phone' => 'Contact Phone',
+                'contact_address' => 'Contact Address',
+            ],
+        ];
+
+        return view('admin.site-contents.edit', compact('siteContent', 'predefinedKeys'));
     }
 
     public function update(Request $request, SiteContent $siteContent)

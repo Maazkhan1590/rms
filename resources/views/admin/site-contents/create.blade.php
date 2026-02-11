@@ -13,12 +13,36 @@
 
             <div class="form-group">
                 <label for="key">Key <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('key') is-invalid @enderror" 
-                       id="key" name="key" value="{{ old('key') }}" required placeholder="e.g., footer_description, footer_address">
+                <div class="row">
+                    <div class="col-md-6">
+                        <select class="form-control @error('key') is-invalid @enderror" 
+                                id="key_select" onchange="document.getElementById('key').value = this.value; updateLabelFromKey();">
+                            <option value="">-- Select Predefined Key --</option>
+                            @foreach($predefinedKeys as $section => $keys)
+                                <optgroup label="{{ ucfirst($section) }} Section">
+                                    @foreach($keys as $keyValue => $keyLabel)
+                                        <option value="{{ $keyValue }}" data-label="{{ $keyLabel }}" data-section="{{ $section }}" data-type="{{ 
+                                            strpos($keyValue, 'email') !== false ? 'email' : 
+                                            (strpos($keyValue, 'phone') !== false ? 'phone' : 
+                                            (strpos($keyValue, 'link') !== false || strpos($keyValue, 'social_') !== false ? 'url' : 
+                                            (strpos($keyValue, 'description') !== false ? 'html' : 'text'))) 
+                                        }}">
+                                            {{ $keyValue }} ({{ $keyLabel }})
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control @error('key') is-invalid @enderror" 
+                               id="key" name="key" value="{{ old('key') }}" required placeholder="Or enter custom key">
+                    </div>
+                </div>
                 @error('key')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                <small class="form-text text-muted">Unique identifier for this content (use lowercase with underscores)</small>
+                <small class="form-text text-muted">Select a predefined key or enter a custom one (use lowercase with underscores)</small>
             </div>
 
             <div class="form-group">
@@ -101,7 +125,7 @@
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Create Content
+                    <span class="material-icons-outlined">save</span> Create Content
                 </button>
                 <a href="{{ route('admin.site-contents.index') }}" class="btn btn-secondary">
                     Cancel
@@ -110,4 +134,41 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    function updateLabelFromKey() {
+        const select = document.getElementById('key_select');
+        const selectedOption = select.options[select.selectedIndex];
+        
+        if (selectedOption.value) {
+            // Update label field
+            const labelInput = document.getElementById('label');
+            if (labelInput && !labelInput.value) {
+                labelInput.value = selectedOption.getAttribute('data-label') || '';
+            }
+            
+            // Update section field
+            const sectionSelect = document.getElementById('section');
+            if (sectionSelect && selectedOption.getAttribute('data-section')) {
+                sectionSelect.value = selectedOption.getAttribute('data-section');
+            }
+            
+            // Update type field
+            const typeSelect = document.getElementById('type');
+            if (typeSelect && selectedOption.getAttribute('data-type')) {
+                typeSelect.value = selectedOption.getAttribute('data-type');
+            }
+        }
+    }
+    
+    // Also update when typing custom key
+    document.getElementById('key').addEventListener('input', function() {
+        if (this.value && !document.getElementById('key_select').value) {
+            // User is typing custom key, clear the select
+            document.getElementById('key_select').value = '';
+        }
+    });
+</script>
+@endpush
 @endsection
