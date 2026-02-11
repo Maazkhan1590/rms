@@ -1113,9 +1113,11 @@
             }
         </script>
 
-        <!-- Custom Admin Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="{{ asset('js/app.js') }}"></script>
-        @yield('scripts')
+    <!-- Custom Admin Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <!-- SweetAlert2 for nicer confirmation dialogs -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    @yield('scripts')
 </body>
 </html>

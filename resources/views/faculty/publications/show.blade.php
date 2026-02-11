@@ -19,9 +19,9 @@
                                 <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">edit</span>
                                 <span style="vertical-align: middle;">Edit</span>
                             </a>
-                            <form action="{{ route('faculty.publications.submit', $publication) }}" method="POST" class="d-inline">
+                            <form action="{{ route('faculty.publications.submit', $publication) }}" method="POST" class="d-inline submit-publication-form">
                                 @csrf
-                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Submit this publication for approval?')">
+                                <button type="button" class="btn btn-success btn-sm btn-submit-publication" data-title="{{ $publication->title }}">
                                     <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">send</span>
                                     <span style="vertical-align: middle;">Submit for Approval</span>
                                 </button>

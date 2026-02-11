@@ -85,9 +85,9 @@
                                 <a href="{{ route('faculty.publications.edit', $publication) }}" class="btn btn-sm btn-primary">
                                     <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">edit</span>
                                 </a>
-                                <form action="{{ route('faculty.publications.submit', $publication) }}" method="POST" class="d-inline">
+                                <form action="{{ route('faculty.publications.submit', $publication) }}" method="POST" class="d-inline submit-publication-form">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Submit this publication for approval?')">
+                                    <button type="button" class="btn btn-sm btn-success btn-submit-publication" data-title="{{ $publication->title }}">
                                         <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">send</span>
                                     </button>
                                 </form>
@@ -119,6 +119,33 @@
             searching: false,
             info: false,
             order: [[3, 'desc']]
+        });
+
+        // SweetAlert confirmation for submit buttons
+        $('.btn-submit-publication').on('click', function (e) {
+            e.preventDefault();
+            const form = $(this).closest('form');
+            const title = $(this).data('title') || 'this publication';
+
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'Submit for approval?',
+                    text: 'You are about to submit "' + title + '" for workflow approval. You will not be able to edit it while under review.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, submit',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#16a34a',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            } else {
+                if (confirm('Submit this publication for approval?')) {
+                    form.submit();
+                }
+            }
         });
     });
 </script>

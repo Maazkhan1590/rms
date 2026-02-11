@@ -218,9 +218,9 @@
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
                                     @if(in_array($submission->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean']))
-                                        <form action="{{ route('admin.rtn-submissions.approve', $submission->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this RTN submission? This will allocate 5 points.');">
+                                        <form action="{{ route('admin.rtn-submissions.approve', $submission->id) }}" method="POST" style="display: inline;" class="rtn-approve-form">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
+                                            <button type="button" class="btn btn-sm btn-outline-success btn-approve-rtn" title="Approve" aria-label="Approve" data-title="{{ $submission->title }}">
                                                 <span class="material-icons-outlined">check_circle</span>
                                             </button>
                                         </form>
@@ -229,10 +229,10 @@
                                         </button>
                                     @endif
                                     @if($submission->status !== 'approved')
-                                    <form action="{{ route('admin.rtn-submissions.destroy', $submission->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This cannot be undone.');">
+                                    <form action="{{ route('admin.rtn-submissions.destroy', $submission->id) }}" method="POST" style="display: inline;" class="rtn-delete-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" aria-label="Delete">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete-rtn" title="Delete" aria-label="Delete" data-title="{{ $submission->title }}">
                                             <span class="material-icons-outlined">delete</span>
                                         </button>
                                     </form>
