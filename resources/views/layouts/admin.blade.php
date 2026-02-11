@@ -381,30 +381,30 @@
                                 <span class="nav-label">My RTN</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.bonus-recognitions.index') }}" class="nav-link {{ request()->routeIs('admin.bonus-recognitions.*') ? 'active' : '' }}">
-                                <span class="nav-icon">🏆</span>
-                                <span class="nav-label">My Recognitions</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('faculty.consultancies.index') }}" class="nav-link {{ request()->routeIs('faculty.consultancies.*') ? 'active' : '' }}">
-                                <span class="nav-icon">💼</span>
-                                <span class="nav-label">My Consultancies</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('faculty.commercializations.index') }}" class="nav-link {{ request()->routeIs('faculty.commercializations.*') ? 'active' : '' }}">
-                                <span class="nav-icon">🚀</span>
-                                <span class="nav-label">My Commercializations</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('faculty.conference-activities.index') }}" class="nav-link {{ request()->routeIs('faculty.conference-activities.*') ? 'active' : '' }}">
-                                <span class="nav-icon">🎤</span>
-                                <span class="nav-label">My Conferences</span>
-                            </a>
-                        </li>
+{{--                        <li>--}}
+{{--                            <a href="{{ route('admin.bonus-recognitions.index') }}" class="nav-link {{ request()->routeIs('admin.bonus-recognitions.*') ? 'active' : '' }}">--}}
+{{--                                <span class="nav-icon">🏆</span>--}}
+{{--                                <span class="nav-label">My Recognitions</span>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('faculty.consultancies.index') }}" class="nav-link {{ request()->routeIs('faculty.consultancies.*') ? 'active' : '' }}">--}}
+{{--                                <span class="nav-icon">💼</span>--}}
+{{--                                <span class="nav-label">My Consultancies</span>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('faculty.commercializations.index') }}" class="nav-link {{ request()->routeIs('faculty.commercializations.*') ? 'active' : '' }}">--}}
+{{--                                <span class="nav-icon">🚀</span>--}}
+{{--                                <span class="nav-label">My Commercializations</span>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li>--}}
+{{--                            <a href="{{ route('faculty.conference-activities.index') }}" class="nav-link {{ request()->routeIs('faculty.conference-activities.*') ? 'active' : '' }}">--}}
+{{--                                <span class="nav-icon">🎤</span>--}}
+{{--                                <span class="nav-label">My Conferences</span>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
                         <li>
                             <a href="{{ route('faculty.dashboard') }}" class="nav-link {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
                                 <span class="nav-icon">📊</span>
