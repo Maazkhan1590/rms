@@ -52,7 +52,7 @@
                                     data-permission-text="{{ strtolower($module) }} {{ strtolower(implode(' ', $modulePermissions->pluck('title')->toArray())) }}"
                                 >
                                     <td>
-                                        <strong>{{ ucwords(str_replace('_', ' ', $module)) }}</strong>
+                                        <strong>{{ $module === 'site_settings' ? 'Site Settings' : ucwords(str_replace('_', ' ', $module)) }}</strong>
                                     </td>
                                     <td>
                                         @foreach($modulePermissions as $permission)

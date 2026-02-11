@@ -31,7 +31,14 @@ class RolesController extends Controller
         $permissions = Permission::all()
             ->sortBy('title')
             ->groupBy(function ($permission) {
-                $parts = explode('_', $permission->title, 2);
+                $title = $permission->title;
+                
+                // Group slider and site_content permissions under "site_settings"
+                if (strpos($title, 'slider_') === 0 || strpos($title, 'site_content_') === 0) {
+                    return 'site_settings';
+                }
+                
+                $parts = explode('_', $title, 2);
                 return $parts[0] ?? 'other';
             });
 
@@ -54,7 +61,14 @@ class RolesController extends Controller
         $permissions = Permission::all()
             ->sortBy('title')
             ->groupBy(function ($permission) {
-                $parts = explode('_', $permission->title, 2);
+                $title = $permission->title;
+                
+                // Group slider and site_content permissions under "site_settings"
+                if (strpos($title, 'slider_') === 0 || strpos($title, 'site_content_') === 0) {
+                    return 'site_settings';
+                }
+                
+                $parts = explode('_', $title, 2);
                 return $parts[0] ?? 'other';
             });
 
