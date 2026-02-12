@@ -93,18 +93,20 @@
         <!-- Evidence Files Section -->
         @php
             $evidenceFiles = $publication->evidenceFiles ?? collect();
+            $hasLinkEvidence = !empty($publication->published_link) || !empty($publication->proceedings_link) || !empty($publication->acceptance_letter_path);
+            $totalEvidenceCount = $evidenceFiles->count() + ($hasLinkEvidence ? ((!empty($publication->published_link) ? 1 : 0) + (!empty($publication->proceedings_link) ? 1 : 0) + (!empty($publication->acceptance_letter_path) ? 1 : 0)) : 0);
         @endphp
-        @if($evidenceFiles->count() > 0)
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">attach_file</span>
-                            <span style="vertical-align: middle;">Evidence Files ({{ $evidenceFiles->count() }})</span>
+                            <span style="vertical-align: middle;">Evidence Files & Attachments ({{ $totalEvidenceCount }})</span>
                         </h5>
                     </div>
                     <div class="card-body">
+                        @if($evidenceFiles->count() > 0 || $hasLinkEvidence)
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -150,14 +152,67 @@
                                         </td>
                                     </tr>
                                     @endforeach
+                                    
+                                    @if($publication->published_link)
+                                    <tr>
+                                        <td>Published Link</td>
+                                        <td><span class="badge badge-info">URL</span></td>
+                                        <td>Published Link</td>
+                                        <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                                        <td>{{ $publication->submitted_at ? $publication->submitted_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                        <td>
+                                            <a href="{{ $publication->published_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                Open URL
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    
+                                    @if($publication->proceedings_link)
+                                    <tr>
+                                        <td>Proceedings Link</td>
+                                        <td><span class="badge badge-info">URL</span></td>
+                                        <td>Proceedings Link</td>
+                                        <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                                        <td>{{ $publication->submitted_at ? $publication->submitted_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                        <td>
+                                            <a href="{{ $publication->proceedings_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                Open URL
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    
+                                    @if($publication->acceptance_letter_path)
+                                    <tr>
+                                        <td>Acceptance Letter</td>
+                                        <td><span class="badge badge-danger">PDF</span></td>
+                                        <td>Acceptance Letter</td>
+                                        <td>{{ $publication->submitter->name ?? 'N/A' }}</td>
+                                        <td>{{ $publication->submitted_at ? $publication->submitted_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                        <td>
+                                            <a href="{{ Storage::disk('public')->url($publication->acceptance_letter_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">download</span>
+                                                Download
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
+                        @else
+                        <div style="text-align:center;padding:2rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;">
+                            <span class="material-icons-outlined" style="font-size:48px;color:#d1d5db;">folder_open</span>
+                            <p style="color:#6b7280;margin-top:1rem;margin-bottom:0;">No evidence files have been uploaded yet.</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
-        @endif
 
         <!-- Workflow Information -->
         @php
