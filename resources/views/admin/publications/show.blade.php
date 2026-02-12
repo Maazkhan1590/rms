@@ -290,7 +290,7 @@
                                             <span class="badge" style="background:{{ $iconColor }};color:white;font-size:13px;padding:4px 10px;border-radius:4px;">
                                                 {{ ucfirst($history->action) }}
                                             </span>
-                                            @if($history->previous_status && $history->new_status)
+                                            @if($history->previous_status && $history->new_status && $history->previous_status != $history->new_status)
                                             <span style="font-size:12px;color:#6b7280;margin-left:8px;">
                                                 {{ ucfirst(str_replace('_', ' ', $history->previous_status)) }} → {{ ucfirst(str_replace('_', ' ', $history->new_status)) }}
                                             </span>
