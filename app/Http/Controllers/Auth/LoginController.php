@@ -43,6 +43,95 @@ class LoginController extends Controller
     }
 
     /**
+     * Get the needed authorization credentials from the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        return $request->only($this->username(), 'password');
+    }
+
+    /**
+     * Attempt to log the user into the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function attemptLogin(Request $request)
+    {
+        $credentials = $this->credentials($request);
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+
+        // Check if user exists and status is not active
+        if ($user && $user->status !== 'active') {
+            // Log blocked login attempt due to pending approval
+            $this->loggingService->logActivity(
+                'login_blocked',
+                "Login blocked - Account pending approval: {$user->name} ({$user->email})",
+                'App\Models\User',
+                $user->id,
+                $user->id
+            );
+            
+            // Store custom error message
+            session()->flash('login_error', 'Your account is pending approval. Please wait for an administrator to approve your account.');
+            session()->flash('login_email', $credentials['email']); // Store email for logging
+            return false;
+        }
+
+        $attempt = $this->guard()->attempt(
+            $credentials, $request->filled('remember')
+        );
+
+        // If login attempt failed and user exists, log it
+        if (!$attempt && $user) {
+            $this->loggingService->logActivity(
+                'login_failed',
+                "Failed login attempt - Invalid password: {$user->name} ({$user->email})",
+                'App\Models\User',
+                $user->id,
+                $user->id
+            );
+        } elseif (!$attempt) {
+            // Log failed attempt with non-existent email
+            $this->loggingService->logActivity(
+                'login_failed',
+                "Failed login attempt - Invalid email: {$credentials['email']}",
+                null,
+                null,
+                null
+            );
+        }
+
+        return $attempt;
+    }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        // Check if there's a custom login error message
+        if (session()->has('login_error')) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                $this->username() => [session()->pull('login_error')],
+            ]);
+        }
+
+        // Default failed login response
+        throw \Illuminate\Validation\ValidationException::withMessages([
+            $this->username() => [trans('auth.failed')],
+        ]);
+    }
+
+    /**
      * The user has been authenticated.
      * This method is called by Laravel's AuthenticatesUsers trait after successful login.
      * We clear url.intended here to prevent redirect to public pages.
@@ -53,26 +142,16 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        if ($user->status !== 'active') {
-            auth()->logout();
-
-            // Return early with error - this will prevent sendLoginResponse from being called
-            redirect()->route('login')->withErrors([
-                'email' => 'Your account is currently ' . $user->status . '. Please contact an administrator.',
-            ])->send();
-            exit;
-        }
-
         $user->forceFill([
             'last_login_at' => now(),
         ])->save();
 
-        // Log activity
+        // Log successful login activity
         $this->loggingService->logActivity(
-            'login',
-            "User logged in: {$user->name} ({$user->email})",
-            null,
-            null,
+            'login_success',
+            "Successful login: {$user->name} ({$user->email})",
+            'App\Models\User',
+            $user->id,
             $user->id
         );
 
@@ -142,19 +221,47 @@ class LoginController extends Controller
     }
 
     /**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function logout(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Log logout activity before logging out
+        if ($user) {
+            $this->loggingService->logActivity(
+                'logout',
+                "User logged out: {$user->name} ({$user->email})",
+                'App\Models\User',
+                $user->id,
+                $user->id
+            );
+        }
+
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        if ($response = $this->loggedOut($request)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new \Illuminate\Http\JsonResponse([], 204)
+            : redirect('/');
+    }
+
+    /**
      * The user has been logged out of the application.
      */
     protected function loggedOut(Request $request)
     {
-        if ($request->user()) {
-            // Log activity
-            $this->loggingService->logActivity(
-                'logout',
-                "User logged out: {$request->user()->name} ({$request->user()->email})",
-                null,
-                null,
-                $request->user()->id
-            );
-        }
+        // Logout activity already logged in logout() method
+        return null;
     }
 }
