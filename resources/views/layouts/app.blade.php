@@ -49,6 +49,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
+    <!-- Form Submit Blocker - Prevents duplicate submissions -->
+    <script src="{{ asset('js/form-blocker.js') }}"></script>
 
     @yield('scripts')
 </body>

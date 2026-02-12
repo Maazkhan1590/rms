@@ -49,7 +49,10 @@
     @include('partials.public-footer')
 
     <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
+    <!-- Form Submit Blocker - Prevents duplicate submissions -->
+    <script src="{{ asset('js/form-blocker.js') }}"></script>
     @if(request()->routeIs('welcome'))
     <script src="{{ asset('js/slider.js') }}"></script>
     @endif

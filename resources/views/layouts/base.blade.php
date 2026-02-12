@@ -28,8 +28,11 @@
     </div>
     
     <!-- Custom Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <!-- Form Submit Blocker - Prevents duplicate submissions -->
+    <script src="{{ asset('js/form-blocker.js') }}"></script>
     @yield('scripts')
 </body>
 </html>

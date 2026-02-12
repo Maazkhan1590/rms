@@ -1161,6 +1161,8 @@
     <!-- SweetAlert2 for nicer confirmation dialogs -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <!-- Form Submit Blocker - Prevents duplicate submissions -->
+    <script src="{{ asset('js/form-blocker.js') }}"></script>
 
     <!-- Global handler for "Submit for Approval" buttons (faculty publications) -->
     <script>
