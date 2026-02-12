@@ -117,24 +117,53 @@
             <p class="section-subtitle" style="font-size: 0.95rem; color: #6b7280;">Our impact in the global research community</p>
         </div>
         @php
-            // Count faculty users - try multiple approaches to ensure we get the count
+            // Count ACTIVE RESEARCHERS only - faculty members who have at least one research contribution
             try {
-                // Method 1: Using whereHas (standard Laravel approach)
                 $facultyCount = \App\Models\User::whereHas('roles', function($q) { 
                     $q->where('title', 'Faculty'); 
-                })->count();
-                
-                // Method 2: If count is 0, try direct join (fallback)
-                if ($facultyCount == 0) {
-                    $facultyCount = \App\Models\User::join('role_user', 'users.id', '=', 'role_user.user_id')
-                        ->join('roles', 'role_user.role_id', '=', 'roles.id')
-                        ->where('roles.title', 'Faculty')
-                        ->distinct('users.id')
-                        ->count('users.id');
-                }
+                })
+                ->where(function($query) {
+                    // Has publications (as submitter or primary author)
+                    $query->whereHas('publications')
+                          ->orWhereHas('primaryAuthorPublications')
+                          // Has grants
+                          ->orWhereHas('grants')
+                          // Has RTN submissions
+                          ->orWhereHas('rtnSubmissions')
+                          // Has bonus recognitions
+                          ->orWhereHas('bonusRecognitions');
+                })
+                ->count();
             } catch (\Exception $e) {
-                // Fallback: count all users if there's an error
-                $facultyCount = \App\Models\User::count();
+                // Fallback: count faculty with at least one publication using raw query
+                $facultyCount = \DB::table('users')
+                    ->join('role_user', 'users.id', '=', 'role_user.user_id')
+                    ->join('roles', 'role_user.role_id', '=', 'roles.id')
+                    ->where('roles.title', 'Faculty')
+                    ->where(function($query) {
+                        $query->whereExists(function($subquery) {
+                            $subquery->select(\DB::raw(1))
+                                ->from('publications')
+                                ->whereRaw('publications.submitted_by = users.id OR publications.primary_author_id = users.id');
+                        })
+                        ->orWhereExists(function($subquery) {
+                            $subquery->select(\DB::raw(1))
+                                ->from('grants')
+                                ->whereRaw('grants.submitted_by = users.id');
+                        })
+                        ->orWhereExists(function($subquery) {
+                            $subquery->select(\DB::raw(1))
+                                ->from('rtn_submissions')
+                                ->whereRaw('rtn_submissions.submitted_by = users.id');
+                        })
+                        ->orWhereExists(function($subquery) {
+                            $subquery->select(\DB::raw(1))
+                                ->from('bonus_recognitions')
+                                ->whereRaw('bonus_recognitions.faculty_id = users.id');
+                        });
+                    })
+                    ->distinct()
+                    ->count('users.id');
             }
             
             $publicationsCount = \App\Models\Publication::where('status', 'approved')->count();
