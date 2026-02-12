@@ -290,7 +290,11 @@
 
         <!-- Evidence Files Section -->
         @php
-            $evidenceFiles = $bonusRecognition->evidenceFiles ?? collect();
+            // Load evidence files directly to avoid any lazy-loading issues
+            $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'bonus')
+                ->where('submission_id', $bonusRecognition->id)
+                ->with('uploader')
+                ->get();
         @endphp
         <div class="row mt-4">
             <div class="col-md-12">

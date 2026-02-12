@@ -313,7 +313,11 @@
 
             <!-- Evidence Files Section -->
             @php
-                $evidenceFiles = $bonus->evidenceFiles ?? collect();
+                // Load evidence files directly to avoid any lazy-loading issues
+                $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'bonus')
+                    ->where('submission_id', $bonus->id)
+                    ->with('uploader')
+                    ->get();
                 $hasLinkEvidence = !empty($bonus->evidence_link);
                 $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
             @endphp
