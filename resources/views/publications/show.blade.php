@@ -172,6 +172,30 @@
                 <i class="fas fa-arrow-left"></i> {{ $backText }}
             </a>
 
+            <!-- Submit Button for Draft Publications -->
+            @auth
+                @if($publication->status === 'draft' && ($publication->submitted_by === auth()->id() || $publication->primary_author_id === auth()->id()))
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                        <div>
+                            <h4 style="color: #92400e; font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem 0;">
+                                <i class="fas fa-exclamation-circle"></i> Draft Status
+                            </h4>
+                            <p style="color: #78350f; font-size: 0.9rem; margin: 0;">
+                                This publication is in draft status. Submit it for approval to start the review process.
+                            </p>
+                        </div>
+                        <form action="{{ route('publications.submit', $publication->id) }}" method="POST" style="margin: 0;" class="submit-publication-form">
+                            @csrf
+                            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; background: #f59e0b; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endif
+            @endauth
+
             <!-- Publication Header -->
             <div class="publication-header">
                 <h1 class="publication-title">{{ $publication->title ?? 'Untitled Publication' }}</h1>

@@ -553,7 +553,7 @@
                     <div class="form-group">
                         <label for="evidence_files">Evidence (URLs, Images, PDFs, etc.)</label>
                         <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
-                            Upload multiple files or add URLs as evidence. Supported formats: PDF, Images (JPG, PNG), or URLs.
+                            <i class="fas fa-info-circle"></i> Upload multiple files (hold Ctrl/Cmd to select multiple) or add URLs as evidence. Supported formats: PDF, Images (JPG, PNG).
                         </p>
                         
                         <!-- File Upload -->
@@ -562,9 +562,13 @@
                                    multiple accept=".pdf,.jpg,.jpeg,.png,.gif,image/*,application/pdf"
                                    style="display: none;" onchange="handleEvidenceFiles(this)">
                             <button type="button" class="btn btn-outline" onclick="document.getElementById('evidence_files').click()" style="width: 100%; margin-bottom: 1rem;">
-                                <i class="fas fa-upload"></i> Upload Files
+                                <i class="fas fa-upload"></i> Select Files (Multiple Selection Allowed)
                             </button>
                             <div id="evidenceFilesList" class="evidence-files-list"></div>
+                            <div id="fileCountInfo" style="margin-top: 0.5rem; padding: 0.5rem; background: #e0f2fe; border-radius: 4px; display: none;">
+                                <i class="fas fa-check-circle" style="color: #0284c7;"></i>
+                                <span id="fileCountText" style="color: #0c4a6e; font-size: 0.875rem; font-weight: 500;"></span>
+                            </div>
                         </div>
                         
                         <!-- URL Input -->
@@ -908,11 +912,25 @@
     function handleEvidenceFiles(input) {
         const files = Array.from(input.files);
         const container = document.getElementById('evidenceFilesList');
+        const fileCountInfo = document.getElementById('fileCountInfo');
+        const fileCountText = document.getElementById('fileCountText');
         
-        files.forEach(file => {
+        // Clear existing items
+        container.innerHTML = '';
+        
+        if (files.length === 0) {
+            fileCountInfo.style.display = 'none';
+            return;
+        }
+        
+        // Show file count
+        fileCountInfo.style.display = 'block';
+        fileCountText.textContent = `${files.length} file${files.length > 1 ? 's' : ''} selected`;
+        
+        files.forEach((file, index) => {
             const fileItem = document.createElement('div');
             fileItem.className = 'evidence-file-item';
-            fileItem.dataset.fileIndex = evidenceFileCount;
+            fileItem.dataset.fileIndex = index;
             
             const fileIcon = file.type.startsWith('image/') ? 'fa-image' : 'fa-file-pdf';
             
@@ -928,13 +946,12 @@
             `;
             
             container.appendChild(fileItem);
-            evidenceFileCount++;
         });
     }
     
     function removeEvidenceFile(button) {
         const fileItem = button.closest('.evidence-file-item');
-        const fileIndex = fileItem.dataset.fileIndex;
+        const fileIndex = parseInt(fileItem.dataset.fileIndex);
         
         // Remove from file input
         const fileInput = document.getElementById('evidence_files');
@@ -942,13 +959,15 @@
         const files = Array.from(fileInput.files);
         
         files.forEach((file, index) => {
-            if (index != fileIndex) {
+            if (index !== fileIndex) {
                 dt.items.add(file);
             }
         });
         
         fileInput.files = dt.files;
-        fileItem.remove();
+        
+        // Re-render the file list
+        handleEvidenceFiles(fileInput);
     }
     
     // Evidence URLs Handling
