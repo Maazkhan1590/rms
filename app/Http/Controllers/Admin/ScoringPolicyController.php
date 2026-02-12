@@ -19,41 +19,82 @@ class ScoringPolicyController extends Controller
     {
         abort_if(Gate::denies('policy_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        if ($request->ajax()) {
+            return $this->getDataTableData($request);
+        }
+
+        return view('admin.policies.index');
+    }
+
+    /**
+     * Get DataTables data for scoring policies
+     */
+    private function getDataTableData(Request $request)
+    {
         $query = ScoringPolicy::with(['creator', 'rules', 'policyVersion']);
 
-        // Filter by type
-        if ($request->has('type') && $request->type) {
-            $query->where('type', $request->type);
-        }
+        // Get DataTables parameters
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 15);
+        $search = $request->input('search.value');
 
-        // Filter by active status
-        if ($request->has('active') && $request->active !== '') {
-            $query->where('is_active', $request->active);
-        }
-
-        // Filter by category
-        if ($request->has('category') && $request->category) {
-            $query->where('category', $request->category);
-        }
-
-        // Search
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
+        // Global search
+        if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('category', 'like', "%{$search}%")
-                  ->orWhere('subcategory', 'like', "%{$search}%");
+                  ->orWhere('subcategory', 'like', "%{$search}%")
+                  ->orWhere('type', 'like', "%{$search}%");
             });
         }
 
-        $policies = $query->latest('created_at')->paginate(20);
+        // Get total count before pagination
+        $totalRecords = $query->count();
 
-        // Get filter options
-        $types = ['publication', 'grant', 'rtn', 'bonus'];
-        $categories = ScoringPolicy::distinct()->pluck('category')->filter()->sort()->values();
-        $versions = PolicyVersion::pluck('version_number', 'id');
+        // Ordering
+        $orderColumn = $request->input('order.0.column', 0);
+        $orderDir = $request->input('order.0.dir', 'desc');
+        
+        $columns = ['id', 'name', 'type', 'category', 'subcategory', 'points', 'cap', 'policy_version_id', 'effective_from', 'is_active', 'rules', 'actions'];
+        $orderBy = $columns[$orderColumn] ?? 'id';
+        
+        if ($orderBy === 'policy_version_id') {
+            $query->leftJoin('policy_versions', 'scoring_policies.policy_version_id', '=', 'policy_versions.id')
+                  ->orderBy('policy_versions.version_number', $orderDir)
+                  ->select('scoring_policies.*');
+        } else {
+            $query->orderBy($orderBy, $orderDir);
+        }
 
-        return view('admin.policies.index', compact('policies', 'types', 'categories', 'versions'));
+        // Pagination
+        $policies = $query->skip($start)->take($length)->get();
+        $policies->load(['creator', 'rules', 'policyVersion']);
+
+        // Format data for DataTables
+        $data = [];
+        foreach ($policies as $policy) {
+            $data[] = [
+                'id' => $policy->id,
+                'name' => $policy->name,
+                'type' => ucfirst($policy->type),
+                'category' => $policy->category ?? '-',
+                'subcategory' => $policy->subcategory ?? '-',
+                'points' => number_format($policy->points, 2),
+                'cap' => $policy->cap ? number_format($policy->cap, 2) : 'No cap',
+                'policy_version' => $policy->policyVersion ? $policy->policyVersion->version_number . ' (' . $policy->policyVersion->year . ')' : 'Not assigned',
+                'effective_period' => $policy->effective_from->format('M Y') . ($policy->effective_to ? ' → ' . $policy->effective_to->format('M Y') : ' → Ongoing'),
+                'status' => $policy->is_active ? 'Active' : 'Inactive',
+                'rules_count' => $policy->rules->count(),
+                'actions' => view('admin.policies.partials.actions', compact('policy'))->render(),
+            ];
+        }
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $data
+        ]);
     }
 
     /**

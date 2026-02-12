@@ -17,30 +17,77 @@ class PolicyVersionController extends Controller
     {
         abort_if(Gate::denies('policy_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        if ($request->ajax()) {
+            return $this->getDataTableData($request);
+        }
+
+        return view('admin.policy-versions.index');
+    }
+
+    /**
+     * Get DataTables data for policy versions
+     */
+    private function getDataTableData(Request $request)
+    {
         $query = PolicyVersion::with(['creator', 'scoringPolicies']);
 
-        // Filter by active status
-        if ($request->has('active') && $request->active !== '') {
-            $query->where('is_active', $request->active);
-        }
+        // Get DataTables parameters
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 15);
+        $search = $request->input('search.value');
 
-        // Filter by year
-        if ($request->has('year') && $request->year) {
-            $query->where('year', $request->year);
-        }
-
-        // Search
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
+        // Global search
+        if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('version_number', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('year', 'like', "%{$search}%");
             });
         }
 
-        $versions = $query->latest('year')->latest('created_at')->paginate(20);
+        // Get total count before pagination
+        $totalRecords = $query->count();
 
-        return view('admin.policy-versions.index', compact('versions'));
+        // Ordering
+        $orderColumn = $request->input('order.0.column', 0);
+        $orderDir = $request->input('order.0.dir', 'desc');
+        
+        $columns = ['id', 'version_number', 'year', 'description', 'is_active', 'scoring_policies', 'created_at', 'actions'];
+        $orderBy = $columns[$orderColumn] ?? 'id';
+        
+        if ($orderBy === 'scoring_policies') {
+            // Order by count of scoring policies
+            $query->withCount('scoringPolicies')
+                  ->orderBy('scoring_policies_count', $orderDir);
+        } else {
+            $query->orderBy($orderBy, $orderDir);
+        }
+
+        // Pagination
+        $versions = $query->skip($start)->take($length)->get();
+        $versions->load(['creator', 'scoringPolicies']);
+
+        // Format data for DataTables
+        $data = [];
+        foreach ($versions as $version) {
+            $data[] = [
+                'id' => $version->id,
+                'version_number' => $version->version_number,
+                'year' => $version->year,
+                'description' => \Str::limit($version->description ?? 'No description', 60),
+                'status' => $version->is_active ? 'Active' : 'Inactive',
+                'policies_count' => $version->scoringPolicies->count(),
+                'created_at' => $version->created_at->format('M d, Y'),
+                'actions' => view('admin.policy-versions.partials.actions', compact('version'))->render(),
+            ];
+        }
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $data
+        ]);
     }
 
     /**

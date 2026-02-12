@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             RoleUserTableSeeder::class,
             SliderSeeder::class,
             SiteContentSeeder::class,
+            ScoringPolicySeeder::class,
             // ResearchSystemDataSeeder::class, // Uncomment to import Excel data
         ]);
     }
