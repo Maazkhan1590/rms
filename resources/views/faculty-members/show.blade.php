@@ -293,6 +293,27 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($grants as $grant)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <!-- Draft Submit Banner -->
+                            @auth
+                                @if($grant->grant_status === 'draft' && $grant->submitted_by === auth()->id())
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This grant needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('grants.submit', $grant->id) }}" method="POST" style="margin: 0;" class="submit-grant-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
+                            
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
                                 <div style="flex: 1;">
                                     <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-color);">
@@ -341,6 +362,27 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($rtnSubmissions as $rtn)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <!-- Draft Submit Banner -->
+                            @auth
+                                @if($rtn->status === 'draft' && $rtn->user_id === auth()->id())
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This RTN submission needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('rtn-submissions.submit', $rtn->id) }}" method="POST" style="margin: 0;" class="submit-rtn-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
+                            
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
                                 <div style="flex: 1;">
                                     <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-color);">
@@ -386,6 +428,27 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($bonusRecognitions as $bonus)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <!-- Draft Submit Banner -->
+                            @auth
+                                @if($bonus->status === 'draft' && $bonus->user_id === auth()->id())
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This recognition needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('bonus-recognitions.submit', $bonus->id) }}" method="POST" style="margin: 0;" class="submit-bonus-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
+                            
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
                                 <div style="flex: 1;">
                                     <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-color);">
