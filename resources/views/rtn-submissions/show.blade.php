@@ -329,7 +329,11 @@
 
             <!-- Evidence Files Section -->
             @php
-                $evidenceFiles = $rtn->evidenceFiles ?? collect();
+                // Load evidence files directly to avoid any lazy-loading issues
+                $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'rtn')
+                    ->where('submission_id', $rtn->id)
+                    ->with('uploader')
+                    ->get();
                 $hasLinkEvidence = !empty($rtn->evidence_link);
                 $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
             @endphp
