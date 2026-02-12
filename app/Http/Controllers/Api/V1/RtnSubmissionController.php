@@ -65,6 +65,11 @@ class RtnSubmissionController extends Controller
         $data = $request->validated();
         $data['user_id'] = auth()->id();
         $data['year'] = $data['year'] ?? now()->year;
+        
+        // Ensure rtn_type is in underscore format (RTN_3, RTN_4) for database
+        if (isset($data['rtn_type'])) {
+            $data['rtn_type'] = str_replace('-', '_', $data['rtn_type']);
+        }
 
         $submission = RtnSubmission::create($data);
 
@@ -107,7 +112,13 @@ class RtnSubmissionController extends Controller
             return $this->errorResponse('Cannot edit approved RTN submission', 403);
         }
 
-        $rtnSubmission->update($request->validated());
+        $data = $request->validated();
+        // Ensure rtn_type is in underscore format (RTN_3, RTN_4) for database
+        if (isset($data['rtn_type'])) {
+            $data['rtn_type'] = str_replace('-', '_', $data['rtn_type']);
+        }
+        
+        $rtnSubmission->update($data);
 
         return $this->successResponse($rtnSubmission->fresh()->load(['user', 'workflow']), 'RTN submission updated successfully');
     }

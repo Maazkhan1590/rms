@@ -30,7 +30,7 @@ class BonusRecognitionController extends Controller
     {
         abort_if(Gate::denies('bonus_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = BonusRecognition::with(['user']);
+        $query = BonusRecognition::with(['user', 'workflow']);
 
         // If current user is Faculty (non-admin), always show only their own bonus recognitions
         $user = auth()->user();

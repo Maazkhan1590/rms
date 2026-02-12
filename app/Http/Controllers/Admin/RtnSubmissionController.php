@@ -30,7 +30,7 @@ class RtnSubmissionController extends Controller
     {
         abort_if(Gate::denies('rtn_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = RtnSubmission::with(['user']);
+        $query = RtnSubmission::with(['user', 'workflow']);
 
         // If current user is Faculty (non-admin), always show only their own RTN submissions
         $user = auth()->user();

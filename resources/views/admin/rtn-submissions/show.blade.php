@@ -362,7 +362,12 @@
                 <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
                 <span style="vertical-align: middle;">Back to List</span>
             </a>
-            @if(in_array($rtnSubmission->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
+            @php
+                $workflowStatus = $rtnSubmission->workflow->status ?? null;
+                $workflowCompleted = $workflowStatus && in_array($workflowStatus, ['approved', 'rejected']);
+                $canShowActions = in_array($rtnSubmission->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']) && !$workflowCompleted;
+            @endphp
+            @if($canShowActions)
                 <form action="{{ route('admin.rtn-submissions.approve', $rtnSubmission->id) }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" class="btn btn-outline-success btn-sm approve-rtn-btn">

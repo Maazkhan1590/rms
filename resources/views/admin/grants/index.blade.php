@@ -238,7 +238,13 @@
                                     <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.grants.show', $grant->id) }}" title="View" aria-label="View">
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
-                                    @if(in_array($grant->grant_status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
+                                    @php
+                                        $workflowStatus = $grant->workflow->status ?? null;
+                                        $canShowActions = in_array($grant->grant_status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']) 
+                                                          && $workflowStatus !== 'approved' 
+                                                          && $workflowStatus !== 'rejected';
+                                    @endphp
+                                    @if($canShowActions)
                                         <form action="{{ route('admin.grants.approve', $grant->id) }}" method="POST" style="display: inline;" class="approve-grant-form">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">

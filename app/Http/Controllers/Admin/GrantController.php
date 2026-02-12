@@ -33,7 +33,7 @@ class GrantController extends Controller
     {
         abort_if(Gate::denies('grant_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = Grant::with(['submitter', 'approver']);
+        $query = Grant::with(['submitter', 'approver', 'workflow']);
 
         // If current user is Faculty (non-admin), always show only their own grants
         $user = auth()->user();

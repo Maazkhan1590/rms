@@ -485,11 +485,14 @@
                 $authUser = auth()->user();
                 $isAwaitingApproval = in_array($publication->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']);
                 $canApproveAtCurrentStep = false;
+                
+                // Don't show approve/reject buttons if workflow is completed (approved or rejected)
+                $workflowCompleted = $workflow && in_array($workflow->status, ['approved', 'rejected']);
 
                 // STRICT WORKFLOW UI:
                 // - If workflow exists: only the current assignee can approve/reject
                 // - If workflow does not exist yet: predict default/fallback assignee from WorkflowAssignment
-                if ($isAwaitingApproval) {
+                if ($isAwaitingApproval && !$workflowCompleted) {
                     if ($workflow) {
                         $canApproveAtCurrentStep = !empty($workflow->assigned_to) && intval($workflow->assigned_to) === intval($authUser->id);
                     } else {

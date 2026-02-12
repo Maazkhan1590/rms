@@ -51,7 +51,7 @@ class PublicationController extends Controller
      */
     private function getDataTableData(Request $request)
     {
-        $query = Publication::with(['submitter', 'primaryAuthor', 'approver']);
+        $query = Publication::with(['submitter', 'primaryAuthor', 'approver', 'workflow']);
 
         // Filter by status
         if ($request->has('status') && $request->status) {
@@ -218,12 +218,13 @@ class PublicationController extends Controller
             
             // Check workflow status before showing approve/reject buttons
             // STRICT WORKFLOW: Only assigned users can approve (Coordinator → Dean → Approved)
-            $workflow = ApprovalWorkflow::where('submission_type', 'publication')
+            $workflow = $publication->workflow ?? ApprovalWorkflow::where('submission_type', 'publication')
                 ->where('submission_id', $publication->id)
                 ->first();
             
-            // Only show approve/reject buttons if workflow exists and user is assigned to current step
-            if ($workflow && in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted'])) {
+            // Only show approve/reject buttons if workflow exists, is not completed (approved/rejected), and user is assigned to current step
+            if ($workflow && in_array($workflow->status, ['pending_coordinator', 'pending_dean', 'submitted']) 
+                && $workflow->status !== 'approved' && $workflow->status !== 'rejected') {
                 // Check if user is assigned to this workflow step (NO ADMIN BYPASS)
                 $canApprove = false;
                 
@@ -245,7 +246,7 @@ class PublicationController extends Controller
                     $actions .= '<button type="button" class="btn btn-sm btn-outline-danger" onclick="showRejectModal(' . $publication->id . ')" style="padding: 4px 8px; font-size: 12px;" title="Reject"><span class=\"material-icons-outlined\">cancel</span></button>';
                 }
             }
-            // No approve button if no workflow exists - must follow workflow process
+            // No approve button if no workflow exists or workflow is completed (approved/rejected) - must follow workflow process
             
             $actions .= '</div>';
 

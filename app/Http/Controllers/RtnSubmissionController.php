@@ -162,8 +162,11 @@ class RtnSubmissionController extends Controller
             'evidence_urls.*' => 'nullable|url|max:500',
         ]);
 
+        // Convert RTN type from hyphen format (RTN-3) to underscore format (RTN_3) for database
+        $rtnType = str_replace('-', '_', $validated['rtn_type']);
+        
         $rtn = RtnSubmission::create([
-            'rtn_type' => $validated['rtn_type'],
+            'rtn_type' => $rtnType,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'year' => $validated['year'],
