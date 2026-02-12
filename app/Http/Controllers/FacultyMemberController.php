@@ -8,6 +8,8 @@ use App\Models\Grant;
 use App\Models\RtnSubmission;
 use App\Models\BonusRecognition;
 use Illuminate\Http\Request;
+use Mpdf\Mpdf;
+use Illuminate\Support\Facades\View;
 
 class FacultyMemberController extends Controller
 {
@@ -145,22 +147,43 @@ class FacultyMemberController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        $pdf = \PDF::loadView('faculty-members.cv', compact(
+        // Render the view to HTML
+        $html = View::make('faculty-members.cv', compact(
             'user',
             'publications',
             'grants',
             'rtnSubmissions',
             'bonusRecognitions'
-        ));
+        ))->render();
 
-        // Set paper size and orientation
-        $pdf->setPaper('A4', 'portrait');
+        // Create mPDF instance with enhanced configuration for icons and unicode support
+        $mpdf = new Mpdf([
+            'margin_left' => 12,
+            'margin_right' => 12,
+            'margin_top' => 12,
+            'margin_bottom' => 12,
+            'fontsize' => 9.5,
+            'default_font' => 'dejavusans',
+            'default_font_size' => 9.5,
+            'autoLangToFont' => true,
+            'useOnlyCore' => false,
+            'keep_table_lineheight' => true,
+            'ignore_invalid_utf8' => false,
+            'mode' => 'utf-8',
+            'tempDir' => storage_path('logs'),
+        ]);
+
+        // Write HTML to PDF
+        $mpdf->WriteHTML($html);
 
         // Generate filename
         $filename = str_replace(' ', '_', $user->name) . '_CV.pdf';
 
-        // Stream the PDF (view in browser)
-        return $pdf->stream($filename);
+        // Stream/view in browser
+        return response($mpdf->Output('', 'S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "inline; filename=\"{$filename}\""
+        ]);
     }
 
     /**
@@ -205,21 +228,42 @@ class FacultyMemberController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        $pdf = \PDF::loadView('faculty-members.cv', compact(
+        // Render the view to HTML
+        $html = View::make('faculty-members.cv', compact(
             'user',
             'publications',
             'grants',
             'rtnSubmissions',
             'bonusRecognitions'
-        ));
+        ))->render();
 
-        // Set paper size and orientation
-        $pdf->setPaper('A4', 'portrait');
+        // Create mPDF instance with enhanced configuration for icons and unicode support
+        $mpdf = new Mpdf([
+            'margin_left' => 12,
+            'margin_right' => 12,
+            'margin_top' => 12,
+            'margin_bottom' => 12,
+            'fontsize' => 9.5,
+            'default_font' => 'dejavusans',
+            'default_font_size' => 9.5,
+            'autoLangToFont' => true,
+            'useOnlyCore' => false,
+            'keep_table_lineheight' => true,
+            'ignore_invalid_utf8' => false,
+            'mode' => 'utf-8',
+            'tempDir' => storage_path('logs'),
+        ]);
+
+        // Write HTML to PDF
+        $mpdf->WriteHTML($html);
 
         // Generate filename
         $filename = str_replace(' ', '_', $user->name) . '_CV_' . date('Y-m-d') . '.pdf';
 
         // Download the PDF
-        return $pdf->download($filename);
+        return response($mpdf->Output('', 'S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\""
+        ]);
     }
 }

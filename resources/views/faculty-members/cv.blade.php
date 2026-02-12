@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{{ $user->name }} – Curriculum Vitae</title>
     <style>
         @page {
@@ -76,8 +77,26 @@
         }
         
         .contact-line {
-            margin: 4px 0;
+            margin: 3px 0;
             color: #4b5563;
+            font-size: 8.5pt;
+            line-height: 1.5;
+        }
+        
+        .contact-icon {
+            margin-right: 5px;
+            font-weight: bold;
+            font-size: 13pt;
+            font-family: 'DejaVu Sans', sans-serif;
+            display: inline-block;
+        }
+        
+        .contact-icon.email {
+            color: #d97706;
+        }
+        
+        .contact-icon.phone {
+            color: #059669;
         }
 
         /* Section Titles */
@@ -226,8 +245,16 @@
                 <p class="cv-institution">{{ $user->college->name ?? 'N/A' }}</p>
             </div>
             <div class="header-right">
-                <div class="contact-line">✉ {{ $user->email ?? 'N/A' }}</div>
-                <div class="contact-line">☎ {{ $user->phone ?? 'N/A' }}</div>
+                @if($user->email)
+                <div class="contact-line"><span class="contact-icon email">&#9993;</span> {{ $user->email }}</div>
+                @else
+                <div class="contact-line"><span class="contact-icon email">&#9993;</span> N/A</div>
+                @endif
+                @if($user->phone)
+                <div class="contact-line"><span class="contact-icon phone">&#9742;</span> {{ $user->phone }}</div>
+                @else
+                <div class="contact-line"><span class="contact-icon phone">&#9742;</span> N/A</div>
+                @endif
                 @if($user->employee_id)
                 <div class="contact-line">ID: {{ $user->employee_id }}</div>
                 @endif
