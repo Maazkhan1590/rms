@@ -211,7 +211,7 @@
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
                                     @if(in_array($recognition->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean']))
-                                        <form action="{{ route('admin.bonus-recognitions.approve', $recognition->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this bonus recognition? This will calculate and assign points.');">
+                                        <form action="{{ route('admin.bonus-recognitions.approve', $recognition->id) }}" method="POST" style="display: inline;" class="approve-bonus-form">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
                                                 <span class="material-icons-outlined">check_circle</span>
@@ -222,7 +222,7 @@
                                         </button>
                                     @endif
                                     @if($recognition->status !== 'approved')
-                                    <form action="{{ route('admin.bonus-recognitions.destroy', $recognition->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This cannot be undone.');">
+                                    <form action="{{ route('admin.bonus-recognitions.destroy', $recognition->id) }}" method="POST" style="display: inline;" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" aria-label="Delete">

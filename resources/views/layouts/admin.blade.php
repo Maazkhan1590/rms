@@ -1164,68 +1164,205 @@
     <!-- Form Submit Blocker - Prevents duplicate submissions -->
     <script src="{{ asset('js/form-blocker.js') }}"></script>
 
-    <!-- Global handler for "Submit for Approval" buttons (faculty publications) -->
+    <!-- Global SweetAlert2 Handlers for All Forms -->
     <script>
-        if (window.jQuery) {
+        if (window.jQuery && window.Swal) {
             jQuery(function($) {
-                $(document).on('click', '.btn-submit-publication', function (e) {
+                // Delete forms
+                $(document).on('submit', '.delete-form', function (e) {
                     e.preventDefault();
-
-                    const $button = $(this);
-                    const form = $button.closest('form');
-                    const title = $button.data('title') || 'this publication';
-
-                    if (!form.length) {
-                        return;
-                    }
-
-                    if (window.Swal) {
-                        Swal.fire({
-                            title: 'Submit for approval?',
-                            text: 'You are about to submit "' + title + '" for workflow approval. You will not be able to edit it while under review.',
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, submit',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#16a34a',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.trigger('submit');
-                            }
-                        });
-                    } else {
-                        if (confirm('Submit this publication for approval?')) {
-                            form.trigger('submit');
-                        }
-                    }
-                });
-
-                // Global handler for "Approve Publication" forms
-                $(document).on('submit', '.approve-publication-form', function (e) {
-                    e.preventDefault();
-
                     const form = $(this);
-
-                    if (window.Swal) {
-                        Swal.fire({
-                            title: 'Approve Publication?',
-                            text: 'Are you sure you want to approve this publication at the current workflow step?',
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, approve it',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#16a34a',
-                            cancelButtonColor: '#6b7280'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form[0].submit(); // Use native submit to bypass jQuery
-                            }
-                        });
-                    } else {
-                        if (confirm('Approve this publication at current workflow step?')) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'This action cannot be undone!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, delete it',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
                             form[0].submit();
                         }
-                    }
+                    });
+                });
+
+                // Approve user forms
+                $(document).on('submit', '.approve-user-form', function (e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    Swal.fire({
+                        title: 'Approve User?',
+                        text: 'An email notification will be sent to the user.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Approve grant forms
+                $(document).on('submit', '.approve-grant-form', function (e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    Swal.fire({
+                        title: 'Approve Grant?',
+                        text: 'Are you sure you want to approve this grant?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Approve bonus recognition forms
+                $(document).on('submit', '.approve-bonus-form', function (e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    Swal.fire({
+                        title: 'Approve Bonus Recognition?',
+                        text: 'This will calculate and assign points.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Approve publication forms
+                $(document).on('submit', '.approve-publication-form', function (e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    Swal.fire({
+                        title: 'Approve Publication?',
+                        text: 'Are you sure you want to approve this publication at the current workflow step?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Approve workflow forms
+                $(document).on('submit', '.approve-workflow-form', function (e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    Swal.fire({
+                        title: 'Approve Workflow?',
+                        text: 'Are you sure you want to approve this workflow?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Submit forms (for publications, grants, RTN, bonus)
+                $(document).on('submit', '.submit-publication-form, .submit-grant-form, .submit-rtn-form, .submit-bonus-form', function (e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    const type = form.hasClass('submit-publication-form') ? 'publication' : 
+                                 form.hasClass('submit-grant-form') ? 'grant' :
+                                 form.hasClass('submit-rtn-form') ? 'RTN submission' : 'bonus recognition';
+                    Swal.fire({
+                        title: 'Submit for Approval?',
+                        text: `Submit this ${type} for workflow approval?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, submit',
+                        confirmButtonColor: '#3b82f6'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Approve buttons (for show pages)
+                $(document).on('click', '.approve-grant-btn, .approve-bonus-btn, .approve-publication-btn, .approve-rtn-btn, .approve-workflow-btn', function (e) {
+                    e.preventDefault();
+                    const $btn = $(this);
+                    const form = $btn.closest('form');
+                    const type = $btn.hasClass('approve-grant-btn') ? 'grant' :
+                                 $btn.hasClass('approve-bonus-btn') ? 'bonus recognition' :
+                                 $btn.hasClass('approve-publication-btn') ? 'publication' :
+                                 $btn.hasClass('approve-rtn-btn') ? 'RTN submission' : 'workflow';
+                    const message = (type === 'bonus recognition' || type === 'publication' || type === 'workflow') ? 
+                                   'This will calculate and assign points.' : '';
+                    Swal.fire({
+                        title: `Approve ${type.charAt(0).toUpperCase() + type.slice(1)}?`,
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Activate policy button
+                $(document).on('click', '.activate-policy-btn', function (e) {
+                    e.preventDefault();
+                    const form = $(this).closest('form');
+                    Swal.fire({
+                        title: 'Activate Policy Version?',
+                        text: 'This will deactivate all other versions.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, activate',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
+                // Submit buttons (for dashboard)
+                $(document).on('click', '.submit-publication-btn, .submit-grant-btn, .submit-rtn-btn, .submit-bonus-btn', function (e) {
+                    e.preventDefault();
+                    const $btn = $(this);
+                    const form = $btn.closest('form');
+                    const type = $btn.hasClass('submit-publication-btn') ? 'publication' :
+                                 $btn.hasClass('submit-grant-btn') ? 'grant' :
+                                 $btn.hasClass('submit-rtn-btn') ? 'RTN submission' : 'bonus recognition';
+                    Swal.fire({
+                        title: 'Submit for Approval?',
+                        text: `Submit this ${type} for workflow approval?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, submit',
+                        confirmButtonColor: '#3b82f6'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
                 });
             });
         }

@@ -235,7 +235,7 @@
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
                                     @if(in_array($grant->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean']))
-                                        <form action="{{ route('admin.grants.approve', $grant->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this grant?');">
+                                        <form action="{{ route('admin.grants.approve', $grant->id) }}" method="POST" style="display: inline;" class="approve-grant-form">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
                                                 <span class="material-icons-outlined">check_circle</span>
@@ -246,7 +246,7 @@
                                         </button>
                                     @endif
                                     @if($grant->status !== 'approved')
-                                    <form action="{{ route('admin.grants.destroy', $grant->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This cannot be undone.');">
+                                    <form action="{{ route('admin.grants.destroy', $grant->id) }}" method="POST" style="display: inline;" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" aria-label="Delete">

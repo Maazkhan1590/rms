@@ -440,7 +440,7 @@
                 @if($canApproveAtCurrentStep)
                     <form action="{{ route('admin.publications.approve', $publication->id) }}" method="POST" style="display: inline;">
                         @csrf
-                        <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Approve this publication? This will calculate and assign points.')">
+                        <button type="submit" class="btn btn-outline-success btn-sm approve-publication-btn">
                             <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">check_circle</span>
                             <span style="vertical-align: middle;">Approve Publication</span>
                         </button>

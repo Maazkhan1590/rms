@@ -251,7 +251,7 @@
             @if(in_array($rtnSubmission->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
                 <form action="{{ route('admin.rtn-submissions.approve', $rtnSubmission->id) }}" method="POST" style="display: inline;">
                     @csrf
-                    <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Approve this RTN submission? This will allocate 5 points.');">
+                    <button type="submit" class="btn btn-outline-success btn-sm approve-rtn-btn">
                         <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">check_circle</span>
                         <span style="vertical-align: middle;">Approve Submission</span>
                     </button>

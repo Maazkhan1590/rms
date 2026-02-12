@@ -210,7 +210,7 @@ class PublicationController extends Controller
             
             // Show "Submit for Approval" button for draft publications owned by the user
             if ($publication->status === 'draft' && ($publication->submitted_by == $user->id || $publication->primary_author_id == $user->id)) {
-                $actions .= '<form action="' . route('publications.submit', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Submit this publication for approval?\');">';
+                $actions .= '<form action="' . route('publications.submit', $publication->id) . '" method="POST" style="display: inline;" class="submit-publication-form">';
                 $actions .= csrf_field();
                 $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" style="padding: 4px 8px; font-size: 12px;" title="Submit"><span class=\"material-icons-outlined\">send</span></button>';
                 $actions .= '</form>';

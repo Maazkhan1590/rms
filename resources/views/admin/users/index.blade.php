@@ -188,7 +188,7 @@
                                 <div class="btn-group btn-group-sm" role="group" aria-label="User actions">
                                     @if($user->status === 'pending')
                                         @can('user_edit')
-                                            <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Approve this user? An email notification will be sent.');">
+                                            <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display: inline;" class="approve-user-form">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
                                                     <span class="material-icons-outlined">check_circle</span>

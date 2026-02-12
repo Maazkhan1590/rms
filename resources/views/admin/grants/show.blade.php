@@ -274,7 +274,7 @@
             @if(in_array($grant->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
                 <form action="{{ route('admin.grants.approve', $grant->id) }}" method="POST" style="display: inline;">
                     @csrf
-                    <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Approve this grant?');">
+                    <button type="submit" class="btn btn-outline-success btn-sm approve-grant-btn">
                         <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">check_circle</span>
                         <span style="vertical-align: middle;">Approve Grant</span>
                     </button>

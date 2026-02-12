@@ -256,7 +256,7 @@
             @if(in_array($bonusRecognition->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
                 <form action="{{ route('admin.bonus-recognitions.approve', $bonusRecognition->id) }}" method="POST" style="display: inline;">
                     @csrf
-                    <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Approve this bonus recognition? This will calculate and assign points.');">
+                    <button type="submit" class="btn btn-outline-success btn-sm approve-bonus-btn">
                         <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">check_circle</span>
                         <span style="vertical-align: middle;">Approve Recognition</span>
                     </button>
