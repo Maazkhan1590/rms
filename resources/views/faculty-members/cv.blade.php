@@ -1,524 +1,532 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>{{ $user->name }} - Curriculum Vitae</title>
+    <title>{{ $user->name }} – Curriculum Vitae</title>
     <style>
         @page {
-            margin: 0 1.8cm 1.2cm 1.8cm;
+            margin: 1.2cm;
         }
+        
         body {
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
-            font-size: 10pt;
-            line-height: 1.35;
-            color: #1a1a1a;
-            margin: 0;
-            padding: 0 1.8cm 0 1.8cm;
-        }
-        
-        /* Header Styles */
-        .cv-header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            color: white;
-            padding: 18px 18px;
-            margin: 0 -1.8cm 0 -1.8cm;
-            text-align: center;
-        }
-        .cv-name {
-            font-size: 24pt;
-            font-weight: bold;
-            margin: 0 0 4px 0;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        .cv-title {
-            font-size: 11pt;
-            margin: 0 0 6px 0;
-            opacity: 0.95;
-            font-weight: normal;
-        }
-        .cv-institution {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 9.5pt;
-            margin: 2px 0;
-            opacity: 0.9;
+            line-height: 1.5;
+            color: #1f2937;
+            margin: 0;
+            padding: 0;
         }
-        .cv-contact {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.3);
-            font-size: 9pt;
+
+        .cv-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 0;
         }
-        .cv-contact-item {
-            display: inline-block;
-            margin: 0 10px;
-            opacity: 0.95;
-        }
-        .cv-links {
-            margin-top: 6px;
-            font-size: 8.5pt;
-        }
-        .cv-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 8px;
-            opacity: 0.9;
-            border-bottom: 1px solid rgba(255,255,255,0.5);
+
+        /* Header Section */
+        .header-section {
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
         }
         
-        /* Section Headers */
-        h2 {
-            font-size: 12pt;
-            font-weight: bold;
-            color: #1e3a8a;
-            margin: 16px 0 10px 0;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #2563eb;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-        h2:first-of-type {
-            margin-top: 14px;
-        }
-        
-        /* Research Metrics Box */
-        .metrics-box {
-            background: #f8fafc;
-            border: 2px solid #2563eb;
-            border-radius: 5px;
-            padding: 10px 14px;
-            margin: 8px 0 12px 0;
-        }
-        .metrics-grid {
-            display: table;
+        .header-flex {
             width: 100%;
         }
-        .metrics-row {
-            display: table-row;
+        
+        .header-left {
+            float: left;
+            width: 60%;
         }
-        .metrics-cell {
-            display: table-cell;
-            padding: 5px 10px;
-            width: 50%;
-            font-size: 9pt;
+        
+        .header-right {
+            float: right;
+            width: 38%;
+            text-align: right;
+            font-size: 8.5pt;
         }
-        .metrics-label {
+        
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+        .cv-name {
+            font-size: 26pt;
             font-weight: bold;
-            color: #1e3a8a;
+            color: #111827;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.3px;
         }
-        .metrics-value {
-            color: #334155;
-            font-size: 9.5pt;
+        
+        .cv-subtitle {
+            font-size: 13pt;
+            color: #1e40af;
+            margin: 4px 0;
             font-weight: 600;
         }
         
-        /* Publication Items */
-        .section {
-            margin-bottom: 16px;
+        .cv-institution {
+            font-size: 11pt;
+            color: #4b5563;
+            margin: 3px 0;
         }
-        .cv-item {
-            margin-bottom: 12px;
-            page-break-inside: avoid;
-            padding-left: 20px;
-            position: relative;
+        
+        .contact-line {
+            margin: 4px 0;
+            color: #4b5563;
         }
-        .cv-item-number {
-            position: absolute;
-            left: 0;
-            top: 0px;
-            font-weight: bold;
-            color: #2563eb;
+
+        /* Section Titles */
+        .section-title {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #111827;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 6px;
+            margin: 20px 0 12px 0;
+        }
+        
+        /* Research Profile Box */
+        .profile-text {
+            font-size: 10pt;
+            line-height: 1.6;
+            color: #374151;
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
             font-size: 9pt;
         }
-        .cv-item-title {
-            font-weight: bold;
-            color: #1a1a1a;
-            font-size: 9.5pt;
-            margin-bottom: 3px;
-            line-height: 1.25;
+
+        th, td {
+            border: 1px solid #d1d5db;
+            padding: 10px 8px;
+            text-align: left;
+            vertical-align: top;
         }
-        .cv-item-meta {
-            font-size: 8.5pt;
-            color: #475569;
-            margin-bottom: 4px;
-            line-height: 1.25;
-        }
-        .cv-item-meta strong {
-            color: #1e3a8a;
+
+        th {
+            background-color: #f3f4f6;
             font-weight: 600;
-        }
-        .cv-item-description {
+            color: #111827;
             font-size: 8.5pt;
-            color: #475569;
-            line-height: 1.25;
-            margin-top: 3px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .authors-col {
+            font-weight: normal;
+        }
+        
+        .authors-col strong {
+            font-weight: bold;
+            color: #1e40af;
+        }
+        
+        .title-col {
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .journal-col {
             font-style: italic;
-        }
-        .cv-item-doi {
-            font-size: 7.5pt;
-            color: #2563eb;
-            margin-top: 3px;
-            font-family: monospace;
+            color: #374151;
         }
         
-        /* Status Badges */
+        .doi-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 8pt;
+        }
+
+        /* Info Sections */
+        .info-row {
+            margin: 8px 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #1e40af;
+            display: inline-block;
+            width: 30%;
+            vertical-align: top;
+        }
+        
+        .info-value {
+            display: inline-block;
+            width: 68%;
+            color: #374151;
+        }
+
+        /* Status Badge */
         .status-badge {
             display: inline-block;
-            padding: 2px 6px;
+            padding: 2px 7px;
             font-size: 7pt;
             font-weight: bold;
             border-radius: 3px;
             color: white;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
         }
+        
         .status-approved {
             background-color: #059669;
         }
+        
         .status-submitted {
             background-color: #2563eb;
         }
+        
         .status-draft {
             background-color: #64748b;
         }
-        
-        /* Summary Counters */
-        .summary-count {
-            font-size: 10pt;
-            color: #2563eb;
-            font-weight: bold;
-        }
-        
+
         /* Footer */
         .cv-footer {
-            margin-top: 24px;
-            padding-top: 10px;
-            border-top: 2px solid #e2e8f0;
+            margin-top: 30px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
             text-align: center;
             font-size: 7.5pt;
-            color: #64748b;
-        }
-        .cv-footer-date {
-            font-weight: 600;
-            color: #475569;
+            color: #6b7280;
         }
         
-        /* Empty State */
-        .no-items {
+        .no-data {
             text-align: center;
-            padding: 12px;
-            color: #64748b;
+            padding: 15px;
+            background: #f9fafb;
+            color: #6b7280;
             font-style: italic;
-            background: #f8fafc;
-            border-radius: 5px;
             font-size: 9pt;
-        }
-        
-        /* Professional Info Table */
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 8px 0;
-            background: white;
-        }
-        .info-table tr {
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .info-table tr:last-child {
-            border-bottom: none;
-        }
-        .info-table td {
-            padding: 6px 10px;
-            font-size: 9pt;
-            vertical-align: top;
-        }
-        .info-table td:first-child {
-            font-weight: 600;
-            color: #1e3a8a;
-            width: 28%;
-        }
-        .info-table td:last-child {
-            color: #334155;
-        }
-        .na-text {
-            color: #94a3b8;
-            font-style: italic;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <!-- Professional Header -->
-    <div class="cv-header">
-        <div class="cv-name">{{ $user->name ?? 'N/A' }}</div>
-        <div class="cv-title">{{ $user->designation ?? 'Faculty Member' }}</div>
-        <div class="cv-institution">{{ $user->college->name ?? 'N/A' }}</div>
-        <div class="cv-institution">{{ $user->department->name ?? 'N/A' }}</div>
-        <div class="cv-contact">
-            <span class="cv-contact-item">✉ {{ $user->email ?? 'N/A' }}</span>
-            <span class="cv-contact-item">☎ {{ $user->phone ?? 'N/A' }}</span>
-            @if($user->employee_id)
-                <span class="cv-contact-item">ID: {{ $user->employee_id }}</span>
-            @endif
-        </div>
-        @if($user->orcid || $user->google_scholar || $user->research_gate)
-            <div class="cv-links">
+
+<div class="cv-container">
+
+    <!-- HEADER -->
+    <div class="header-section clearfix">
+        <div class="header-flex clearfix">
+            <div class="header-left">
+                <h1 class="cv-name">{{ $user->name ?? 'N/A' }}</h1>
+                <p class="cv-subtitle">{{ $user->designation ?? 'Faculty Member' }} • {{ $user->department->name ?? 'N/A' }}</p>
+                <p class="cv-institution">{{ $user->college->name ?? 'N/A' }}</p>
+            </div>
+            <div class="header-right">
+                <div class="contact-line">✉ {{ $user->email ?? 'N/A' }}</div>
+                <div class="contact-line">☎ {{ $user->phone ?? 'N/A' }}</div>
+                @if($user->employee_id)
+                <div class="contact-line">ID: {{ $user->employee_id }}</div>
+                @endif
                 @if($user->orcid)
-                    <a href="{{ $user->orcid }}">ORCID Profile</a>
+                <div class="contact-line">ORCID: {{ $user->orcid }}</div>
                 @endif
                 @if($user->google_scholar)
-                    <a href="{{ $user->google_scholar }}">Google Scholar</a>
+                <div class="contact-line">Google Scholar: Available</div>
                 @endif
                 @if($user->research_gate)
-                    <a href="{{ $user->research_gate }}">ResearchGate</a>
+                <div class="contact-line">ResearchGate: Available</div>
                 @endif
-            </div>
-        @endif
-    </div>
-
-    <!-- Professional Information -->
-    <div class="section">
-        <h2>Professional Information</h2>
-        <table class="info-table">
-            <tr>
-                <td>Full Name</td>
-                <td>{{ $user->name ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>Employee ID</td>
-                <td>{{ $user->employee_id ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>Designation</td>
-                <td>{{ $user->designation ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>College</td>
-                <td>{{ $user->college->name ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>Department</td>
-                <td>{{ $user->department->name ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>Email</td>
-                <td>{{ $user->email ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>Phone</td>
-                <td>{{ $user->phone ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>ORCID</td>
-                <td>{{ $user->orcid ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>Google Scholar</td>
-                <td>{{ $user->google_scholar ? 'Available' : 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>ResearchGate</td>
-                <td>{{ $user->research_gate ? 'Available' : 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td>Sohar Affiliation</td>
-                <td>{{ $user->sohar_affiliation ?? 'N/A' }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Research Impact Metrics -->
-    <div class="section">
-        <h2>Research Impact Metrics</h2>
-        <div class="metrics-box">
-            <div class="metrics-grid">
-                <div class="metrics-row">
-                    <div class="metrics-cell">
-                        <span class="metrics-label">H-Index:</span>
-                        <span class="metrics-value">{{ $user->h_index ?? 'N/A' }}</span>
-                    </div>
-                    <div class="metrics-cell">
-                        <span class="metrics-label">Total Citations:</span>
-                        <span class="metrics-value">{{ $user->citation_number ? number_format($user->citation_number) : 'N/A' }}</span>
-                    </div>
-                </div>
-                <div class="metrics-row">
-                    <div class="metrics-cell">
-                        <span class="metrics-label">Scopus H-Index:</span>
-                        <span class="metrics-value">{{ $user->scopus_h_index ?? 'N/A' }}</span>
-                    </div>
-                    <div class="metrics-cell">
-                        <span class="metrics-label">Scopus Citations:</span>
-                        <span class="metrics-value">{{ $user->scopus_citation_number ? number_format($user->scopus_citation_number) : 'N/A' }}</span>
-                    </div>
-                </div>
-                <div class="metrics-row">
-                    <div class="metrics-cell" style="width: 100%;">
-                        <span class="metrics-label">Scopus Indexed Papers:</span>
-                        <span class="metrics-value">{{ $user->scopus_papers ?? 'N/A' }}</span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Publications -->
-    <div class="section">
-        <h2>Publications <span class="summary-count">({{ $publications->count() }})</span></h2>
-        @if($publications->count() > 0)
+    <!-- RESEARCH PROFILE -->
+    <div class="section-title">Research Profile</div>
+    <p class="profile-text">
+        @if($user->h_index || $user->citation_number || $user->scopus_papers)
+            {{ $user->designation ?? 'Faculty Member' }} specializing in {{ $user->department->name ?? 'research' }}.
+            @if($publications->count() > 0)
+                {{ $publications->count() }} publications
+            @endif
+            @if($user->h_index)
+                (h-index {{ $user->h_index }}
+                @if($user->citation_number)
+                    , {{ number_format($user->citation_number) }} citations
+                @endif
+                )
+            @endif.
+            @if($user->scopus_papers)
+                {{ $user->scopus_papers }} Scopus-indexed papers
+                @if($user->scopus_h_index)
+                    (Scopus h-index {{ $user->scopus_h_index }})
+                @endif
+            @endif.
+            @if($grants->count() > 0)
+                Secured funding for {{ $grants->count() }} research {{ $grants->count() == 1 ? 'grant' : 'grants' }}
+                @if($grants->sum('amount_omr') > 0)
+                    totaling OMR {{ number_format($grants->sum('amount_omr'), 2) }}
+                @endif.
+            @endif
+        @else
+            Faculty member specializing in {{ $user->department->name ?? 'research' }} at {{ $user->college->name ?? 'the institution' }}.
+        @endif
+    </p>
+
+    <!-- RESEARCH METRICS -->
+    <div class="section-title">Research Impact Metrics</div>
+    <table style="margin-bottom: 20px;">
+        <tr>
+            <th style="width: 30%;">Metric</th>
+            <th style="width: 70%;">Value</th>
+        </tr>
+        <tr>
+            <td><strong>H-Index</strong></td>
+            <td>{{ $user->h_index ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total Citations</strong></td>
+            <td>{{ $user->citation_number ? number_format($user->citation_number) : 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Scopus H-Index</strong></td>
+            <td>{{ $user->scopus_h_index ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Scopus Citations</strong></td>
+            <td>{{ $user->scopus_citation_number ? number_format($user->scopus_citation_number) : 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Scopus Indexed Papers</strong></td>
+            <td>{{ $user->scopus_papers ?? 'N/A' }}</td>
+        </tr>
+    </table>
+
+    <!-- PROFESSIONAL INFORMATION -->
+    <div class="section-title">Professional Information</div>
+    <table style="margin-bottom: 20px;">
+        <tr>
+            <th style="width: 30%;">Field</th>
+            <th style="width: 70%;">Details</th>
+        </tr>
+        <tr>
+            <td><strong>Full Name</strong></td>
+            <td>{{ $user->name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Employee ID</strong></td>
+            <td>{{ $user->employee_id ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Designation</strong></td>
+            <td>{{ $user->designation ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>College</strong></td>
+            <td>{{ $user->college->name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Department</strong></td>
+            <td>{{ $user->department->name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Email</strong></td>
+            <td>{{ $user->email ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Phone</strong></td>
+            <td>{{ $user->phone ?? 'N/A' }}</td>
+        </tr>
+    </table>
+
+    <!-- PUBLICATIONS -->
+    <div class="section-title">Selected Publications ({{ $publications->count() }})</div>
+    
+    @if($publications->count() > 0)
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 4%;">#</th>
+            <th style="width: 18%;">Authors<br>(Your name in bold)</th>
+            <th style="width: 34%;">Title</th>
+            <th style="width: 24%;">Journal • Volume • Year</th>
+            <th style="width: 12%;">DOI / Status</th>
+        </tr>
+        </thead>
+        <tbody>
         @foreach($publications as $index => $publication)
-            <div class="cv-item">
-                <div class="cv-item-number">[{{ $index + 1 }}]</div>
-                <div class="cv-item-title">
-                    {{ $publication->title ?? 'Untitled' }}
-                </div>
-                <div class="cv-item-meta">
-                    <strong>Type:</strong> {{ $publication->publication_type ? ucfirst(str_replace('_', ' ', $publication->publication_type)) : 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Year:</strong> {{ $publication->publication_year ?? 'N/A' }}
-                    @if($publication->journal_name)
-                        &nbsp;|&nbsp; <strong>Journal:</strong> {{ $publication->journal_name }}
-                    @endif
-                    @if($publication->conference_name)
-                        &nbsp;|&nbsp; <strong>Conference:</strong> {{ $publication->conference_name }}
-                    @endif
-                    @if($publication->volume)
-                        &nbsp;|&nbsp; <strong>Vol.</strong> {{ $publication->volume }}
-                    @endif
-                    @if($publication->issue)
-                        &nbsp;|&nbsp; <strong>Issue</strong> {{ $publication->issue }}
-                    @endif
-                    @if($publication->pages)
-                        &nbsp;|&nbsp; <strong>Pages:</strong> {{ $publication->pages }}
-                    @endif
-                    &nbsp;|&nbsp; <span class="status-badge status-{{ $publication->status === 'approved' ? 'approved' : ($publication->status === 'submitted' ? 'submitted' : 'draft') }}">
-                        {{ ucfirst($publication->status ?? 'draft') }}
-                    </span>
-                </div>
-                @if($publication->abstract)
-                    <div class="cv-item-description">
-                        {{ Str::limit(strip_tags($publication->abstract), 250) }}
-                    </div>
+        <tr>
+            <td style="text-align: center; font-weight: bold;">{{ $index + 1 }}</td>
+            <td class="authors-col">
+                @if($publication->primaryAuthor)
+                    <strong>{{ $publication->primaryAuthor->name }}</strong>
+                @else
+                    <strong>{{ $user->name }}</strong>
                 @endif
+                et al.
+            </td>
+            <td class="title-col">{{ $publication->title ?? 'Untitled' }}</td>
+            <td class="journal-col">
+                @if($publication->journal_name)
+                    {{ $publication->journal_name }}
+                @elseif($publication->conference_name)
+                    {{ $publication->conference_name }}
+                @else
+                    N/A
+                @endif
+                @if($publication->volume)
+                    <br>Vol. {{ $publication->volume }}
+                    @if($publication->issue)({{ $publication->issue }})@endif
+                    @if($publication->pages), pp. {{ $publication->pages }}@endif
+                @endif
+                <br>{{ $publication->publication_year ?? 'N/A' }}
+            </td>
+            <td style="font-size: 8pt;">
                 @if($publication->doi)
-                    <div class="cv-item-doi">
-                        DOI: {{ $publication->doi }}
-                    </div>
+                    <a href="https://doi.org/{{ $publication->doi }}" class="doi-link">doi:{{ $publication->doi }}</a><br>
                 @endif
-            </div>
+                <span class="status-badge status-{{ $publication->status === 'approved' ? 'approved' : ($publication->status === 'submitted' ? 'submitted' : 'draft') }}">
+                    {{ ucfirst($publication->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
         @endforeach
-        @else
-            <div class="no-items">
-                No publications recorded for this faculty member.
-            </div>
-        @endif
+        </tbody>
+    </table>
+    @else
+    <div class="no-data">
+        No publications recorded for this faculty member.
+    </div>
+    @endif
+
+    <!-- GRANTS & FUNDING -->
+    <div class="section-title">Grants & Funding ({{ $grants->count() }})</div>
+    
+    @if($grants->count() > 0)
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 35%;">Project / Grant Title</th>
+            <th style="width: 18%;">Funding Agency</th>
+            <th style="width: 12%;">Amount (OMR)</th>
+            <th style="width: 12%;">Duration</th>
+            <th style="width: 10%;">Role</th>
+            <th style="width: 10%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($grants as $grant)
+        <tr>
+            <td class="title-col">{{ $grant->title ?? 'Untitled Grant' }}</td>
+            <td>{{ $grant->sponsor_name ?? 'N/A' }}</td>
+            <td style="text-align: right; font-weight: 600;">{{ $grant->amount_omr ? number_format($grant->amount_omr, 2) : 'N/A' }}</td>
+            <td>{{ $grant->award_year ?? 'N/A' }}</td>
+            <td>{{ $grant->role ?? 'PI' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $grant->status === 'approved' ? 'approved' : ($grant->status === 'submitted' ? 'submitted' : 'draft') }}">
+                    {{ ucfirst($grant->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @else
+    <div class="no-data">
+        No grants or funded research recorded for this faculty member.
+    </div>
+    @endif
+
+    <!-- RTN ACTIVITIES -->
+    <div class="section-title">Research, Teaching & Networking Activities ({{ $rtnSubmissions->count() }})</div>
+    
+    @if($rtnSubmissions->count() > 0)
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 42%;">Activity Title</th>
+            <th style="width: 20%;">Type</th>
+            <th style="width: 10%;">Year</th>
+            <th style="width: 14%;">Research Points</th>
+            <th style="width: 12%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($rtnSubmissions as $rtn)
+        <tr>
+            <td class="title-col">{{ $rtn->title ?? 'Untitled Activity' }}</td>
+            <td>{{ $rtn->rtn_type ? ucfirst(str_replace('_', ' ', $rtn->rtn_type)) : 'N/A' }}</td>
+            <td style="text-align: center;">{{ $rtn->year ?? 'N/A' }}</td>
+            <td style="text-align: right; font-weight: 600; color: #1e40af;">{{ $rtn->points ? number_format($rtn->points, 2) : 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $rtn->status === 'approved' ? 'approved' : ($rtn->status === 'submitted' ? 'submitted' : 'draft') }}">
+                    {{ ucfirst($rtn->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @else
+    <div class="no-data">
+        No RTN activities recorded for this faculty member.
+    </div>
+    @endif
+
+    <!-- AWARDS & HONORS -->
+    <div class="section-title">Awards & Honors ({{ $bonusRecognitions->count() }})</div>
+    
+    @if($bonusRecognitions->count() > 0)
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 42%;">Award Name</th>
+            <th style="width: 30%;">Organization / Body</th>
+            <th style="width: 10%;">Year</th>
+            <th style="width: 15%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($bonusRecognitions as $bonus)
+        <tr>
+            <td class="title-col">{{ $bonus->title ?? 'Untitled Recognition' }}</td>
+            <td>{{ $bonus->organization ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $bonus->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $bonus->status === 'approved' ? 'approved' : ($bonus->status === 'submitted' ? 'submitted' : 'draft') }}">
+                    {{ ucfirst($bonus->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @else
+    <div class="no-data">
+        No awards or recognitions recorded for this faculty member.
+    </div>
+    @endif
+
+    <!-- PROFESSIONAL SERVICE -->
+    <div class="section-title">Professional Service & Leadership</div>
+    <div class="profile-text" style="font-size: 9pt; color: #6b7280;">
+        Details available upon request.
     </div>
 
-    <!-- Grants -->
-    <div class="section">
-        <h2>Research Grants & Funding <span class="summary-count">({{ $grants->count() }})</span></h2>
-        @if($grants->count() > 0)
-        @foreach($grants as $index => $grant)
-            <div class="cv-item">
-                <div class="cv-item-number">[{{ $index + 1 }}]</div>
-                <div class="cv-item-title">
-                    {{ $grant->title ?? 'Untitled Grant' }}
-                </div>
-                <div class="cv-item-meta">
-                    <strong>Type:</strong> {{ $grant->grant_type ? ucfirst(str_replace('_', ' ', $grant->grant_type)) : 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Award Year:</strong> {{ $grant->award_year ?? 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Funding:</strong> {{ $grant->amount_omr ? 'OMR ' . number_format($grant->amount_omr, 2) : 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Sponsor:</strong> {{ $grant->sponsor_name ?? 'N/A' }}
-                    @if($grant->role)
-                        &nbsp;|&nbsp; <strong>Role:</strong> {{ $grant->role }}
-                    @endif
-                    &nbsp;|&nbsp; <span class="status-badge status-{{ $grant->status === 'approved' ? 'approved' : ($grant->status === 'submitted' ? 'submitted' : 'draft') }}">
-                        {{ ucfirst($grant->status ?? 'draft') }}
-                    </span>
-                </div>
-                @if($grant->description)
-                    <div class="cv-item-description">
-                        {{ Str::limit(strip_tags($grant->description), 250) }}
-                    </div>
-                @endif
-            </div>
-        @endforeach
-        @else
-            <div class="no-items">
-                No grants or funded research recorded for this faculty member.
-            </div>
-        @endif
+    <!-- REFERENCES -->
+    <div class="section-title">References</div>
+    <div class="profile-text" style="font-size: 9pt; color: #6b7280;">
+        Available upon request.
     </div>
 
-    <!-- RTN Submissions -->
-    <div class="section">
-        <h2>Research, Teaching & Networking Activities <span class="summary-count">({{ $rtnSubmissions->count() }})</span></h2>
-        @if($rtnSubmissions->count() > 0)
-        @foreach($rtnSubmissions as $index => $rtn)
-            <div class="cv-item">
-                <div class="cv-item-number">[{{ $index + 1 }}]</div>
-                <div class="cv-item-title">
-                    {{ $rtn->title ?? 'Untitled Activity' }}
-                </div>
-                <div class="cv-item-meta">
-                    <strong>Type:</strong> {{ $rtn->rtn_type ? ucfirst(str_replace('_', ' ', $rtn->rtn_type)) : 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Year:</strong> {{ $rtn->year ?? 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Research Points:</strong> {{ $rtn->points ? number_format($rtn->points, 2) : 'N/A' }}
-                    &nbsp;|&nbsp; <span class="status-badge status-{{ $rtn->status === 'approved' ? 'approved' : ($rtn->status === 'submitted' ? 'submitted' : 'draft') }}">
-                        {{ ucfirst($rtn->status ?? 'draft') }}
-                    </span>
-                </div>
-                @if($rtn->description)
-                    <div class="cv-item-description">
-                        {{ Str::limit(strip_tags($rtn->description), 200) }}
-                    </div>
-                @endif
-            </div>
-        @endforeach
-        @else
-            <div class="no-items">
-                No RTN activities recorded for this faculty member.
-            </div>
-        @endif
-    </div>
-
-    <!-- Bonus Recognitions -->
-    <div class="section">
-        <h2>Awards & Professional Recognition <span class="summary-count">({{ $bonusRecognitions->count() }})</span></h2>
-        @if($bonusRecognitions->count() > 0)
-        @foreach($bonusRecognitions as $index => $bonus)
-            <div class="cv-item">
-                <div class="cv-item-number">[{{ $index + 1 }}]</div>
-                <div class="cv-item-title">
-                    {{ $bonus->title ?? 'Untitled Recognition' }}
-                </div>
-                <div class="cv-item-meta">
-                    <strong>Type:</strong> {{ $bonus->recognition_type ? ucfirst(str_replace('_', ' ', $bonus->recognition_type)) : 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Year:</strong> {{ $bonus->year ?? 'N/A' }}
-                    &nbsp;|&nbsp; <strong>Organization:</strong> {{ $bonus->organization ?? 'N/A' }}
-                    &nbsp;|&nbsp; <span class="status-badge status-{{ $bonus->status === 'approved' ? 'approved' : ($bonus->status === 'submitted' ? 'submitted' : 'draft') }}">
-                        {{ ucfirst($bonus->status ?? 'draft') }}
-                    </span>
-                </div>
-                @if($bonus->description)
-                    <div class="cv-item-description">
-                        {{ Str::limit(strip_tags($bonus->description), 200) }}
-                    </div>
-                @endif
-            </div>
-        @endforeach
-        @else
-            <div class="no-items">
-                No awards or recognitions recorded for this faculty member.
-            </div>
-        @endif
-    </div>
-
-    <!-- Footer -->
     <div class="cv-footer">
-        <div class="cv-footer-date">
-            Curriculum Vitae - Generated on {{ date('F d, Y') }}
-        </div>
-        <div style="margin-top: 5px;">
-            Research Management System | University Academic Portal
-        </div>
+        Faculty CV Template • Generated on {{ date('F d, Y') }} • Research Management System
     </div>
+
+</div>
+
 </body>
 </html>

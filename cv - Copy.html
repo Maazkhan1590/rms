@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Your Full Name] – Curriculum Vitae</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        h1, h2 { font-family: 'Playfair Display', serif; }
+
+        .section-title {
+            @apply text-2xl font-semibold text-gray-900 border-b-2 border-blue-600 pb-2 mb-6;
+        }
+
+        .cv-container {
+            max-width: 1080px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid #d1d5db;
+            padding: 14px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        td.title-col {
+            word-break: break-word;
+            hyphens: auto;
+            max-width: 380px;
+        }
+
+        @media print {
+            body { background: white; }
+            .cv-container { box-shadow: none; margin: 0; max-width: 100%; padding: 1.8cm; }
+            .no-print { display: none; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 py-8">
+
+<div class="cv-container mx-auto bg-white p-10 md:p-14 text-gray-800">
+
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row justify-between items-start border-b border-gray-300 pb-8 mb-8">
+        <div>
+            <h1 class="text-5xl font-bold text-gray-900 tracking-tight">[Your Full Name]</h1>
+            <p class="text-2xl text-blue-700 mt-2">[Your Academic Title] • [Department]</p>
+            <p class="text-lg text-gray-600 mt-1">[University / Institution], [City, Country]</p>
+        </div>
+        <div class="mt-6 md:mt-0 text-right text-sm space-y-1">
+            <p><i class="fas fa-envelope text-blue-600 mr-1"></i> <a href="mailto:you@university.edu" class="hover:text-blue-600">you@university.edu</a></p>
+            <p><i class="fas fa-phone text-blue-600 mr-1"></i> +92-XXX-XXXXXXX</p>
+            <p><i class="fas fa-globe text-blue-600 mr-1"></i> <a href="https://yourwebsite.com" class="hover:text-blue-600">yourwebsite.com</a></p>
+            <p><i class="fas fa-map-marker-alt text-blue-600 mr-1"></i> [City, Pakistan]</p>
+        </div>
+    </div>
+
+    <!-- RESEARCH PROFILE -->
+    <div class="mb-10">
+        <h2 class="section-title">Research Profile</h2>
+        <p class="text-lg leading-relaxed text-gray-700">
+            [Write a strong 4–6 line summary here. Example: “Materials Scientist specializing in nanomaterials and energy storage.
+            68 peer-reviewed publications (h-index 28, >4,200 citations), including 14 papers in Nature, Science, and Advanced Materials.
+            Secured PKR 148 million in research grants as Principal Investigator.”]
+        </p>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="mb-10">
+        <h2 class="section-title">Education</h2>
+        <div class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+                <div class="md:w-48 flex-shrink-0">
+                    <p class="font-medium text-gray-900">Ph.D. in [Field]</p>
+                    <p class="text-gray-500">20XX – 20XX</p>
+                </div>
+                <div>
+                    <p class="font-semibold">[University Name], [City, Country]</p>
+                    <p class="text-gray-600">Thesis: “[Thesis Title]” • Advisor: Prof. [Name]</p>
+                </div>
+            </div>
+            <!-- Add more degrees here -->
+        </div>
+    </div>
+
+    <!-- ACADEMIC APPOINTMENTS -->
+    <div class="mb-10">
+        <h2 class="section-title">Academic Appointments</h2>
+        <div class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+                <div class="md:w-48 flex-shrink-0">
+                    <p class="font-medium text-gray-900">Associate Professor</p>
+                    <p class="text-gray-500">20XX – Present</p>
+                </div>
+                <div>
+                    <p class="font-semibold">[Department], [University]</p>
+                    <p class="text-gray-600">Key responsibilities and achievements (1–2 lines)</p>
+                </div>
+            </div>
+            <!-- Add more appointments -->
+        </div>
+    </div>
+
+    <!-- RESEARCH INTERESTS -->
+    <div class="mb-10">
+        <h2 class="section-title">Research Interests</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+            <li class="flex items-start"><span class="text-blue-600 mr-2">•</span> [Research Area 1]</li>
+            <li class="flex items-start"><span class="text-blue-600 mr-2">•</span> [Research Area 2]</li>
+            <!-- Add more -->
+        </ul>
+    </div>
+
+    <!-- PUBLICATIONS -->
+    <div class="mb-10">
+        <h2 class="section-title">Selected Publications</h2>
+
+        <h3 class="text-xl font-medium text-gray-800 mb-4">Peer-Reviewed Journal Articles</h3>
+        <div class="overflow-x-auto">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th style="width: 22%;">Authors<br>(Your name in bold)</th>
+                    <th class="title-col" style="width: 38%;">Title</th>
+                    <th style="width: 25%;">Journal • Volume • Year</th>
+                    <th style="width: 15%;">DOI / Link</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><strong>Your Last Name, F.</strong> et al.</td>
+                    <td class="title-col">“Full or Abbreviated Paper Title Here”</td>
+                    <td><em>Journal Name</em><br>Vol. XX, pp. YY–ZZ, 20XX</td>
+                    <td><a href="#" class="text-blue-600 hover:underline">doi:10.xxxx/xxxxx</a></td>
+                </tr>
+                <!-- Duplicate <tr> for more papers -->
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="text-xl font-medium text-gray-800 mt-10 mb-4">Book Chapters / Books</h3>
+        <div class="overflow-x-auto">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th style="width: 22%;">Authors / Editor</th>
+                    <th class="title-col" style="width: 38%;">Title / Chapter</th>
+                    <th style="width: 40%;">Book / Publisher / Year</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><strong>Your Last Name, F.</strong></td>
+                    <td class="title-col">“Chapter Title”</td>
+                    <td>In: Book Title (Eds. …), Publisher, 20XX</td>
+                </tr>
+                <!-- Duplicate rows -->
+                </tbody>
+            </table>
+        </div>
+        <p class="mt-4 text-sm text-gray-600 italic">Full publication list available on Google Scholar / ORCID / personal website.</p>
+    </div>
+
+    <!-- TEACHING EXPERIENCE -->
+    <div class="mb-10">
+        <h2 class="section-title">Teaching Experience</h2>
+        <div class="space-y-6">
+            <div>
+                <p class="font-medium">[Course Code] – [Course Title]</p>
+                <p class="text-gray-500">[University] • [Semester/Year]</p>
+                <p class="text-gray-600 text-sm">Role: Instructor / Course Coordinator • [Number] students</p>
+            </div>
+            <!-- Add more courses -->
+        </div>
+    </div>
+
+    <!-- GRANTS & FUNDING -->
+    <div class="mb-10">
+        <h2 class="section-title">Grants & Funding</h2>
+        <div class="overflow-x-auto">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 40%;">Project / Grant Title</th>
+                    <th style="width: 20%;">Funding Agency</th>
+                    <th style="width: 15%;">Amount (PKR)</th>
+                    <th style="width: 15%;">Duration</th>
+                    <th style="width: 10%;">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>AI-Driven Drug Discovery for Cancer Therapeutics</td>
+                    <td>HEC-NRPU</td>
+                    <td>25.6 Million</td>
+                    <td>2023 – 2026</td>
+                    <td>Principal Investigator</td>
+                </tr>
+                <!-- Add more rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- AWARDS & HONORS -->
+    <div class="mb-10">
+        <h2 class="section-title">Awards & Honors</h2>
+        <div class="overflow-x-auto">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 45%;">Award Name</th>
+                    <th style="width: 35%;">Organization / Body</th>
+                    <th style="width: 20%;">Year</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Best Researcher Award</td>
+                    <td>Higher Education Commission (HEC)</td>
+                    <td>2024</td>
+                </tr>
+                <!-- Add more rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PROFESSIONAL SERVICE -->
+    <div class="mb-10">
+        <h2 class="section-title">Professional Service & Leadership</h2>
+        <div class="overflow-x-auto">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 35%;">Role / Position</th>
+                    <th style="width: 40%;">Organization / Journal / Conference</th>
+                    <th style="width: 25%;">Duration / Year</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Associate Editor</td>
+                    <td>Journal of Materials Science</td>
+                    <td>2022 – Present</td>
+                </tr>
+                <!-- Add more rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- REFERENCES -->
+    <div>
+        <h2 class="section-title">References</h2>
+        <p class="text-gray-600">Available upon request</p>
+    </div>
+
+</div>
+
+<div class="text-center mt-8 text-xs text-gray-400 no-print">
+    Faculty CV Template • Tailwind CSS • 2026
+</div>
+
+</body>
+</html>
