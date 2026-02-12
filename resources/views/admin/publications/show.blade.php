@@ -270,6 +270,10 @@
                                 $iconColor = $isApproved ? '#22c55e' : ($isRejected ? '#ef4444' : '#3b82f6');
                                 $iconBg = $isApproved ? '#f0fdf4' : ($isRejected ? '#fef2f2' : '#eff6ff');
                                 $icon = $isApproved ? 'check_circle' : ($isRejected ? 'cancel' : 'pending');
+                                
+                                // Format status names
+                                $prevStatus = $history->previous_status ? ucwords(str_replace('_', ' ', $history->previous_status)) : null;
+                                $newStatus = $history->new_status ? ucwords(str_replace('_', ' ', $history->new_status)) : null;
                             @endphp
                             
                             <div class="timeline-item" style="position:relative;padding-left:50px;padding-bottom:30px;">
@@ -290,9 +294,13 @@
                                             <span class="badge" style="background:{{ $iconColor }};color:white;font-size:13px;padding:4px 10px;border-radius:4px;">
                                                 {{ ucfirst($history->action) }}
                                             </span>
-                                            @if($history->previous_status && $history->new_status && $history->previous_status != $history->new_status)
+                                            @if($prevStatus && $newStatus && $prevStatus != $newStatus)
                                             <span style="font-size:12px;color:#6b7280;margin-left:8px;">
-                                                {{ ucfirst(str_replace('_', ' ', $history->previous_status)) }} → {{ ucfirst(str_replace('_', ' ', $history->new_status)) }}
+                                                <strong>{{ $prevStatus }}</strong> → <strong>{{ $newStatus }}</strong>
+                                            </span>
+                                            @elseif($newStatus && !$prevStatus)
+                                            <span style="font-size:12px;color:#6b7280;margin-left:8px;">
+                                                <strong>{{ $newStatus }}</strong>
                                             </span>
                                             @endif
                                         </div>
