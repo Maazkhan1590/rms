@@ -31,7 +31,7 @@ class ScoringPolicyController extends Controller
      */
     private function getDataTableData(Request $request)
     {
-        $query = ScoringPolicy::with(['creator', 'rules', 'policyVersion']);
+        $query = ScoringPolicy::with(['creator', 'policyVersion']);
 
         // Get DataTables parameters
         $start = $request->input('start', 0);
@@ -71,7 +71,7 @@ class ScoringPolicyController extends Controller
 
         // Pagination
         $policies = $query->skip($start)->take($length)->get();
-        $policies->load(['creator', 'rules', 'policyVersion']);
+        $policies->load(['creator', 'policyVersion']);
 
         // Format data for DataTables
         $data = [];
@@ -86,8 +86,6 @@ class ScoringPolicyController extends Controller
                 ? '<span class="badge badge-info">' . $policy->policyVersion->version_number . ' (' . $policy->policyVersion->year . ')</span>' 
                 : '<span class="text-muted">Not assigned</span>';
             
-            $rulesBadge = '<span class="badge badge-info">' . $policy->rules->count() . ' Rules</span>';
-            
             $data[] = [
                 'id' => $policy->id,
                 'name' => '<strong>' . e($policy->name) . '</strong>',
@@ -95,11 +93,10 @@ class ScoringPolicyController extends Controller
                 'category' => $policy->category ?? '-',
                 'subcategory' => $policy->subcategory ?? '-',
                 'points' => '<strong style="color: var(--primary);">' . number_format($policy->points, 2) . '</strong>',
-                'cap' => $policy->cap ? '<strong>' . number_format($policy->cap, 2) . '</strong>' : '<span class="text-muted">No cap</span>',
+                'cap' => $policy->cap ? '<strong>' . number_format($policy->cap, 2) . '</strong>' : '-',
                 'policy_version' => $policyVersionBadge,
                 'effective_period' => '<small>' . $policy->effective_from->format('M Y') . ($policy->effective_to ? ' → ' . $policy->effective_to->format('M Y') : ' → Ongoing') . '</small>',
                 'status' => $statusBadge,
-                'rules_count' => $rulesBadge,
                 'actions' => view('admin.policies.partials.actions', compact('policy'))->render(),
             ];
         }
@@ -173,7 +170,7 @@ class ScoringPolicyController extends Controller
     {
         abort_if(Gate::denies('policy_read'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $policy->load(['creator', 'rules', 'policyVersion']);
+        $policy->load(['creator', 'policyVersion']);
 
         return view('admin.policies.show', compact('policy'));
     }

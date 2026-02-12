@@ -15,13 +15,4 @@
     </form>
     @endif
     @endcan
-    @can('policy_delete')
-    <form action="{{ route('admin.policy-versions.destroy', $version->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This cannot be undone.');">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="btn btn-sm btn-danger" title="Delete" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #ef4444; color: white; border: none; cursor: pointer;">
-            <i class="fas fa-trash"></i> Delete
-        </button>
-    </form>
-    @endcan
 </div>

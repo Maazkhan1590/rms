@@ -60,7 +60,6 @@
                         <th>Policy Version</th>
                         <th>Effective Period</th>
                         <th>Status</th>
-                        <th>Rules</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -121,7 +120,6 @@ $(document).ready(function() {
             { data: 'policy_version', name: 'policy_version_id', orderable: true },
             { data: 'effective_period', name: 'effective_from', orderable: true },
             { data: 'status', name: 'is_active', orderable: true },
-            { data: 'rules_count', name: 'rules', orderable: false },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
         order: [[0, 'desc']],

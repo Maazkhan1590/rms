@@ -90,45 +90,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- Scoring Rules -->
-        @if($policy->rules && $policy->rules->count() > 0)
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <h5><i class="fas fa-list"></i> Scoring Rules</h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Rule Name</th>
-                                <th>Type</th>
-                                <th>Points</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($policy->rules->sortBy('priority') as $rule)
-                            <tr>
-                                <td>{{ $rule->rule_name }}</td>
-                                <td>{{ $rule->rule_type }}</td>
-                                <td><strong>{{ number_format($rule->points, 2) }}</strong></td>
-                                <td>{{ $rule->priority }}</td>
-                                <td>
-                                    @if($rule->is_active)
-                                        <span class="badge badge-success">Active</span>
-                                    @else
-                                        <span class="badge badge-secondary">Inactive</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        @endif
         
         <div style="margin-top: 20px;">
             <a href="{{ route('admin.policies.index') }}" class="btn btn-secondary">
