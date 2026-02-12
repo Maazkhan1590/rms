@@ -279,7 +279,12 @@ class GrantController extends Controller
      */
     public function show($id)
     {
-        $grant = Grant::with(['submitter', 'workflow', 'evidenceFiles.uploader'])->findOrFail($id);
+        $grant = Grant::with(['submitter', 'workflow'])->findOrFail($id);
+        
+        // Load evidence files explicitly to ensure they're loaded correctly
+        $grant->load(['evidenceFiles' => function($query) {
+            $query->with('uploader');
+        }]);
         
         // Allow public viewing for approved grants, or if user owns it, or if admin/coordinator/dean
         if ($grant->status !== 'approved' && auth()->check() && $grant->submitted_by !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {

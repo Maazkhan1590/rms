@@ -153,11 +153,27 @@
                             @php
                                 $isApproved = $history->action == 'approved';
                                 $isRejected = $history->action == 'rejected';
-                                $isPending = !$isApproved && !$isRejected;
+                                $isDraft = $history->new_status == 'draft' || ($history->action == 'submitted' && $history->new_status == 'draft');
+                                $isPending = !$isApproved && !$isRejected && !$isDraft;
                                 
-                                $iconColor = $isApproved ? '#22c55e' : ($isRejected ? '#ef4444' : '#3b82f6');
-                                $iconBg = $isApproved ? '#f0fdf4' : ($isRejected ? '#fef2f2' : '#eff6ff');
-                                $icon = $isApproved ? 'check_circle' : ($isRejected ? 'cancel' : 'pending');
+                                // Set colors and icons based on status
+                                if ($isApproved) {
+                                    $iconColor = '#22c55e';
+                                    $iconBg = '#f0fdf4';
+                                    $icon = 'check_circle';
+                                } elseif ($isRejected) {
+                                    $iconColor = '#ef4444';
+                                    $iconBg = '#fef2f2';
+                                    $icon = 'cancel';
+                                } elseif ($isDraft) {
+                                    $iconColor = '#f59e0b';
+                                    $iconBg = '#fef3c7';
+                                    $icon = 'drafts';
+                                } else {
+                                    $iconColor = '#3b82f6';
+                                    $iconBg = '#eff6ff';
+                                    $icon = 'pending';
+                                }
                                 
                                 $prevStatus = $history->previous_status ? ucwords(str_replace('_', ' ', $history->previous_status)) : null;
                                 $newStatus = $history->new_status ? ucwords(str_replace('_', ' ', $history->new_status)) : null;

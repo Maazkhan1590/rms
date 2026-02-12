@@ -55,6 +55,9 @@ class WorkflowService
             'department' => $submitter->department->name ?? null,
         ]);
 
+        // Log draft status creation in workflow history
+        $this->logAction($workflow, 'submitted', $submitter, 'Draft created', null, 'draft');
+
         return $workflow;
     }
 

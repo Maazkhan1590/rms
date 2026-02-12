@@ -423,7 +423,11 @@
 
             <!-- Evidence Files Section -->
             @php
-                $evidenceFiles = $grant->evidenceFiles ?? collect();
+                // Load evidence files directly to avoid any lazy-loading issues
+                $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'grant')
+                    ->where('submission_id', $grant->id)
+                    ->with('uploader')
+                    ->get();
                 $hasLinkEvidence = !empty($grant->award_letter_path);
                 $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
             @endphp
