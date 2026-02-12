@@ -48,10 +48,22 @@
     <!-- Faculty Members Filter -->
     <section class="search-section">
         <div class="container">
-            <form action="{{ route('faculty-members.index') }}" method="GET" style="display: flex; gap: 0.75rem; max-width: 700px; margin: 0 auto;">
+            <form action="{{ route('faculty-members.index') }}" method="GET" style="display: flex; gap: 0.75rem; max-width: 700px; margin: 0 auto; align-items: stretch;">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..." style="flex: 1; padding: 0.75rem 1rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
-                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem;">Search</button>
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; white-space: nowrap;">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                @if(request('search'))
+                <a href="{{ route('faculty-members.index') }}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; background: #6b7280; border: none; color: white; text-decoration: none; display: inline-flex; align-items: center; white-space: nowrap;" title="Clear search">
+                    <i class="fas fa-times"></i> Reset
+                </a>
+                @endif
             </form>
+            @if(request('search'))
+            <div style="text-align: center; margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i> Searching across all faculty members for: <strong>"{{ request('search') }}"</strong>
+            </div>
+            @endif
         </div>
     </section>
 
