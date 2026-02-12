@@ -102,4 +102,64 @@ class FacultyMemberController extends Controller
             'bonusRecognitions'
         ));
     }
+
+    /**
+     * Download faculty member's CV as PDF
+     */
+    public function downloadCV($id)
+    {
+        $user = User::with(['roles', 'college', 'department'])
+            ->whereHas('roles', function($q) {
+                $q->where('title', 'Faculty');
+            })
+            ->findOrFail($id);
+
+        // Get all publications for this faculty member
+        $publications = Publication::where(function($query) use ($user) {
+                $query->where('submitted_by', $user->id)
+                      ->orWhere('primary_author_id', $user->id);
+            })
+            ->with(['submitter', 'primaryAuthor', 'evidenceFiles'])
+            ->orderBy('publication_year', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Get all grants
+        $grants = Grant::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('award_year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all RTN submissions
+        $rtnSubmissions = RtnSubmission::where('user_id', $user->id)
+            ->with(['user', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all bonus recognitions
+        $bonusRecognitions = BonusRecognition::where('user_id', $user->id)
+            ->with(['user', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $pdf = \PDF::loadView('faculty-members.cv', compact(
+            'user',
+            'publications',
+            'grants',
+            'rtnSubmissions',
+            'bonusRecognitions'
+        ));
+
+        // Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+
+        // Generate filename
+        $filename = str_replace(' ', '_', $user->name) . '_CV_' . date('Y-m-d') . '.pdf';
+
+        // Download the PDF
+        return $pdf->download($filename);
+    }
 }
