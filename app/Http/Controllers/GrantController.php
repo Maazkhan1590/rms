@@ -340,6 +340,7 @@ class GrantController extends Controller
         $grant->update([
             'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
                        ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
+            'grant_status' => 'submitted',
             'submitted_at' => now(),
         ]);
 

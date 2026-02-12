@@ -166,7 +166,7 @@
 
             <!-- Draft Submit Banner -->
             @auth
-                @if($grant->grant_status === 'draft' && ($grant->submitted_by === auth()->id()))
+                @if($grant->status === 'draft' && ($grant->submitted_by === auth()->id()))
                 <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
                         <div style="flex: 1;">
@@ -221,13 +221,20 @@
                         </span>
                     @endif
                     @if($grant->status)
-                        <span class="badge-pill" style="background: {{ $grant->status === 'approved' ? '#22c55e' : ($grant->status === 'submitted' || $grant->status === 'pending' ? '#eab308' : '#6b7280') }}; color: #fff;">
-                            {{ ucfirst($grant->status) }}
-                        </span>
-                    @endif
-                    @if($grant->grant_status)
-                        <span class="badge-pill" style="background: #fef3c7; color: #92400e;">
-                            {{ ucfirst(str_replace('_', ' ', $grant->grant_status)) }}
+                        @php
+                            $statusColors = [
+                                'approved' => ['bg' => '#22c55e', 'text' => '#fff'],
+                                'pending' => ['bg' => '#eab308', 'text' => '#fff'],
+                                'pending_coordinator' => ['bg' => '#6b7280', 'text' => '#fff'],
+                                'pending_dean' => ['bg' => '#6b7280', 'text' => '#fff'],
+                                'submitted' => ['bg' => '#3b82f6', 'text' => '#fff'],
+                                'rejected' => ['bg' => '#ef4444', 'text' => '#fff'],
+                                'draft' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                            ];
+                            $color = $statusColors[$grant->status] ?? ['bg' => '#6b7280', 'text' => '#fff'];
+                        @endphp
+                        <span class="badge-pill" style="background: {{ $color['bg'] }}; color: {{ $color['text'] }};">
+                            {{ strtoupper(str_replace('_', ' ', $grant->status)) }}
                         </span>
                     @endif
                 </div>

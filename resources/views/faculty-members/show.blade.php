@@ -295,7 +295,7 @@
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                             <!-- Draft Submit Banner -->
                             @auth
-                                @if($grant->grant_status === 'draft' && $grant->submitted_by === auth()->id())
+                                @if($grant->status === 'draft' && $grant->submitted_by === auth()->id())
                                 <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
                                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
                                         <div style="flex: 1;">
