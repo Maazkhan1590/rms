@@ -29,57 +29,66 @@ class ScoringService
 
         $policyVersion = $policyVersion ?? PolicyVersion::active()->first();
         
-        if (!$policyVersion) {
-            Log::warning("No active policy version found for publication {$publication->id}");
-            return 0;
-        }
-
         // Find matching policy
-        $policy = ScoringPolicy::active()
-            ->ofType('publication')
-            ->effectiveOn($publication->year ?? now()->year)
-            ->where(function ($query) use ($publication) {
-                $query->where('category', $publication->journal_category)
-                    ->orWhereNull('category');
-            })
-            ->where(function ($query) use ($publication) {
-                if ($publication->quartile) {
-                    $query->where('subcategory', $publication->quartile)
-                        ->orWhereNull('subcategory');
-                } else {
-                    $query->whereNull('subcategory');
+        $policy = null;
+        if ($policyVersion) {
+            $policy = ScoringPolicy::active()
+                ->ofType('publication')
+                ->effectiveOn($publication->year ?? now()->year)
+                ->where(function ($query) use ($publication) {
+                    $query->where('category', $publication->journal_category)
+                        ->orWhereNull('category');
+                })
+                ->where(function ($query) use ($publication) {
+                    if ($publication->quartile) {
+                        $query->where('subcategory', $publication->quartile)
+                            ->orWhereNull('subcategory');
+                    } else {
+                        $query->whereNull('subcategory');
+                    }
+                })
+                ->first();
+        }
+
+        // Use policy if found, otherwise use defaults
+        if ($policy) {
+            $points = $policy->points;
+            $cap = $policy->cap;
+
+            // Apply rules if any
+            $rules = ScoringRule::where('policy_id', $policy->id)
+                ->active()
+                ->orderedByPriority()
+                ->get();
+
+            foreach ($rules as $rule) {
+                if ($this->ruleMatches($rule, $publication)) {
+                    $points = $rule->points;
+                    break; // First matching rule wins
                 }
-            })
-            ->first();
-
-        if (!$policy) {
-            Log::warning("No matching policy found for publication {$publication->id}");
-            return 0;
-        }
-
-        $points = $policy->points;
-
-        // Apply rules if any
-        $rules = ScoringRule::where('policy_id', $policy->id)
-            ->active()
-            ->orderedByPriority()
-            ->get();
-
-        foreach ($rules as $rule) {
-            if ($this->ruleMatches($rule, $publication)) {
-                $points = $rule->points;
-                break; // First matching rule wins
             }
-        }
 
-        // Apply cap if specified
-        if ($policy->cap && $points > $policy->cap) {
-            $points = $policy->cap;
+            // Apply cap if specified
+            if ($cap && $points > $cap) {
+                $points = $cap;
+            }
+        } else {
+            // Use default values
+            $defaults = $this->getDefaultPublicationPoints($publication);
+            $points = $defaults['points'];
+            $cap = $defaults['cap'];
+            
+            // Apply cap if specified
+            if ($cap && $points > $cap) {
+                $points = $cap;
+            }
         }
 
         // Update publication
         $publication->points_allocated = $points;
-        $publication->policy_version_id = $policyVersion->id;
+        if ($policyVersion) {
+            $publication->policy_version_id = $policyVersion->id;
+        }
         $publication->save();
 
         return $points;
@@ -100,57 +109,59 @@ class ScoringService
 
         $policyVersion = $policyVersion ?? PolicyVersion::active()->first();
         
-        if (!$policyVersion) {
-            Log::warning("No active policy version found for grant {$grant->id}");
-            return 0;
-        }
-
         // Find matching policy
-        $policy = ScoringPolicy::active()
-            ->ofType('grant')
-            ->effectiveOn($grant->award_year ?? now()->year)
-            ->where(function ($query) use ($grant) {
-                $query->where('category', $grant->grant_type)
-                    ->orWhereNull('category');
-            })
-            ->where(function ($query) use ($grant) {
-                if ($grant->role) {
-                    $query->where('subcategory', $grant->role)
-                        ->orWhereNull('subcategory');
-                } else {
-                    $query->whereNull('subcategory');
+        $policy = null;
+        if ($policyVersion) {
+            $policy = ScoringPolicy::active()
+                ->ofType('grant')
+                ->effectiveOn($grant->award_year ?? now()->year)
+                ->where(function ($query) use ($grant) {
+                    $query->where('category', $grant->grant_type)
+                        ->orWhereNull('category');
+                })
+                ->where(function ($query) use ($grant) {
+                    if ($grant->role) {
+                        $query->where('subcategory', $grant->role)
+                            ->orWhereNull('subcategory');
+                    } else {
+                        $query->whereNull('subcategory');
+                    }
+                })
+                ->first();
+        }
+
+        // Use policy if found, otherwise use defaults
+        if ($policy) {
+            $points = $policy->points;
+            $cap = $policy->cap;
+
+            // Apply rules if any
+            $rules = ScoringRule::where('policy_id', $policy->id)
+                ->active()
+                ->orderedByPriority()
+                ->get();
+
+            foreach ($rules as $rule) {
+                if ($this->ruleMatches($rule, $grant)) {
+                    $points = $rule->points;
+                    break;
                 }
-            })
-            ->first();
-
-        if (!$policy) {
-            Log::warning("No matching policy found for grant {$grant->id}");
-            return 0;
-        }
-
-        $points = $policy->points;
-
-        // Apply rules if any
-        $rules = ScoringRule::where('policy_id', $policy->id)
-            ->active()
-            ->orderedByPriority()
-            ->get();
-
-        foreach ($rules as $rule) {
-            if ($this->ruleMatches($rule, $grant)) {
-                $points = $rule->points;
-                break;
             }
-        }
 
-        // Apply cap if specified
-        if ($policy->cap && $points > $policy->cap) {
-            $points = $policy->cap;
+            // Apply cap if specified
+            if ($cap && $points > $cap) {
+                $points = $cap;
+            }
+        } else {
+            // Use default values
+            $points = $this->getDefaultGrantPoints($grant);
         }
 
         // Update grant
         $grant->points_allocated = $points;
-        $grant->policy_version_id = $policyVersion->id;
+        if ($policyVersion) {
+            $grant->policy_version_id = $policyVersion->id;
+        }
         $grant->save();
 
         return $points;
@@ -160,12 +171,30 @@ class ScoringService
      * Calculate points for RTN submission
      *
      * @param RtnSubmission $rtn
+     * @param PolicyVersion|null $policyVersion
      * @return float
      */
-    public function calculateRtnPoints(RtnSubmission $rtn): float
+    public function calculateRtnPoints(RtnSubmission $rtn, ?PolicyVersion $policyVersion = null): float
     {
-        // RTN-3 and RTN-4 both get 5 points
-        $points = 5.0;
+        $policyVersion = $policyVersion ?? PolicyVersion::active()->first();
+        
+        // Find matching policy
+        $policy = null;
+        if ($policyVersion) {
+            $policy = ScoringPolicy::active()
+                ->ofType('rtn')
+                ->effectiveOn($rtn->year ?? now()->year)
+                ->where('category', $rtn->rtn_type)
+                ->first();
+        }
+
+        // Use policy if found, otherwise use defaults
+        if ($policy) {
+            $points = $policy->points;
+        } else {
+            // Use default values: RTN-3 and RTN-4 both get 5 points
+            $points = 5.0;
+        }
         
         $rtn->points = $points;
         $rtn->save();
@@ -184,24 +213,23 @@ class ScoringService
     {
         $policyVersion = $policyVersion ?? PolicyVersion::active()->first();
         
-        if (!$policyVersion) {
-            Log::warning("No active policy version found for bonus recognition {$bonus->id}");
-            return 0;
-        }
-
         // Find matching policy
-        $policy = ScoringPolicy::active()
-            ->ofType('bonus')
-            ->effectiveOn($bonus->year)
-            ->where('category', $bonus->recognition_type)
-            ->first();
-
-        if (!$policy) {
-            Log::warning("No matching policy found for bonus recognition {$bonus->id}");
-            return 0;
+        $policy = null;
+        if ($policyVersion) {
+            $policy = ScoringPolicy::active()
+                ->ofType('bonus')
+                ->effectiveOn($bonus->year)
+                ->where('category', $bonus->recognition_type)
+                ->first();
         }
 
-        $points = $policy->points;
+        // Use policy if found, otherwise use defaults
+        if ($policy) {
+            $points = $policy->points;
+        } else {
+            // Use default values
+            $points = $this->getDefaultBonusPoints($bonus->recognition_type);
+        }
 
         // Check yearly cap (25 points per user per year)
         $yearlyTotal = BonusRecognition::where('user_id', $bonus->user_id)
@@ -292,6 +320,119 @@ class ScoringService
         }
 
         return true;
+    }
+
+    /**
+     * Get default points for a publication based on its type and category
+     *
+     * @param Publication $publication
+     * @return array ['points' => float, 'cap' => float|null]
+     */
+    private function getDefaultPublicationPoints(Publication $publication): array
+    {
+        // Default values based on publication type
+        $publicationType = $publication->publication_type;
+        $journalCategory = $publication->journal_category;
+
+        // Journal (Indexed): 60 points (Cap: 120)
+        if ($publicationType === 'journal_paper' && 
+            in_array($journalCategory, ['scopus', 'international_refereed']) && 
+            $publication->quartile) {
+            return ['points' => 60.0, 'cap' => 120.0];
+        }
+
+        // Conference Paper: 15 points (Cap: 15)
+        if ($publicationType === 'conference_paper') {
+            return ['points' => 15.0, 'cap' => 15.0];
+        }
+
+        // Book/Chapter: 10 points
+        if (in_array($publicationType, ['book', 'book_chapter'])) {
+            return ['points' => 10.0, 'cap' => null];
+        }
+
+        // Non-indexed Journal: 5 points
+        if ($publicationType === 'journal_paper' && 
+            ($journalCategory === 'non_indexed' || !$publication->quartile)) {
+            return ['points' => 5.0, 'cap' => null];
+        }
+
+        // Default fallback
+        return ['points' => 5.0, 'cap' => null];
+    }
+
+    /**
+     * Get default points for a grant based on its type and role
+     *
+     * @param Grant $grant
+     * @return float
+     */
+    private function getDefaultGrantPoints(Grant $grant): float
+    {
+        $grantType = strtolower($grant->grant_type ?? '');
+        $role = $grant->role ?? '';
+
+        // External Grant (PI): 90 points
+        if (($grantType === 'external_grant' || str_contains($grantType, 'external')) && 
+            ($role === 'PI' || $role === 'Principal Investigator')) {
+            return 90.0;
+        }
+
+        // Matching Grant (PI): 15 points
+        if (($grantType === 'matching_grant' || str_contains($grantType, 'matching')) && 
+            ($role === 'PI' || $role === 'Principal Investigator')) {
+            return 15.0;
+        }
+
+        // GRG/URG (Advisor): 10 points
+        if ((str_contains($grantType, 'grg') || str_contains($grantType, 'urg')) && 
+            (str_contains(strtolower($role), 'advisor') || str_contains(strtolower($role), 'mentor'))) {
+            return 10.0;
+        }
+
+        // Patent (SU-registered): 10 points
+        if ((str_contains($grantType, 'patent') || str_contains($grantType, 'copyright')) && 
+            $grant->patent_su_registered) {
+            return 10.0;
+        }
+
+        // Grant Application: 5 points
+        if (str_contains($grantType, 'application') || $role === 'Applicant') {
+            return 5.0;
+        }
+
+        // Co-PI: 5 points
+        if ($role === 'Co-PI' || $role === 'Co_PI' || str_contains($role, 'Co-PI')) {
+            return 5.0;
+        }
+
+        // Co-I: 6 points
+        if ($role === 'Co-I' || $role === 'Co_I' || str_contains($role, 'Co-I')) {
+            return 6.0;
+        }
+
+        // Default fallback
+        return 5.0;
+    }
+
+    /**
+     * Get default points for a bonus recognition type
+     *
+     * @param string $recognitionType
+     * @return float
+     */
+    private function getDefaultBonusPoints(string $recognitionType): float
+    {
+        $defaults = [
+            'editorial_board' => 5.0,
+            'external_examiner' => 6.0,
+            'regulatory_body' => 7.0,
+            'workshop_seminar' => 8.0,
+            'keynote_plenary' => 9.0,
+            'journal_reviewer' => 5.0,
+        ];
+
+        return $defaults[$recognitionType] ?? 5.0;
     }
 }
 

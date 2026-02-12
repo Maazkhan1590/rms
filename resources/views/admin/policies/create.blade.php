@@ -186,14 +186,17 @@
 
 <!-- Quick Reference Guide -->
 <div class="card mt-4">
-    <div class="card-header">
-        <h5><i class="fas fa-book"></i> Quick Reference: Standard Scoring Values</h5>
+    <div class="card-header bg-info text-white">
+        <h5><i class="fas fa-book"></i> Quick Reference: Default Scoring Values</h5>
     </div>
     <div class="card-body">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> <strong>Note:</strong> These are the default scoring values that will be automatically applied if no policy is created for a specific type/category. If you create a policy, it will override these defaults.
+        </div>
         <div class="row">
             <div class="col-md-6">
-                <h6>Publications</h6>
-                <ul>
+                <h6><i class="fas fa-book-open"></i> Publications</h6>
+                <ul class="list-unstyled">
                     <li><strong>Journal (Indexed):</strong> 60 points (Cap: 120)</li>
                     <li><strong>Conference Paper:</strong> 15 points (Cap: 15)</li>
                     <li><strong>Book/Chapter:</strong> 10 points</li>
@@ -201,8 +204,8 @@
                 </ul>
             </div>
             <div class="col-md-6">
-                <h6>Grants (by Role)</h6>
-                <ul>
+                <h6><i class="fas fa-money-bill-wave"></i> Grants (by Role)</h6>
+                <ul class="list-unstyled">
                     <li><strong>External Grant (PI):</strong> 90 points</li>
                     <li><strong>Matching Grant (PI):</strong> 15 points</li>
                     <li><strong>GRG/URG (Advisor):</strong> 10 points</li>
@@ -215,15 +218,15 @@
         </div>
         <div class="row mt-3">
             <div class="col-md-6">
-                <h6>RTN</h6>
-                <ul>
+                <h6><i class="fas fa-graduation-cap"></i> RTN</h6>
+                <ul class="list-unstyled">
                     <li><strong>RTN-3 (Student Co-author):</strong> 5 points</li>
                     <li><strong>RTN-4 (Research in Teaching):</strong> 5 points</li>
                 </ul>
             </div>
             <div class="col-md-6">
-                <h6>Bonuses (Cap: 25 total)</h6>
-                <ul>
+                <h6><i class="fas fa-star"></i> Bonuses (Cap: 25 total)</h6>
+                <ul class="list-unstyled">
                     <li><strong>Editorial Board:</strong> 5 points</li>
                     <li><strong>External Examiner:</strong> 6 points</li>
                     <li><strong>Regulatory/Professional Body:</strong> 7 points</li>
