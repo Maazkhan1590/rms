@@ -454,11 +454,11 @@
                 $hasLinkEvidence = !empty($publication->published_link) || !empty($publication->proceedings_link) || !empty($publication->acceptance_letter_path);
                 $hasAnyEvidence = $evidenceFiles->count() > 0 || $hasLinkEvidence;
             @endphp
-            @if($hasAnyEvidence)
             <div style="margin-bottom: 2.5rem;">
                 <h2 class="section-title">
                     <i class="fas fa-paperclip" style="color: #3b82f6; margin-right: 0.5rem;"></i>Evidence & Attachments
                 </h2>
+                @if($hasAnyEvidence)
                 <table class="evidence-table">
                     <thead>
                         <tr>
@@ -548,8 +548,13 @@
                         @endif
                     </tbody>
                 </table>
+                @else
+                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 2rem; text-align: center;">
+                    <i class="fas fa-folder-open" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+                    <p style="color: #6b7280; font-size: 1rem; margin: 0;">No evidence files or attachments have been uploaded yet.</p>
+                </div>
+                @endif
             </div>
-            @endif
 
             <!-- Submission & Affiliation Info -->
             @if($publication->submitter || $publication->approver || $publication->college || $publication->department)
