@@ -104,7 +104,19 @@ class WorkflowService
             // Update submission status to match workflow status
             $submission = $workflow->submission;
             if ($submission) {
-                $submission->status = $workflow->status;
+                // Map workflow status to submission status
+                // For RTN and bonus, ensure status values are valid
+                $statusMap = [
+                    'submitted' => 'submitted',
+                    'pending_coordinator' => 'pending_coordinator',
+                    'pending_dean' => 'pending_dean',
+                    'approved' => 'approved',
+                    'rejected' => 'rejected',
+                    'draft' => 'draft',
+                ];
+                
+                $mappedStatus = $statusMap[$workflow->status] ?? 'submitted';
+                $submission->status = $mappedStatus;
                 $submission->save();
             }
             
