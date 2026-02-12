@@ -316,9 +316,14 @@
                             // Load history entries
                             $historyEntries = $workflow->history ? $workflow->history->sortBy('created_at') : collect();
                             
-                            // If workflow is in draft status but has no history, create a virtual history entry
-                            if ($workflow->status == 'draft' && $historyEntries->isEmpty()) {
-                                // Create a virtual draft entry for display
+                            // Check if there's already a draft entry in history
+                            $hasDraftEntry = $historyEntries->contains(function($entry) {
+                                return isset($entry->new_status) && $entry->new_status == 'draft';
+                            });
+                            
+                            // If no draft entry exists and workflow was created, add virtual draft entry at the beginning
+                            if (!$hasDraftEntry && $workflow->created_at) {
+                                // Create a virtual draft entry for display (at the beginning of timeline)
                                 $draftEntry = new \stdClass();
                                 $draftEntry->action = 'submitted';
                                 $draftEntry->new_status = 'draft';
@@ -326,7 +331,12 @@
                                 $draftEntry->comments = 'Draft created';
                                 $draftEntry->created_at = $workflow->created_at;
                                 $draftEntry->performer = $workflow->submitter;
-                                $historyEntries = collect([$draftEntry]);
+                                
+                                // Prepend draft entry to history entries
+                                $historyEntries = $historyEntries->prepend($draftEntry)->sortBy(function($entry) {
+                                    return is_object($entry->created_at) ? $entry->created_at->timestamp : 
+                                           (is_string($entry->created_at) ? strtotime($entry->created_at) : 0);
+                                })->values();
                             }
                         @endphp
 
