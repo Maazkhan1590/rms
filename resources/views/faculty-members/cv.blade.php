@@ -194,24 +194,48 @@
         /* Status Badge */
         .status-badge {
             display: inline-block;
-            padding: 2px 7px;
-            font-size: 7pt;
-            font-weight: bold;
-            border-radius: 3px;
+            padding: 6px 12px;
+            font-size: 7.5pt;
+            font-weight: 600;
+            border-radius: 50px !important;
             color: white;
             text-transform: uppercase;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
         }
 
         .status-approved {
             background-color: #059669;
+            border-color: #047857;
+        }
+
+        .status-approved:hover {
+            background-color: #047857;
         }
 
         .status-submitted {
             background-color: #2563eb;
+            border-color: #1d4ed8;
+        }
+
+        .status-submitted:hover {
+            background-color: #1d4ed8;
         }
 
         .status-draft {
             background-color: #64748b;
+            border-color: #475569;
+        }
+
+        .status-draft:hover {
+            background-color: #475569;
         }
 
         /* Footer */
