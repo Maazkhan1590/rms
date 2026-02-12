@@ -285,7 +285,11 @@
 
         <!-- Evidence Files Section -->
         @php
-            $evidenceFiles = $rtnSubmission->evidenceFiles ?? collect();
+            // Query evidence files directly to ensure they're loaded properly
+            $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'rtn')
+                ->where('submission_id', $rtnSubmission->id)
+                ->with('uploader')
+                ->get();
         @endphp
         <div class="row mt-4">
             <div class="col-md-12">

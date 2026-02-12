@@ -120,7 +120,9 @@ class RtnSubmissionController extends Controller
     {
         abort_if(Gate::denies('rtn_read'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $rtnSubmission->load(['user', 'workflow']);
+        $rtnSubmission->load(['user', 'workflow', 'evidenceFiles' => function($query) {
+            $query->with('uploader');
+        }]);
 
         return view('admin.rtn-submissions.show', compact('rtnSubmission'));
     }
