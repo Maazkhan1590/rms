@@ -164,6 +164,27 @@
                 <i class="fas fa-arrow-left"></i> {{ $backText }}
             </a>
 
+            <!-- Draft Submit Banner -->
+            @auth
+                @if($bonus->status === 'draft' && ($bonus->user_id === auth()->id()))
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                        <div style="flex: 1;">
+                            <p style="color: #92400e; font-size: 0.95rem; margin: 0; font-weight: 500;">
+                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This recognition needs to be submitted for approval.
+                            </p>
+                        </div>
+                        <form action="{{ route('bonus-recognitions.submit', $bonus->id) }}" method="POST" style="margin: 0;" class="submit-bonus-form">
+                            @csrf
+                            <button type="submit" style="padding: 0.625rem 1.5rem; background: #f59e0b; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endif
+            @endauth
+
             <!-- Bonus Recognition Header -->
             <div class="publication-header">
                 <h1 class="publication-title">{{ $bonus->title ?? 'Untitled Recognition' }}</h1>

@@ -31,21 +31,29 @@
 {{--                <a href="{{ route('grants.create') }}" class="btn btn-sm btn-primary">--}}
 {{--                    <span class="material-icons-outlined">add</span> Create Grant--}}
 {{--                </a>--}}
-                <a href="{{ route('admin.grants.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}"
-                   class="btn btn-sm {{ request('status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
+                <a href="{{ route('admin.grants.index', array_merge(request()->except('grant_status'), ['grant_status' => 'pending'])) }}"
+                   class="btn btn-sm {{ request('grant_status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
                     <span class="material-icons-outlined">schedule</span> Pending
                 </a>
-                <a href="{{ route('admin.grants.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}"
-                   class="btn btn-sm {{ request('status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
+                <a href="{{ route('admin.grants.index', array_merge(request()->except('grant_status'), ['grant_status' => 'submitted'])) }}"
+                   class="btn btn-sm {{ request('grant_status') == 'submitted' ? 'btn-info' : 'btn-outline-info' }}">
+                    <span class="material-icons-outlined">send</span> Submitted
+                </a>
+                <a href="{{ route('admin.grants.index', array_merge(request()->except('grant_status'), ['grant_status' => 'approved'])) }}"
+                   class="btn btn-sm {{ request('grant_status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
                     <span class="material-icons-outlined">check_circle</span> Approved
                 </a>
-                <a href="{{ route('admin.grants.index', array_merge(request()->except('status'), ['status' => 'rejected'])) }}"
-                   class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
+                <a href="{{ route('admin.grants.index', array_merge(request()->except('grant_status'), ['grant_status' => 'rejected'])) }}"
+                   class="btn btn-sm {{ request('grant_status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
                     <span class="material-icons-outlined">cancel</span> Rejected
                 </a>
-                <a href="{{ route('admin.grants.index', request()->except('status')) }}"
-                   class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <span class="material-icons-outlined">list</span> All
+                <a href="{{ route('admin.grants.index', array_merge(request()->except('grant_status'), ['grant_status' => 'draft'])) }}"
+                   class="btn btn-sm {{ request('grant_status') == 'draft' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                    <span class="material-icons-outlined">drafts</span> Drafts
+                </a>
+                <a href="{{ route('admin.grants.index', request()->except('grant_status')) }}"
+                   class="btn btn-sm {{ !request('grant_status') ? 'btn-dark' : 'btn-outline-dark' }}">
+                    <span class="material-icons-outlined">list</span> All (No Drafts)
                 </a>
             </div>
         </div>
@@ -180,16 +188,18 @@
                             </td>
                             <td>{{ $grant->award_year ?? $grant->submission_year ?? 'N/A' }}</td>
                             <td>
-                                @if($grant->status == 'approved')
+                                @if($grant->grant_status == 'approved')
                                     <span class="badge badge-success">Approved</span>
-                                @elseif($grant->status == 'pending')
+                                @elseif($grant->grant_status == 'pending')
                                     <span class="badge badge-warning">Pending</span>
-                                @elseif($grant->status == 'rejected')
+                                @elseif($grant->grant_status == 'rejected')
                                     <span class="badge badge-danger">Rejected</span>
-                                @elseif($grant->status == 'submitted')
+                                @elseif($grant->grant_status == 'submitted')
                                     <span class="badge badge-info">Submitted</span>
+                                @elseif($grant->grant_status == 'draft')
+                                    <span class="badge badge-secondary">Draft</span>
                                 @else
-                                    <span class="badge badge-secondary">{{ ucfirst($grant->status) }}</span>
+                                    <span class="badge badge-secondary">{{ ucfirst($grant->grant_status) }}</span>
                                 @endif
                             </td>
                             <td>
@@ -234,7 +244,7 @@
                                     <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.grants.show', $grant->id) }}" title="View" aria-label="View">
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
-                                    @if(in_array($grant->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean']))
+                                    @if(in_array($grant->grant_status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
                                         <form action="{{ route('admin.grants.approve', $grant->id) }}" method="POST" style="display: inline;" class="approve-grant-form">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
@@ -245,7 +255,7 @@
                                             <span class="material-icons-outlined">cancel</span>
                                         </button>
                                     @endif
-                                    @if($grant->status !== 'approved')
+                                    @if($grant->grant_status !== 'approved')
                                     <form action="{{ route('admin.grants.destroy', $grant->id) }}" method="POST" style="display: inline;" class="delete-form">
                                         @csrf
                                         @method('DELETE')

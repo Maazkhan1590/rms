@@ -35,6 +35,10 @@
                    class="btn btn-sm {{ request('status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
                     <span class="material-icons-outlined">schedule</span> Pending
                 </a>
+                <a href="{{ route('admin.bonus-recognitions.index', array_merge(request()->except('status'), ['status' => 'submitted'])) }}"
+                   class="btn btn-sm {{ request('status') == 'submitted' ? 'btn-info' : 'btn-outline-info' }}">
+                    <span class="material-icons-outlined">send</span> Submitted
+                </a>
                 <a href="{{ route('admin.bonus-recognitions.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}"
                    class="btn btn-sm {{ request('status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
                     <span class="material-icons-outlined">check_circle</span> Approved
@@ -43,9 +47,13 @@
                    class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
                     <span class="material-icons-outlined">cancel</span> Rejected
                 </a>
+                <a href="{{ route('admin.bonus-recognitions.index', array_merge(request()->except('status'), ['status' => 'draft'])) }}"
+                   class="btn btn-sm {{ request('status') == 'draft' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                    <span class="material-icons-outlined">drafts</span> Drafts
+                </a>
                 <a href="{{ route('admin.bonus-recognitions.index', request()->except('status')) }}"
-                   class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <span class="material-icons-outlined">list</span> All
+                   class="btn btn-sm {{ !request('status') ? 'btn-dark' : 'btn-outline-dark' }}">
+                    <span class="material-icons-outlined">list</span> All (No Drafts)
                 </a>
             </div>
         </div>

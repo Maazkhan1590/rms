@@ -38,8 +38,15 @@ class RtnSubmissionController extends Controller
             $query->where('user_id', $user->id);
         }
 
-        // Filter by status
-        if ($request->has('status') && $request->status) {
+        // Exclude drafts by default unless specifically requesting them
+        if ($request->has('status') && $request->status === 'draft') {
+            $query->where('status', 'draft');
+        } else {
+            $query->where('status', '!=', 'draft');
+        }
+
+        // Filter by status (workflow status)
+        if ($request->has('status') && $request->status && $request->status !== 'draft') {
             $query->where('status', $request->status);
         }
 

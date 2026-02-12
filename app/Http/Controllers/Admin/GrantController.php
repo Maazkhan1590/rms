@@ -41,9 +41,16 @@ class GrantController extends Controller
             $query->where('submitted_by', $user->id);
         }
 
-        // Filter by status
-        if ($request->has('status') && $request->status) {
-            $query->where('status', $request->status);
+        // Exclude drafts by default unless specifically requesting them
+        if ($request->has('grant_status') && $request->grant_status === 'draft') {
+            $query->where('grant_status', 'draft');
+        } else {
+            $query->where('grant_status', '!=', 'draft');
+        }
+
+        // Filter by grant status (workflow status)
+        if ($request->has('grant_status') && $request->grant_status && $request->grant_status !== 'draft') {
+            $query->where('grant_status', $request->grant_status);
         }
 
         // Filter by year
