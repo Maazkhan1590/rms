@@ -6,10 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{{ $user->name }} – Curriculum Vitae</title>
     <style>
-        @page {
-            margin: 1.2cm;
-        }
-        
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 9.5pt;
@@ -107,23 +103,21 @@
             border-bottom: 2px solid #2563eb;
             padding-bottom: 6px;
             margin: 20px 0 12px 0;
+            page-break-inside: avoid;
+            page-break-after: avoid;
         }
         
-        /* Research Profile Box */
-        .profile-text {
-            font-size: 10pt;
-            line-height: 1.6;
-            color: #374151;
-            margin: 12px 0;
-            text-align: justify;
-        }
-
-        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 12px 0;
             font-size: 9pt;
+            page-break-inside: auto;
+        }
+        
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
 
         th, td {
@@ -142,6 +136,15 @@
 
         tr:nth-child(even) {
             background-color: #f9fafb;
+        }
+        
+        .profile-text {
+            font-size: 10pt;
+            line-height: 1.6;
+            color: #374151;
+            margin: 12px 0;
+            text-align: justify;
+            page-break-inside: avoid;
         }
         
         .authors-col {
@@ -217,8 +220,9 @@
             padding-top: 12px;
             border-top: 1px solid #e5e7eb;
             text-align: center;
-            font-size: 7.5pt;
-            color: #6b7280;
+            font-size: 8pt;
+            color: #999999;
+            page-break-inside: avoid;
         }
         
         .no-data {
@@ -329,43 +333,6 @@
         <tr>
             <td><strong>Scopus Indexed Papers</strong></td>
             <td>{{ $user->scopus_papers ?? 'N/A' }}</td>
-        </tr>
-    </table>
-
-    <!-- PROFESSIONAL INFORMATION -->
-    <div class="section-title">Professional Information</div>
-    <table style="margin-bottom: 20px;">
-        <tr>
-            <th style="width: 30%;">Field</th>
-            <th style="width: 70%;">Details</th>
-        </tr>
-        <tr>
-            <td><strong>Full Name</strong></td>
-            <td>{{ $user->name ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Employee ID</strong></td>
-            <td>{{ $user->employee_id ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Designation</strong></td>
-            <td>{{ $user->designation ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td><strong>College</strong></td>
-            <td>{{ $user->college->name ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Department</strong></td>
-            <td>{{ $user->department->name ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Email</strong></td>
-            <td>{{ $user->email ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Phone</strong></td>
-            <td>{{ $user->phone ?? 'N/A' }}</td>
         </tr>
     </table>
 
@@ -536,22 +503,6 @@
         No awards or recognitions recorded for this faculty member.
     </div>
     @endif
-
-    <!-- PROFESSIONAL SERVICE -->
-    <div class="section-title">Professional Service & Leadership</div>
-    <div class="profile-text" style="font-size: 9pt; color: #6b7280;">
-        Details available upon request.
-    </div>
-
-    <!-- REFERENCES -->
-    <div class="section-title">References</div>
-    <div class="profile-text" style="font-size: 9pt; color: #6b7280;">
-        Available upon request.
-    </div>
-
-    <div class="cv-footer">
-        Faculty CV Template • Generated on {{ date('F d, Y') }} • Research Management System
-    </div>
 
 </div>
 

@@ -158,10 +158,10 @@ class FacultyMemberController extends Controller
 
         // Create mPDF instance with enhanced configuration for icons and unicode support
         $mpdf = new Mpdf([
-            'margin_left' => 12,
-            'margin_right' => 12,
-            'margin_top' => 12,
-            'margin_bottom' => 12,
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 15,
+            'margin_bottom' => 25,
             'fontsize' => 9.5,
             'default_font' => 'dejavusans',
             'default_font_size' => 9.5,
@@ -172,6 +172,10 @@ class FacultyMemberController extends Controller
             'mode' => 'utf-8',
             'tempDir' => storage_path('logs'),
         ]);
+
+        // Set footer with page numbering and generation date
+        $generatedDate = date('F d, Y');
+        $mpdf->SetFooter("Faculty CV Template • Generated on {$generatedDate} • Research Management System\n{PAGENO} of {nb}");
 
         // Write HTML to PDF
         $mpdf->WriteHTML($html);
@@ -239,10 +243,10 @@ class FacultyMemberController extends Controller
 
         // Create mPDF instance with enhanced configuration for icons and unicode support
         $mpdf = new Mpdf([
-            'margin_left' => 12,
-            'margin_right' => 12,
-            'margin_top' => 12,
-            'margin_bottom' => 12,
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 15,
+            'margin_bottom' => 25,
             'fontsize' => 9.5,
             'default_font' => 'dejavusans',
             'default_font_size' => 9.5,
@@ -253,6 +257,10 @@ class FacultyMemberController extends Controller
             'mode' => 'utf-8',
             'tempDir' => storage_path('logs'),
         ]);
+
+        // Set footer with page numbering and generation date
+        $generatedDate = date('F d, Y');
+        $mpdf->SetFooter("Faculty CV Template • Generated on {$generatedDate} • Research Management System\n{PAGENO} of {nb}");
 
         // Write HTML to PDF
         $mpdf->WriteHTML($html);
