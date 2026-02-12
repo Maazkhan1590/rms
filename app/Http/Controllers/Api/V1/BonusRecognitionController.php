@@ -65,6 +65,7 @@ class BonusRecognitionController extends Controller
         $data = $request->validated();
         $data['user_id'] = auth()->id();
         $data['year'] = $data['year'] ?? now()->year;
+        $data['points'] = $data['points'] ?? 0;
 
         $recognition = BonusRecognition::create($data);
 

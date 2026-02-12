@@ -173,6 +173,7 @@ class BonusRecognitionController extends Controller
             'user_id' => auth()->id(),
             'status' => 'draft',
             'description' => $validated['description'] ?? null,
+            'points' => 0,
             'submitted_at' => now(),
         ]);
 
