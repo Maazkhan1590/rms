@@ -5,7 +5,7 @@
     <title>{{ $user->name }} - Curriculum Vitae</title>
     <style>
         @page {
-            margin: 1.2cm 1.8cm;
+            margin: 0 1.8cm 1.2cm 1.8cm;
         }
         body {
             font-family: 'DejaVu Sans', 'Arial', sans-serif;
@@ -13,7 +13,7 @@
             line-height: 1.35;
             color: #1a1a1a;
             margin: 0;
-            padding: 0;
+            padding: 0 1.8cm 0 1.8cm;
         }
         
         /* Header Styles */
@@ -21,7 +21,7 @@
             background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: white;
             padding: 18px 18px;
-            margin: -1.2cm -1.8cm 0 -1.8cm;
+            margin: 0 -1.8cm 0 -1.8cm;
             text-align: center;
         }
         .cv-name {
