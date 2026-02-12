@@ -272,18 +272,9 @@
                                                 <span class="material-icons-outlined">check_circle</span>
                                             </button>
                                         </form>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="showRejectModal({{ $grant->id }})" title="Reject" aria-label="Reject">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-reject-grant" title="Reject" aria-label="Reject" data-grant-id="{{ $grant->id }}">
                                             <span class="material-icons-outlined">cancel</span>
                                         </button>
-                                    @endif
-                                    @if($grant->grant_status !== 'approved')
-                                    <form action="{{ route('admin.grants.destroy', $grant->id) }}" method="POST" style="display: inline;" class="delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" aria-label="Delete">
-                                            <span class="material-icons-outlined">delete</span>
-                                        </button>
-                                    </form>
                                     @endif
                                 </div>
                             </td>
@@ -308,39 +299,4 @@
     </div>
 </div>
 
-<!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Reject Grant</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="reject_reason">Reason (Optional)</label>
-                        <textarea class="form-control" id="reject_reason" name="reason" rows="3"
-                                  placeholder="Enter reason for rejection..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Reject Grant</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    function showRejectModal(grantId) {
-        const form = document.getElementById('rejectForm');
-        form.action = '/admin/grants/' + grantId + '/reject';
-        $('#rejectModal').modal('show');
-    }
-</script>
 @endsection

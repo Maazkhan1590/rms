@@ -242,18 +242,9 @@
                                                 <span class="material-icons-outlined">check_circle</span>
                                             </button>
                                         </form>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="showRejectModal({{ $submission->id }})" title="Reject" aria-label="Reject">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-reject-rtn" title="Reject" aria-label="Reject" data-rtn-id="{{ $submission->id }}">
                                             <span class="material-icons-outlined">cancel</span>
                                         </button>
-                                    @endif
-                                    @if($submission->status !== 'approved')
-                                    <form action="{{ route('admin.rtn-submissions.destroy', $submission->id) }}" method="POST" style="display: inline;" class="rtn-delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete-rtn" title="Delete" aria-label="Delete" data-title="{{ $submission->title }}">
-                                            <span class="material-icons-outlined">delete</span>
-                                        </button>
-                                    </form>
                                     @endif
                                 </div>
                             </td>
@@ -278,39 +269,4 @@
     </div>
 </div>
 
-<!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Reject RTN Submission</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="reject_reason">Reason (Optional)</label>
-                        <textarea class="form-control" id="reject_reason" name="reason" rows="3"
-                                  placeholder="Enter reason for rejection..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Reject Submission</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    function showRejectModal(submissionId) {
-        const form = document.getElementById('rejectForm');
-        form.action = '/admin/rtn-submissions/' + submissionId + '/reject';
-        $('#rejectModal').modal('show');
-    }
-</script>
 @endsection

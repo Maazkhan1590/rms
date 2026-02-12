@@ -227,18 +227,9 @@
                                                 <span class="material-icons-outlined">check_circle</span>
                                             </button>
                                         </form>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="showRejectModal({{ $recognition->id }})" title="Reject" aria-label="Reject">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-reject-bonus" title="Reject" aria-label="Reject" data-bonus-id="{{ $recognition->id }}">
                                             <span class="material-icons-outlined">cancel</span>
                                         </button>
-                                    @endif
-                                    @if($recognition->status !== 'approved')
-                                    <form action="{{ route('admin.bonus-recognitions.destroy', $recognition->id) }}" method="POST" style="display: inline;" class="delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" aria-label="Delete">
-                                            <span class="material-icons-outlined">delete</span>
-                                        </button>
-                                    </form>
                                     @endif
                                 </div>
                             </td>
@@ -263,39 +254,4 @@
     </div>
 </div>
 
-<!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Reject Bonus Recognition</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="reject_reason">Reason (Optional)</label>
-                        <textarea class="form-control" id="reject_reason" name="reason" rows="3"
-                                  placeholder="Enter reason for rejection..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Reject Recognition</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    function showRejectModal(recognitionId) {
-        const form = document.getElementById('rejectForm');
-        form.action = '/admin/bonus-recognitions/' + recognitionId + '/reject';
-        $('#rejectModal').modal('show');
-    }
-</script>
 @endsection

@@ -87,33 +87,6 @@
     </div>
 </div>
 
-<!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Reject Publication</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="reject_reason">Reason (Optional)</label>
-                        <textarea class="form-control" id="reject_reason" name="reason" rows="3"
-                                  placeholder="Enter reason for rejection..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Reject Publication</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <style>
     .btn-xs, .btn-sm {
@@ -291,10 +264,5 @@
 
     });
 
-    function showRejectModal(publicationId) {
-        const form = document.getElementById('rejectForm');
-        form.action = '/admin/publications/' + publicationId + '/reject';
-        $('#rejectModal').modal('show');
-    }
 </script>
 @endsection

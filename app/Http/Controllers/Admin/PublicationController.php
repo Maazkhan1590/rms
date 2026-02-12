@@ -243,7 +243,7 @@ class PublicationController extends Controller
                     $actions .= csrf_field();
                     $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" style="padding: 4px 8px; font-size: 12px;" title="Approve"><span class=\"material-icons-outlined\">check_circle</span></button>';
                     $actions .= '</form>';
-                    $actions .= '<button type="button" class="btn btn-sm btn-outline-danger" onclick="showRejectModal(' . $publication->id . ')" style="padding: 4px 8px; font-size: 12px;" title="Reject"><span class=\"material-icons-outlined\">cancel</span></button>';
+                    $actions .= '<button type="button" class="btn btn-sm btn-outline-danger btn-reject-publication" data-publication-id="' . $publication->id . '" style="padding: 4px 8px; font-size: 12px;" title="Reject"><span class=\"material-icons-outlined\">cancel</span></button>';
                 }
             }
             // No approve button if no workflow exists or workflow is completed (approved/rejected) - must follow workflow process

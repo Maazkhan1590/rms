@@ -1382,6 +1382,127 @@
                         }
                     });
                 });
+
+                // Reject buttons with comment input (for grants, RTN, bonus, publications)
+                $(document).on('click', '.btn-reject-grant', function (e) {
+                    e.preventDefault();
+                    const grantId = $(this).data('grant-id');
+                    Swal.fire({
+                        title: 'Reject Grant?',
+                        html: '<textarea id="swal-reject-reason" class="swal2-textarea" placeholder="Enter reason for rejection (optional)..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, reject',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        preConfirm: () => {
+                            return document.getElementById('swal-reject-reason').value;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const reason = result.value || '';
+                            const form = $('<form>', {
+                                'method': 'POST',
+                                'action': '/admin/grants/' + grantId + '/reject'
+                            });
+                            form.append($('<input>', {type: 'hidden', name: '_token', value: $('meta[name="csrf-token"]').attr('content')}));
+                            form.append($('<input>', {type: 'hidden', name: 'reason', value: reason}));
+                            $('body').append(form);
+                            form.submit();
+                        }
+                    });
+                });
+
+                $(document).on('click', '.btn-reject-rtn', function (e) {
+                    e.preventDefault();
+                    const rtnId = $(this).data('rtn-id');
+                    Swal.fire({
+                        title: 'Reject RTN Submission?',
+                        html: '<textarea id="swal-reject-reason" class="swal2-textarea" placeholder="Enter reason for rejection (optional)..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, reject',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        preConfirm: () => {
+                            return document.getElementById('swal-reject-reason').value;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const reason = result.value || '';
+                            const form = $('<form>', {
+                                'method': 'POST',
+                                'action': '/admin/rtn-submissions/' + rtnId + '/reject'
+                            });
+                            form.append($('<input>', {type: 'hidden', name: '_token', value: $('meta[name="csrf-token"]').attr('content')}));
+                            form.append($('<input>', {type: 'hidden', name: 'reason', value: reason}));
+                            $('body').append(form);
+                            form.submit();
+                        }
+                    });
+                });
+
+                $(document).on('click', '.btn-reject-bonus', function (e) {
+                    e.preventDefault();
+                    const bonusId = $(this).data('bonus-id');
+                    Swal.fire({
+                        title: 'Reject Bonus Recognition?',
+                        html: '<textarea id="swal-reject-reason" class="swal2-textarea" placeholder="Enter reason for rejection (optional)..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, reject',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        preConfirm: () => {
+                            return document.getElementById('swal-reject-reason').value;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const reason = result.value || '';
+                            const form = $('<form>', {
+                                'method': 'POST',
+                                'action': '/admin/bonus-recognitions/' + bonusId + '/reject'
+                            });
+                            form.append($('<input>', {type: 'hidden', name: '_token', value: $('meta[name="csrf-token"]').attr('content')}));
+                            form.append($('<input>', {type: 'hidden', name: 'reason', value: reason}));
+                            $('body').append(form);
+                            form.submit();
+                        }
+                    });
+                });
+
+                $(document).on('click', '.btn-reject-publication', function (e) {
+                    e.preventDefault();
+                    const publicationId = $(this).data('publication-id');
+                    Swal.fire({
+                        title: 'Reject Publication?',
+                        html: '<textarea id="swal-reject-reason" class="swal2-textarea" placeholder="Enter reason for rejection (optional)..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, reject',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        preConfirm: () => {
+                            return document.getElementById('swal-reject-reason').value;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const reason = result.value || '';
+                            const form = $('<form>', {
+                                'method': 'POST',
+                                'action': '/admin/publications/' + publicationId + '/reject'
+                            });
+                            form.append($('<input>', {type: 'hidden', name: '_token', value: $('meta[name="csrf-token"]').attr('content')}));
+                            form.append($('<input>', {type: 'hidden', name: 'reason', value: reason}));
+                            $('body').append(form);
+                            form.submit();
+                        }
+                    });
+                });
             });
         }
     </script>
