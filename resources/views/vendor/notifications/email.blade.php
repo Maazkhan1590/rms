@@ -24,10 +24,10 @@
         }
 
         .email-header {
-            background-color: #6c757d;
+            background-color: #e9ecef;
             padding: 30px 20px;
             text-align: center;
-            color: white;
+            color: #495057;
         }
 
         .email-header img {
@@ -39,12 +39,14 @@
             font-size: 24px;
             margin: 10px 0;
             font-weight: 600;
+            color: #495057;
         }
 
         .email-header p {
             font-size: 14px;
-            opacity: 0.9;
+            opacity: 0.8;
             margin: 0;
+            color: #6c757d;
         }
 
         .email-body {
@@ -96,21 +98,21 @@
         }
 
         .email-footer {
-            background-color: #6c757d;
+            background-color: #e9ecef;
             padding: 25px 30px;
             text-align: center;
             border-top: none;
-            color: white;
+            color: #495057;
         }
 
         .email-footer p {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #6c757d;
             margin: 5px 0;
         }
 
         .email-footer a {
-            color: #ffffff;
+            color: #495057;
             text-decoration: none;
             font-weight: 500;
         }
@@ -126,7 +128,7 @@
         .social-links a {
             display: inline-block;
             margin: 0 8px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #6c757d;
             text-decoration: none;
             font-size: 12px;
         }
@@ -226,19 +228,19 @@
         <!-- Footer -->
         <div class="email-footer">
             <p><strong>Research Management System</strong></p>
-            
-            <div class="social-links">
-                <a href="#">Website</a> |
-                <a href="mailto:support@rms.com">Support</a> |
-                <a href="#">Privacy Policy</a>
-            </div>
+
+{{--            <div class="social-links">--}}
+{{--                <a href="#">Website</a> |--}}
+{{--                <a href="mailto:support@rms.uos.edu.pk">Support</a> |--}}
+{{--                <a href="#">Privacy Policy</a>--}}
+{{--            </div>--}}
 
             <p style="margin-top: 15px;">
                 © {{ date('Y') }} Research Management System. All rights reserved.
             </p>
 
-            <p style="font-size: 11px; color: rgba(255, 255, 255, 0.7); margin-top: 10px;">
-                This email was sent to {{ $notifiable->email ?? 'you' }}. 
+            <p style="font-size: 11px; color: #999; margin-top: 10px;">
+                This email was sent to {{ $notifiable->email ?? 'you' }}.
                 If you did not expect this email, please contact support.
             </p>
         </div>

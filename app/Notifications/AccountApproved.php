@@ -37,7 +37,7 @@ class AccountApproved extends Notification implements ShouldQueue
             ->greeting('Great News, ' . $notifiable->name . '!')
             ->line('Your Research Management System account has been approved by our administrators.')
             ->line('You now have full access to the system and can start managing your research activities.')
-            ->line('**What you can do now:**')
+            ->line('<strong>What you can do now:</strong>')
             ->line('• Submit your publications and research work')
             ->line('• Apply for grants and funding')
             ->line('• Track your research score and rankings')

@@ -37,25 +37,19 @@ class RegistrationEmail extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Welcome to Research Management System')
             ->greeting('Hello ' . $notifiable->name . '!')
-            ->line('Thank you for registering with the Research Management System (RMS) - URC FCIT.')
-            ->line('**Your Account Details:**')
-            ->line('**Email:** ' . $notifiable->email)
-            ->line('**Password:** ' . $this->password)
-            ->line('**Account Status:** Pending Approval')
-            ->line('**Important Information:**')
-            ->line('• Your account is currently **pending admin approval** and will be activated shortly.')
+            ->line('Thank you for registering with the Research Management System (RMS)')
+            ->line('<strong>Your Account Details:</strong>')
+            ->line('<strong>Email:</strong> ' . $notifiable->email)
+            ->line('<strong>Password:</strong> ' . $this->password)
+            ->line('<strong>Account Status:</strong> Pending Approval')
+            ->line('<strong>Important Information:</strong>')
+            ->line('• Your account is currently <strong>pending admin approval</strong> and will be activated shortly.')
             ->line('• You will receive a confirmation email once your account is approved by our administrators.')
             ->line('• After approval, you can log in and access your profile.')
             ->line('• You can browse public profiles and publications while waiting for approval.')
             ->action('Browse Publications', url('/publications'))
-            ->line('**After approval, you will be able to:**')
-            ->line('• Manage your research profile')
-            ->line('• Submit publications and research work')
-            ->line('• View analytics and reports')
-            ->line('• Generate and download your CV')
             ->line('If you did not create this account, please contact support immediately.')
-            ->salutation('Best regards,  
-Research Management System Team  
-URC FCIT');
+            ->salutation('Best regards,
+Research Management System Team');
     }
 }

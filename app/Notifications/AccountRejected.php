@@ -42,14 +42,14 @@ class AccountRejected extends Notification implements ShouldQueue
         if ($this->reason) {
             $message->line('We regret to inform you that we are unable to approve your account application at this time.')
                    ->line('')
-                   ->line('**Reason for rejection:**')
+                   ->line('<strong>Reason for rejection:</strong>')
                    ->line($this->reason);
         } else {
             $message->line('We regret to inform you that we are unable to approve your account application at this time.');
         }
         
         $message->line('')
-               ->line('**What you can do next:**')
+               ->line('<strong>What you can do next:</strong>')
                ->line('• Review the requirements for faculty registration')
                ->line('• Ensure all submitted credentials are valid and up-to-date')
                ->line('• Verify that all required information was provided correctly')
