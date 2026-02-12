@@ -31,8 +31,8 @@
     </div>
 
     <div class="card-body">
-        <div class="table-responsive">
-            <table id="grants-table" class="table table-bordered table-striped table-hover" style="min-width: 1200px;">
+        <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table id="grants-table" class="table table-bordered table-striped table-hover">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -58,6 +58,32 @@
         </div>
     </div>
 </div>
+
+@push('styles')
+<style>
+    .card-body .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #grants-table {
+        width: 100%;
+        margin: 0;
+        table-layout: auto;
+    }
+    
+    .dataTables_wrapper {
+        width: 100%;
+        overflow-x: visible;
+    }
+    
+    .dataTables_wrapper .dataTables_scrollBody {
+        overflow-x: visible !important;
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>
@@ -96,6 +122,7 @@ $(document).ready(function() {
              "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         select: false,
         responsive: false,
+        autoWidth: false,
         columnDefs: [
             { targets: 0, orderable: true, searchable: true, className: '' }
         ]
