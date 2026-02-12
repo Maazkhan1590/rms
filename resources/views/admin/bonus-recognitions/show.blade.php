@@ -141,7 +141,25 @@
                             @endif
                         </table>
 
-                        @if($workflow->history && $workflow->history->count() > 0)
+                        @php
+                            // Load history entries
+                            $historyEntries = $workflow->history ? $workflow->history->sortBy('created_at') : collect();
+                            
+                            // If workflow is in draft status but has no history, create a virtual history entry
+                            if ($workflow->status == 'draft' && $historyEntries->isEmpty()) {
+                                // Create a virtual draft entry for display
+                                $draftEntry = new \stdClass();
+                                $draftEntry->action = 'submitted';
+                                $draftEntry->new_status = 'draft';
+                                $draftEntry->previous_status = null;
+                                $draftEntry->comments = 'Draft created';
+                                $draftEntry->created_at = $workflow->created_at;
+                                $draftEntry->performer = $workflow->submitter;
+                                $historyEntries = collect([$draftEntry]);
+                            }
+                        @endphp
+
+                        @if($historyEntries->count() > 0)
                         <h6 class="mt-4 mb-3">
                             <span class="material-icons-outlined" style="font-size:20px;vertical-align:middle;color:#4f46e5;">history</span>
                             <span style="vertical-align: middle;font-weight:600;">Approval Timeline</span>
@@ -149,11 +167,15 @@
                         
                         <!-- Professional Timeline -->
                         <div class="approval-timeline">
-                            @foreach($workflow->history->sortBy('created_at') as $index => $history)
+                            @foreach($historyEntries as $index => $history)
                             @php
-                                $isApproved = $history->action == 'approved';
-                                $isRejected = $history->action == 'rejected';
-                                $isDraft = $history->new_status == 'draft' || ($history->action == 'submitted' && $history->new_status == 'draft');
+                                $action = isset($history->action) ? $history->action : null;
+                                $newStatus = isset($history->new_status) ? $history->new_status : null;
+                                
+                                $isApproved = $action == 'approved';
+                                $isRejected = $action == 'rejected';
+                                // Check for draft status: either new_status is 'draft' OR action is 'submitted' with draft status
+                                $isDraft = ($newStatus == 'draft') || ($action == 'submitted' && $newStatus == 'draft') || ($workflow->status == 'draft' && $action == 'submitted');
                                 $isPending = !$isApproved && !$isRejected && !$isDraft;
                                 
                                 // Set colors and icons based on status
@@ -175,8 +197,8 @@
                                     $icon = 'pending';
                                 }
                                 
-                                $prevStatus = $history->previous_status ? ucwords(str_replace('_', ' ', $history->previous_status)) : null;
-                                $newStatus = $history->new_status ? ucwords(str_replace('_', ' ', $history->new_status)) : null;
+                                $prevStatus = isset($history->previous_status) && $history->previous_status ? ucwords(str_replace('_', ' ', $history->previous_status)) : null;
+                                $newStatusFormatted = isset($history->new_status) && $history->new_status ? ucwords(str_replace('_', ' ', $history->new_status)) : null;
                             @endphp
                             
                             <div class="timeline-item" style="position:relative;padding-left:50px;padding-bottom:30px;">
@@ -192,29 +214,29 @@
                                     <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
                                         <div>
                                             <span class="badge" style="background:{{ $iconColor }};color:white;font-size:13px;padding:4px 10px;border-radius:4px;">
-                                                {{ ucfirst($history->action) }}
+                                                {{ ucfirst(isset($history->action) ? $history->action : 'submitted') }}
                                             </span>
-                                            @if($prevStatus && $newStatus && $prevStatus != $newStatus)
+                                            @if($prevStatus && $newStatusFormatted && $prevStatus != $newStatusFormatted)
                                             <span style="font-size:12px;color:#6b7280;margin-left:8px;">
-                                                <strong>{{ $prevStatus }}</strong> → <strong>{{ $newStatus }}</strong>
+                                                <strong>{{ $prevStatus }}</strong> → <strong>{{ $newStatusFormatted }}</strong>
                                             </span>
-                                            @elseif($newStatus && !$prevStatus)
+                                            @elseif($newStatusFormatted && !$prevStatus)
                                             <span style="font-size:12px;color:#6b7280;margin-left:8px;">
-                                                <strong>{{ $newStatus }}</strong>
+                                                <strong>{{ $newStatusFormatted }}</strong>
                                             </span>
                                             @endif
                                         </div>
                                         <span style="font-size:12px;color:#6b7280;white-space:nowrap;">
                                             <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">schedule</span>
-                                            {{ $history->created_at->format('M d, Y H:i') }}
+                                            {{ is_object($history->created_at) ? $history->created_at->format('M d, Y H:i') : ($workflow->created_at->format('M d, Y H:i') ?? 'N/A') }}
                                         </span>
                                     </div>
                                     
                                     <div style="margin-top:10px;">
                                         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                                             <span class="material-icons-outlined" style="font-size:18px;color:#4f46e5;">person</span>
-                                            <strong style="color:#111827;">{{ $history->performer->name ?? 'N/A' }}</strong>
-                                            @if($history->performer && $history->performer->roles->count() > 0)
+                                            <strong style="color:#111827;">{{ isset($history->performer) && is_object($history->performer) ? ($history->performer->name ?? 'N/A') : ($history->performer ?? 'N/A') }}</strong>
+                                            @if(isset($history->performer) && is_object($history->performer) && $history->performer->roles && $history->performer->roles->count() > 0)
                                                 @php
                                                     $roleNames = $history->performer->roles->pluck('name')->filter()->join(', ');
                                                 @endphp
@@ -226,7 +248,7 @@
                                             @endif
                                         </div>
                                         
-                                        @if($history->comments)
+                                        @if(isset($history->comments) && $history->comments)
                                         <div style="margin-top:8px;padding:10px;background:#f9fafb;border-left:3px solid {{ $iconColor }};border-radius:4px;">
                                             <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">Comments</div>
                                             <div style="color:#374151;font-size:14px;">{{ $history->comments }}</div>
