@@ -187,7 +187,7 @@
 
             {{-- Intro Lines --}}
             @foreach ($introLines as $line)
-                <p>{{ $line }}</p>
+                <p>{!! $line !!}</p>
             @endforeach
 
             {{-- Action Button --}}
@@ -199,7 +199,7 @@
 
             {{-- Outro Lines --}}
             @foreach ($outroLines as $line)
-                <p>{{ $line }}</p>
+                <p>{!! $line !!}</p>
             @endforeach
 
             {{-- Salutation --}}
