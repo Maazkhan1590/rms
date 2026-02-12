@@ -30,7 +30,8 @@ class RtnSubmissionController extends Controller
     {
         abort_if(Gate::denies('rtn_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = RtnSubmission::with(['user', 'workflow']);
+        // Start with a basic query - we'll eager load relationships after filtering
+        $query = RtnSubmission::query();
 
         // If current user is Faculty (non-admin), always show only their own RTN submissions
         $user = auth()->user();
@@ -38,26 +39,23 @@ class RtnSubmissionController extends Controller
             $query->where('user_id', $user->id);
         }
 
-        // Exclude drafts by default unless specifically requesting them
-        if ($request->has('status') && $request->status === 'draft') {
-            $query->where('status', 'draft');
-        } else {
-            $query->where('status', '!=', 'draft');
-        }
-
-        // Filter by status (workflow status)
-        if ($request->has('status') && $request->status && $request->status !== 'draft') {
+        // Filter by status
+        // Only filter if a specific status is provided
+        // If no status filter, show ALL submissions (including drafts)
+        if ($request->has('status') && $request->status !== '' && $request->status !== null) {
             $query->where('status', $request->status);
         }
+        // Removed default draft exclusion - show all submissions by default
 
         // Filter by year
         if ($request->has('year') && $request->year) {
             $query->where('year', $request->year);
         }
 
-        // Filter by RTN type
+        // Filter by RTN type (convert hyphen format to underscore format for database)
         if ($request->has('type') && $request->type) {
-            $query->where('rtn_type', $request->type);
+            $rtnType = str_replace('-', '_', $request->type);
+            $query->where('rtn_type', $rtnType);
         }
 
         // Filter by user
@@ -78,12 +76,18 @@ class RtnSubmissionController extends Controller
             });
         }
 
+        // Eager load relationships after all filters are applied
+        $query->with(['user', 'workflow']);
+        
         $submissions = $query->latest('created_at')->paginate(20);
 
         // Get filter options
-        $statuses = ['pending', 'submitted', 'approved', 'rejected', 'draft'];
+        $statuses = ['pending', 'submitted', 'approved', 'rejected', 'draft', 'pending_coordinator', 'pending_dean'];
         $years = RtnSubmission::distinct()->pluck('year')->filter()->sortDesc()->values();
-        $types = RtnSubmission::distinct()->pluck('rtn_type')->filter()->sort()->values();
+        // Convert RTN types from underscore to hyphen format for display
+        $types = RtnSubmission::distinct()->pluck('rtn_type')->filter()->map(function($type) {
+            return str_replace('_', '-', $type);
+        })->sort()->values();
         $users = User::whereHas('rtnSubmissions')->pluck('name', 'id');
 
         return view('admin.rtn-submissions.index', compact('submissions', 'statuses', 'years', 'types', 'users'));
@@ -114,7 +118,7 @@ class RtnSubmissionController extends Controller
      */
     public function show(RtnSubmission $rtnSubmission)
     {
-        abort_if(Gate::denies('rtn_submission_read'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('rtn_read'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $rtnSubmission->load(['user', 'workflow']);
 

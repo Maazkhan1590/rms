@@ -47,8 +47,12 @@
                    class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
                     <span class="material-icons-outlined">cancel</span> Rejected
                 </a>
+                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'draft'])) }}"
+                   class="btn btn-sm {{ request('status') == 'draft' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                    <span class="material-icons-outlined">edit</span> Draft
+                </a>
                 <a href="{{ route('admin.rtn-submissions.index', request()->except('status')) }}"
-                   class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                   class="btn btn-sm {{ !request('status') ? 'btn-primary' : 'btn-outline-primary' }}">
                     <span class="material-icons-outlined">list</span> All
                 </a>
             </div>
@@ -68,7 +72,7 @@
                         <option value="">All Types</option>
                         @foreach($types ?? [] as $type)
                             <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
-                                {{ strtoupper($type) }}
+                                {{ strtoupper(str_replace('_', '-', $type)) }}
                             </option>
                         @endforeach
                     </select>
@@ -131,7 +135,7 @@
                             </td>
                             <td>
                                 <span class="badge badge-info">
-                                    {{ strtoupper($submission->rtn_type ?? 'N/A') }}
+                                    {{ strtoupper(str_replace('_', '-', $submission->rtn_type ?? 'N/A')) }}
                                 </span>
                             </td>
                             <td>
@@ -161,14 +165,18 @@
                             <td>
                                 @if($submission->status == 'approved')
                                     <span class="badge badge-success">Approved</span>
-                                @elseif($submission->status == 'pending')
-                                    <span class="badge badge-warning">Pending</span>
+                                @elseif($submission->status == 'pending' || $submission->status == 'pending_coordinator')
+                                    <span class="badge badge-warning">Pending Coordinator</span>
+                                @elseif($submission->status == 'pending_dean')
+                                    <span class="badge badge-info">Pending Dean</span>
                                 @elseif($submission->status == 'rejected')
                                     <span class="badge badge-danger">Rejected</span>
                                 @elseif($submission->status == 'submitted')
                                     <span class="badge badge-info">Submitted</span>
+                                @elseif($submission->status == 'draft')
+                                    <span class="badge badge-secondary">Draft</span>
                                 @else
-                                    <span class="badge badge-secondary">{{ ucfirst($submission->status) }}</span>
+                                    <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $submission->status)) }}</span>
                                 @endif
                             </td>
                             <td>
@@ -252,7 +260,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center">
+                            <td colspan="12" class="text-center">
                                 <p style="padding: 2rem; color: #6c757d;">No RTN submissions found.</p>
                             </td>
                         </tr>
