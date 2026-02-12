@@ -117,11 +117,12 @@
             <p class="section-subtitle" style="font-size: 0.95rem; color: #6b7280;">Our impact in the global research community</p>
         </div>
         @php
-            // Count ACTIVE RESEARCHERS only - faculty members who have at least one research contribution
+            // Count ACTIVE RESEARCHERS only - approved/active faculty members with research contributions
             try {
                 $facultyCount = \App\Models\User::whereHas('roles', function($q) { 
                     $q->where('title', 'Faculty'); 
                 })
+                ->where('status', 'active') // Only count approved/active faculty
                 ->where(function($query) {
                     // Has publications (as submitter or primary author)
                     $query->whereHas('publications')
@@ -140,6 +141,7 @@
                     ->join('role_user', 'users.id', '=', 'role_user.user_id')
                     ->join('roles', 'role_user.role_id', '=', 'roles.id')
                     ->where('roles.title', 'Faculty')
+                    ->where('users.status', 'active') // Only count approved/active faculty
                     ->where(function($query) {
                         $query->whereExists(function($subquery) {
                             $subquery->select(\DB::raw(1))

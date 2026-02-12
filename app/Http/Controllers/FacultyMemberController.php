@@ -18,9 +18,18 @@ class FacultyMemberController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all faculty users (not just those with publications)
+        // Get approved/active faculty users with research contributions (matching "Active Researchers" on homepage)
         $query = User::whereHas('roles', function($q) {
             $q->where('title', 'Faculty');
+        })
+        ->where('status', 'active') // Only show approved/active faculty
+        ->where(function($q) {
+            // Only show faculty who have at least one research contribution
+            $q->whereHas('publications')
+              ->orWhereHas('primaryAuthorPublications')
+              ->orWhereHas('grants')
+              ->orWhereHas('rtnSubmissions')
+              ->orWhereHas('bonusRecognitions');
         });
 
         // Search
@@ -63,6 +72,7 @@ class FacultyMemberController extends Controller
             ->whereHas('roles', function($q) {
                 $q->where('title', 'Faculty');
             })
+            ->where('status', 'active') // Only show approved/active faculty
             ->findOrFail($id);
 
         // Publications for this faculty member
@@ -114,6 +124,7 @@ class FacultyMemberController extends Controller
             ->whereHas('roles', function($q) {
                 $q->where('title', 'Faculty');
             })
+            ->where('status', 'active') // Only show approved/active faculty CVs
             ->findOrFail($id);
 
         // Get all publications for this faculty member
@@ -236,6 +247,7 @@ class FacultyMemberController extends Controller
             ->whereHas('roles', function($q) {
                 $q->where('title', 'Faculty');
             })
+            ->where('status', 'active') // Only allow download for approved/active faculty CVs
             ->findOrFail($id);
 
         // Get all publications for this faculty member
