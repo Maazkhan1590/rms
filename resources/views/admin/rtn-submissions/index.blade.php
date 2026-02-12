@@ -238,7 +238,7 @@
                                     @if($canShowActions)
                                         <form action="{{ route('admin.rtn-submissions.approve', $submission->id) }}" method="POST" style="display: inline;" class="rtn-approve-form">
                                             @csrf
-                                            <button type="button" class="btn btn-sm btn-outline-success btn-approve-rtn" title="Approve" aria-label="Approve" data-title="{{ $submission->title }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
                                                 <span class="material-icons-outlined">check_circle</span>
                                             </button>
                                         </form>
