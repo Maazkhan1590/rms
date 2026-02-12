@@ -30,8 +30,20 @@ class RtnSubmissionController extends Controller
     {
         abort_if(Gate::denies('rtn_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        // Start with a basic query - we'll eager load relationships after filtering
-        $query = RtnSubmission::query();
+        // If AJAX request for DataTables
+        if ($request->ajax()) {
+            return $this->getDataTableData($request);
+        }
+
+        return view('admin.rtn-submissions.index');
+    }
+
+    /**
+     * Get DataTables data
+     */
+    private function getDataTableData(Request $request)
+    {
+        $query = RtnSubmission::with(['user', 'workflow']);
 
         // If current user is Faculty (non-admin), always show only their own RTN submissions
         $user = auth()->user();
@@ -39,33 +51,12 @@ class RtnSubmissionController extends Controller
             $query->where('user_id', $user->id);
         }
 
-        // Filter by status
-        // Only filter if a specific status is provided
-        // If no status filter, show ALL submissions (including drafts)
-        if ($request->has('status') && $request->status !== '' && $request->status !== null) {
-            $query->where('status', $request->status);
-        }
-        // Removed default draft exclusion - show all submissions by default
+        // Exclude drafts by default
+        $query->where('status', '!=', 'draft');
 
-        // Filter by year
-        if ($request->has('year') && $request->year) {
-            $query->where('year', $request->year);
-        }
-
-        // Filter by RTN type (convert hyphen format to underscore format for database)
-        if ($request->has('type') && $request->type) {
-            $rtnType = str_replace('-', '_', $request->type);
-            $query->where('rtn_type', $rtnType);
-        }
-
-        // Filter by user
-        if ($request->has('user_id') && $request->user_id) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        // Search
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
+        // Global search
+        if ($request->has('search') && $request->search['value']) {
+            $search = $request->search['value'];
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%")
@@ -76,21 +67,125 @@ class RtnSubmissionController extends Controller
             });
         }
 
-        // Eager load relationships after all filters are applied
-        $query->with(['user', 'workflow']);
+        // Get total count before pagination
+        $totalRecords = $query->count();
+
+        // Ordering
+        $orderColumn = $request->input('order.0.column', 0);
+        $orderDir = $request->input('order.0.dir', 'desc');
         
-        $submissions = $query->latest('created_at')->paginate(20);
+        $columns = ['id', 'title', 'rtn_type', 'user_id', 'evidence_link', 'total_rtn', 'year', 'status', 'workflow.status', 'points_allocated', 'submitted_at'];
+        $orderBy = $columns[$orderColumn] ?? 'id';
+        
+        if ($orderBy === 'user_id') {
+            $query->leftJoin('users', 'rtn_submissions.user_id', '=', 'users.id')
+                  ->orderBy('users.name', $orderDir)
+                  ->select('rtn_submissions.*');
+        } elseif ($orderBy === 'workflow.status') {
+            $query->leftJoin('approval_workflows', function($join) {
+                $join->on('rtn_submissions.id', '=', 'approval_workflows.submission_id')
+                     ->where('approval_workflows.submission_type', '=', 'rtn');
+            })
+            ->orderBy('approval_workflows.status', $orderDir)
+            ->select('rtn_submissions.*');
+        } else {
+            $query->orderBy($orderBy, $orderDir);
+        }
 
-        // Get filter options
-        $statuses = ['pending', 'submitted', 'approved', 'rejected', 'draft', 'pending_coordinator', 'pending_dean'];
-        $years = RtnSubmission::distinct()->pluck('year')->filter()->sortDesc()->values();
-        // Convert RTN types from underscore to hyphen format for display
-        $types = RtnSubmission::distinct()->pluck('rtn_type')->filter()->map(function($type) {
-            return str_replace('_', '-', $type);
-        })->sort()->values();
-        $users = User::whereHas('rtnSubmissions')->pluck('name', 'id');
+        // Pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 15);
+        $submissions = $query->skip($start)->take($length)->get();
 
-        return view('admin.rtn-submissions.index', compact('submissions', 'statuses', 'years', 'types', 'users'));
+        // Reload relationships if they were lost due to joins
+        $submissions->load(['user', 'workflow']);
+
+        // Format data for DataTables
+        $data = $submissions->map(function($submission) use ($user) {
+            $workflow = $submission->workflow ?? \App\Models\ApprovalWorkflow::where('submission_type', 'rtn')
+                ->where('submission_id', $submission->id)
+                ->first();
+            
+            $workflowBadge = '<span class="badge badge-secondary">No Workflow</span>';
+            
+            if ($workflow) {
+                if ($workflow->status == 'pending_coordinator') {
+                    $workflowBadge = '<span class="badge badge-warning"><i class="fas fa-user-tie"></i> Coordinator</span>';
+                } elseif ($workflow->status == 'pending_dean') {
+                    $workflowBadge = '<span class="badge badge-info"><i class="fas fa-user-graduate"></i> Dean</span>';
+                } elseif ($workflow->status == 'approved') {
+                    $workflowBadge = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Complete</span>';
+                } elseif ($workflow->status == 'rejected') {
+                    $workflowBadge = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>';
+                } else {
+                    $workflowBadge = '<span class="badge badge-secondary">' . ucfirst(str_replace('_', ' ', $workflow->status)) . '</span>';
+                }
+            }
+
+            // Status badge
+            $statusBadge = match($submission->status) {
+                'approved' => '<span class="badge badge-success">Approved</span>',
+                'pending', 'pending_coordinator' => '<span class="badge badge-warning">Pending Coordinator</span>',
+                'pending_dean' => '<span class="badge badge-info">Pending Dean</span>',
+                'rejected' => '<span class="badge badge-danger">Rejected</span>',
+                'submitted' => '<span class="badge badge-info">Submitted</span>',
+                'draft' => '<span class="badge badge-secondary">Draft</span>',
+                default => '<span class="badge badge-secondary">' . ucfirst(str_replace('_', ' ', $submission->status)) . '</span>'
+            };
+
+            $actions = '<div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">';
+            $actions .= '<a class="btn btn-sm btn-outline-primary" href="' . route('admin.rtn-submissions.show', $submission->id) . '" title="View" aria-label="View"><span class="material-icons-outlined">visibility</span></a>';
+
+            // Check if user can approve this workflow step
+            $canApprove = false;
+            if ($workflow) {
+                if ($workflow->assigned_to == $user->id) {
+                    $canApprove = true;
+                } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                    $canApprove = true;
+                } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                    $canApprove = true;
+                }
+            }
+            
+            $canShowActions = !in_array($submission->status, ['approved', 'rejected']) 
+                              && $workflow && $workflow->status !== 'approved' 
+                              && $workflow->status !== 'rejected'
+                              && in_array($submission->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])
+                              && $canApprove;
+            
+            if ($canShowActions) {
+                $actions .= '<form action="' . route('admin.rtn-submissions.approve', $submission->id) . '" method="POST" style="display: inline;" class="approve-rtn-form">';
+                $actions .= csrf_field();
+                $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve"><span class="material-icons-outlined">check_circle</span></button>';
+                $actions .= '</form>';
+                $actions .= '<button type="button" class="btn btn-sm btn-outline-danger btn-reject-rtn" title="Reject" aria-label="Reject" data-rtn-id="' . $submission->id . '"><span class="material-icons-outlined">cancel</span></button>';
+            }
+            
+            $actions .= '</div>';
+
+            return [
+                'id' => $submission->id,
+                'title' => '<strong>' . \Str::limit($submission->title, 50) . '</strong>',
+                'rtn_type' => '<span class="badge badge-info">' . strtoupper(str_replace('_', '-', $submission->rtn_type ?? 'N/A')) . '</span>',
+                'user_name' => $submission->user ? $submission->user->name : 'N/A',
+                'evidence_link' => $submission->evidence_link ? '<a href="' . $submission->evidence_link . '" target="_blank" class="text-primary"><i class="fas fa-link"></i> View</a>' : '<span class="text-muted">-</span>',
+                'total_rtn' => $submission->total_rtn ? '<span class="badge badge-info">' . $submission->total_rtn . '</span>' : '<span class="text-muted">-</span>',
+                'year' => $submission->year ?? 'N/A',
+                'status' => $statusBadge,
+                'workflow_status' => $workflowBadge,
+                'points_allocated' => $submission->points_allocated ? '<strong style="color: var(--primary);">' . number_format($submission->points_allocated, 2) . '</strong>' : '<span class="text-muted">-</span>',
+                'submitted_at' => $submission->submitted_at ? $submission->submitted_at->format('M d, Y') : 'N/A',
+                'actions' => $actions
+            ];
+        });
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $data
+        ]);
     }
 
     /**
