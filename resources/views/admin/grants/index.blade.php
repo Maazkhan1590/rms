@@ -95,6 +95,7 @@ $(document).ready(function() {
              "<'row'<'col-sm-12'tr>>" +
              "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         select: false,
+        responsive: false,
         columnDefs: [
             { targets: 0, orderable: true, searchable: true, className: '' }
         ]
