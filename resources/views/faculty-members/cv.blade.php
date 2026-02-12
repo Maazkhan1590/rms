@@ -5,15 +5,12 @@
     <title>{{ $user->name }} - Curriculum Vitae</title>
     <style>
         @page {
-            margin: 2.5cm 2cm;
-            @bottom-center {
-                content: "Page " counter(page) " of " counter(pages);
-            }
+            margin: 1.2cm 1.8cm;
         }
         body {
             font-family: 'DejaVu Sans', 'Arial', sans-serif;
-            font-size: 10.5pt;
-            line-height: 1.5;
+            font-size: 10pt;
+            line-height: 1.35;
             color: #1a1a1a;
             margin: 0;
             padding: 0;
@@ -23,73 +20,73 @@
         .cv-header {
             background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: white;
-            padding: 30px 25px;
-            margin: -2.5cm -2cm 25px -2cm;
+            padding: 18px 18px;
+            margin: -1.2cm -1.8cm 0 -1.8cm;
             text-align: center;
         }
         .cv-name {
-            font-size: 28pt;
+            font-size: 24pt;
             font-weight: bold;
-            margin: 0 0 8px 0;
+            margin: 0 0 4px 0;
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
         .cv-title {
-            font-size: 13pt;
-            margin: 0 0 15px 0;
+            font-size: 11pt;
+            margin: 0 0 6px 0;
             opacity: 0.95;
             font-weight: normal;
         }
         .cv-institution {
-            font-size: 11pt;
-            margin: 5px 0;
+            font-size: 9.5pt;
+            margin: 2px 0;
             opacity: 0.9;
         }
         .cv-contact {
-            margin-top: 15px;
-            padding-top: 15px;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1px solid rgba(255,255,255,0.3);
-            font-size: 9.5pt;
+            font-size: 9pt;
         }
         .cv-contact-item {
             display: inline-block;
-            margin: 0 15px;
+            margin: 0 10px;
             opacity: 0.95;
         }
         .cv-links {
-            margin-top: 10px;
-            font-size: 9pt;
+            margin-top: 6px;
+            font-size: 8.5pt;
         }
         .cv-links a {
             color: white;
             text-decoration: none;
-            margin: 0 12px;
+            margin: 0 8px;
             opacity: 0.9;
             border-bottom: 1px solid rgba(255,255,255,0.5);
         }
         
         /* Section Headers */
         h2 {
-            font-size: 15pt;
+            font-size: 12pt;
             font-weight: bold;
             color: #1e3a8a;
-            margin: 25px 0 15px 0;
-            padding-bottom: 8px;
-            border-bottom: 3px solid #2563eb;
+            margin: 16px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #2563eb;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
         h2:first-of-type {
-            margin-top: 0;
+            margin-top: 14px;
         }
         
         /* Research Metrics Box */
         .metrics-box {
             background: #f8fafc;
             border: 2px solid #2563eb;
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin: 15px 0 20px 0;
+            border-radius: 5px;
+            padding: 10px 14px;
+            margin: 8px 0 12px 0;
         }
         .metrics-grid {
             display: table;
@@ -100,9 +97,9 @@
         }
         .metrics-cell {
             display: table-cell;
-            padding: 8px 15px;
+            padding: 5px 10px;
             width: 50%;
-            font-size: 10pt;
+            font-size: 9pt;
         }
         .metrics-label {
             font-weight: bold;
@@ -110,69 +107,69 @@
         }
         .metrics-value {
             color: #334155;
-            font-size: 11pt;
+            font-size: 9.5pt;
             font-weight: 600;
         }
         
         /* Publication Items */
         .section {
-            margin-bottom: 25px;
+            margin-bottom: 16px;
         }
         .cv-item {
-            margin-bottom: 18px;
+            margin-bottom: 12px;
             page-break-inside: avoid;
-            padding-left: 25px;
+            padding-left: 20px;
             position: relative;
         }
         .cv-item-number {
             position: absolute;
             left: 0;
-            top: 2px;
+            top: 0px;
             font-weight: bold;
             color: #2563eb;
-            font-size: 10pt;
+            font-size: 9pt;
         }
         .cv-item-title {
             font-weight: bold;
             color: #1a1a1a;
-            font-size: 10.5pt;
-            margin-bottom: 5px;
-            line-height: 1.4;
+            font-size: 9.5pt;
+            margin-bottom: 3px;
+            line-height: 1.25;
         }
         .cv-item-meta {
-            font-size: 9.5pt;
+            font-size: 8.5pt;
             color: #475569;
-            margin-bottom: 6px;
-            line-height: 1.4;
+            margin-bottom: 4px;
+            line-height: 1.25;
         }
         .cv-item-meta strong {
             color: #1e3a8a;
             font-weight: 600;
         }
         .cv-item-description {
-            font-size: 9.5pt;
+            font-size: 8.5pt;
             color: #475569;
-            line-height: 1.4;
-            margin-top: 5px;
+            line-height: 1.25;
+            margin-top: 3px;
             font-style: italic;
         }
         .cv-item-doi {
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             color: #2563eb;
-            margin-top: 5px;
+            margin-top: 3px;
             font-family: monospace;
         }
         
         /* Status Badges */
         .status-badge {
             display: inline-block;
-            padding: 3px 10px;
-            font-size: 8pt;
+            padding: 2px 6px;
+            font-size: 7pt;
             font-weight: bold;
-            border-radius: 4px;
+            border-radius: 3px;
             color: white;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
         .status-approved {
             background-color: #059669;
@@ -186,18 +183,18 @@
         
         /* Summary Counters */
         .summary-count {
-            font-size: 12pt;
+            font-size: 10pt;
             color: #2563eb;
             font-weight: bold;
         }
         
         /* Footer */
         .cv-footer {
-            margin-top: 40px;
-            padding-top: 15px;
+            margin-top: 24px;
+            padding-top: 10px;
             border-top: 2px solid #e2e8f0;
             text-align: center;
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             color: #64748b;
         }
         .cv-footer-date {
@@ -208,30 +205,36 @@
         /* Empty State */
         .no-items {
             text-align: center;
-            padding: 20px;
+            padding: 12px;
             color: #64748b;
             font-style: italic;
             background: #f8fafc;
-            border-radius: 6px;
+            border-radius: 5px;
+            font-size: 9pt;
         }
         
         /* Professional Info Table */
         .info-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 8px 0;
+            background: white;
         }
         .info-table tr {
             border-bottom: 1px solid #e2e8f0;
         }
+        .info-table tr:last-child {
+            border-bottom: none;
+        }
         .info-table td {
-            padding: 10px 15px;
-            font-size: 10pt;
+            padding: 6px 10px;
+            font-size: 9pt;
+            vertical-align: top;
         }
         .info-table td:first-child {
-            font-weight: bold;
+            font-weight: 600;
             color: #1e3a8a;
-            width: 35%;
+            width: 28%;
         }
         .info-table td:last-child {
             color: #334155;
