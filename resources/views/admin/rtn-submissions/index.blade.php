@@ -47,13 +47,9 @@
                    class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
                     <span class="material-icons-outlined">cancel</span> Rejected
                 </a>
-                <a href="{{ route('admin.rtn-submissions.index', array_merge(request()->except('status'), ['status' => 'draft'])) }}"
-                   class="btn btn-sm {{ request('status') == 'draft' ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <span class="material-icons-outlined">drafts</span> Drafts
-                </a>
                 <a href="{{ route('admin.rtn-submissions.index', request()->except('status')) }}"
-                   class="btn btn-sm {{ !request('status') ? 'btn-dark' : 'btn-outline-dark' }}">
-                    <span class="material-icons-outlined">list</span> All (No Drafts)
+                   class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                    <span class="material-icons-outlined">list</span> All
                 </a>
             </div>
         </div>

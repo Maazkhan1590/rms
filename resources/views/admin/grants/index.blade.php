@@ -47,13 +47,9 @@
                    class="btn btn-sm {{ request('grant_status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
                     <span class="material-icons-outlined">cancel</span> Rejected
                 </a>
-                <a href="{{ route('admin.grants.index', array_merge(request()->except('grant_status'), ['grant_status' => 'draft'])) }}"
-                   class="btn btn-sm {{ request('grant_status') == 'draft' ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <span class="material-icons-outlined">drafts</span> Drafts
-                </a>
                 <a href="{{ route('admin.grants.index', request()->except('grant_status')) }}"
-                   class="btn btn-sm {{ !request('grant_status') ? 'btn-dark' : 'btn-outline-dark' }}">
-                    <span class="material-icons-outlined">list</span> All (No Drafts)
+                   class="btn btn-sm {{ !request('grant_status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                    <span class="material-icons-outlined">list</span> All
                 </a>
             </div>
         </div>
