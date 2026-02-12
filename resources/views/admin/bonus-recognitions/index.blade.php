@@ -214,7 +214,7 @@
                                     <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.bonus-recognitions.show', $recognition->id) }}" title="View" aria-label="View">
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
-                                    @if(in_array($recognition->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean']))
+                                    @if(in_array($recognition->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
                                         <form action="{{ route('admin.bonus-recognitions.approve', $recognition->id) }}" method="POST" style="display: inline;" class="approve-bonus-form">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">

@@ -221,7 +221,7 @@
                                     <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.rtn-submissions.show', $submission->id) }}" title="View" aria-label="View">
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
-                                    @if(in_array($submission->status, ['pending', 'submitted', 'draft', 'pending_coordinator', 'pending_dean']))
+                                    @if(in_array($submission->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']))
                                         <form action="{{ route('admin.rtn-submissions.approve', $submission->id) }}" method="POST" style="display: inline;" class="rtn-approve-form">
                                             @csrf
                                             <button type="button" class="btn btn-sm btn-outline-success btn-approve-rtn" title="Approve" aria-label="Approve" data-title="{{ $submission->title }}">

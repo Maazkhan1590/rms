@@ -192,8 +192,6 @@
                                     <span class="badge badge-danger">Rejected</span>
                                 @elseif($grant->grant_status == 'submitted')
                                     <span class="badge badge-info">Submitted</span>
-                                @elseif($grant->grant_status == 'draft')
-                                    <span class="badge badge-secondary">Draft</span>
                                 @else
                                     <span class="badge badge-secondary">{{ ucfirst($grant->grant_status) }}</span>
                                 @endif
