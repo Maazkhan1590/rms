@@ -1,6 +1,22 @@
 @extends('layouts.admin')
 
 @section('content')
+@push('styles')
+<style>
+    .card-body .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .card-body .table-responsive table {
+        width: 100%;
+        margin: 0;
+        table-layout: auto;
+    }
+</style>
+@endpush
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle"></i> {{ session('success') }}
@@ -108,8 +124,8 @@
             </div>
         </form>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover" style="min-width: 1200px;">
+        <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table class="table table-bordered table-striped table-hover">
                 <thead>
                     <tr>
                         <th>ID</th>

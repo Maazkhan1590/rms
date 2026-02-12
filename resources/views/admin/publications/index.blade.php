@@ -1,12 +1,36 @@
 @extends('layouts.admin')
 
 @section('content')
+@push('styles')
 <style>
     table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before, table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control::before {
         background-color: #0056b300 !important;
         box-shadow: none !important;
     }
+    
+    .card-body .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #publications-table {
+        width: 100%;
+        margin: 0;
+        table-layout: auto;
+    }
+    
+    .dataTables_wrapper {
+        width: 100%;
+        overflow-x: visible;
+    }
+    
+    .dataTables_wrapper .dataTables_scrollBody {
+        overflow-x: visible !important;
+    }
 </style>
+@endpush
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle"></i> {{ session('success') }}
@@ -56,8 +80,8 @@
     </div>
 
     <div class="card-body">
-        <div class="table-responsive">
-            <table id="publications-table" class="table table-bordered table-striped table-hover" style="width:100%; min-width: 1400px;">
+        <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table id="publications-table" class="table table-bordered table-striped table-hover" style="width:100%;">
                 <thead>
                     <tr>
                         <th>Sr No</th>
@@ -248,8 +272,8 @@
                     previous: "Previous"
                 }
             },
-            responsive: true,
-            scrollX: true,
+            responsive: false,
+            autoWidth: false,
             select: false,
             columnDefs: [
                 {
