@@ -44,8 +44,8 @@ class FacultyMemberController extends Controller
                 'bonusRecognitions'  // Count all recognitions, not just approved
             ])
             ->selectRaw('users.*, (
-                SELECT COUNT(DISTINCT id) 
-                FROM publications 
+                SELECT COUNT(DISTINCT id)
+                FROM publications
                 WHERE (submitted_by = users.id OR primary_author_id = users.id)
             ) as unique_publications_count')
             ->orderBy('name')
@@ -174,8 +174,45 @@ class FacultyMemberController extends Controller
         ]);
 
         // Set footer with page numbering and generation date
-        $generatedDate = date('F d, Y');
-        $mpdf->SetFooter("Faculty CV Template • Generated on {$generatedDate} • Research Management System\n{PAGENO} of {nb}");
+        $generatedDate = date('F d, Y h:i A');
+
+        $footerHtml = '
+<div style="
+    border-top: 1px solid #cccccc;
+    padding-top: 6px;
+    margin: 0;
+    line-height: 1.2;
+">
+    <table width="100%" style="
+        font-size:8.5pt;
+        color:#777777;
+        border-collapse: collapse;
+        padding: 0;
+        margin: 0;
+    ">
+        <tr>
+            <td align="left" style="
+                font-style: italic;
+                border: none;
+                padding: 0;
+                margin: 0;
+            ">
+                Generated on ' . $generatedDate . '
+            </td>
+            <td align="right" style="
+                border: none;
+                padding: 0;
+                margin: 0;
+            ">
+                {PAGENO} of {nb}
+            </td>
+        </tr>
+    </table>
+</div>
+';
+
+        $mpdf->SetHTMLFooter($footerHtml);
+
 
         // Write HTML to PDF
         $mpdf->WriteHTML($html);
@@ -259,9 +296,45 @@ class FacultyMemberController extends Controller
         ]);
 
         // Set footer with page numbering and generation date
-        $generatedDate = date('F d, Y');
-        $mpdf->SetFooter("Faculty CV Template • Generated on {$generatedDate} • Research Management System\n{PAGENO} of {nb}");
+        // Set footer with page numbering and generation date
+        $generatedDate = date('F d, Y h:i A');
 
+        $footerHtml = '
+<div style="
+    border-top: 1px solid #cccccc;
+    padding-top: 6px;
+    margin: 0;
+    line-height: 1.2;
+">
+    <table width="100%" style="
+        font-size:8.5pt;
+        color:#777777;
+        border-collapse: collapse;
+        padding: 0;
+        margin: 0;
+    ">
+        <tr>
+            <td align="left" style="
+                font-style: italic;
+                border: none;
+                padding: 0;
+                margin: 0;
+            ">
+                Generated on ' . $generatedDate . '
+            </td>
+            <td align="right" style="
+                border: none;
+                padding: 0;
+                margin: 0;
+            ">
+                {PAGENO} of {nb}
+            </td>
+        </tr>
+    </table>
+</div>
+';
+
+        $mpdf->SetHTMLFooter($footerHtml);
         // Write HTML to PDF
         $mpdf->WriteHTML($html);
 
