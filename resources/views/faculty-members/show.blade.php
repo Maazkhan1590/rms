@@ -143,14 +143,25 @@
                 </div>
             </div>
             <div style="text-align:right; font-size:.8rem; color:#9ca3af;">
-                <a href="{{ route('faculty-members.cv', $user->id) }}" 
-                   class="btn btn-primary" 
-                   style="display: inline-flex; align-items: center; gap: .5rem; padding: .65rem 1.25rem; background: #2c5aa0; color: white; text-decoration: none; border-radius: 8px; font-size: .9rem; font-weight: 600; margin-bottom: .75rem; transition: background .2s ease;"
-                   onmouseover="this.style.background='#1e3a8a'"
-                   onmouseout="this.style.background='#2c5aa0'">
-                    <i class="fas fa-download"></i>
-                    <span>Download CV (PDF)</span>
-                </a>
+                <div style="display: flex; flex-direction: column; gap: .5rem; align-items: flex-end; margin-bottom: .75rem;">
+                    <a href="{{ route('faculty-members.cv.view', $user->id) }}" 
+                       target="_blank"
+                       class="btn btn-view-cv" 
+                       style="display: inline-flex; align-items: center; gap: .5rem; padding: .65rem 1.25rem; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-size: .9rem; font-weight: 600; transition: background .2s ease; min-width: 180px; justify-content: center;"
+                       onmouseover="this.style.background='#059669'"
+                       onmouseout="this.style.background='#10b981'">
+                        <i class="fas fa-eye"></i>
+                        <span>View CV (PDF)</span>
+                    </a>
+                    <a href="{{ route('faculty-members.cv.download', $user->id) }}" 
+                       class="btn btn-download-cv" 
+                       style="display: inline-flex; align-items: center; gap: .5rem; padding: .65rem 1.25rem; background: #2563eb; color: white; text-decoration: none; border-radius: 8px; font-size: .9rem; font-weight: 600; transition: background .2s ease; min-width: 180px; justify-content: center;"
+                       onmouseover="this.style.background='#1e40af'"
+                       onmouseout="this.style.background='#2563eb'">
+                        <i class="fas fa-download"></i>
+                        <span>Download CV</span>
+                    </a>
+                </div>
                 <div style="margin-bottom:.4rem; font-weight:500; color:#6b7280;">Detailed Information</div>
                 <div>Profile generated from RMS data</div>
             </div>

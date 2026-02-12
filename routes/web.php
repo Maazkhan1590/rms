@@ -46,7 +46,8 @@ Route::get('/', 'HomeController@index')->name('welcome');
 // Public Faculty Members Page
 Route::get('faculty-members', 'FacultyMemberController@index')->name('faculty-members.index');
 Route::get('faculty-members/{user}', 'FacultyMemberController@show')->name('faculty-members.show');
-Route::get('faculty-members/{user}/cv', 'FacultyMemberController@downloadCV')->name('faculty-members.cv');
+Route::get('faculty-members/{user}/cv/view', 'FacultyMemberController@viewCV')->name('faculty-members.cv.view');
+Route::get('faculty-members/{user}/cv/download', 'FacultyMemberController@downloadCV')->name('faculty-members.cv.download');
 
 // Public Publications Routes
 Route::get('publications', 'PublicationController@index')->name('publications.index');
