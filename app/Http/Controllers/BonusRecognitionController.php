@@ -236,7 +236,7 @@ class BonusRecognitionController extends Controller
      */
     public function show($id)
     {
-        $bonus = BonusRecognition::with(['user', 'workflow', 'evidenceFiles.uploader'])->findOrFail($id);
+        $bonus = BonusRecognition::with(['user', 'workflow.history.performer', 'evidenceFiles.uploader'])->findOrFail($id);
         
         // Allow public viewing for approved bonus, or if user owns it, or if admin/coordinator/dean
         if ($bonus->status !== 'approved' && auth()->check() && $bonus->user_id !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {

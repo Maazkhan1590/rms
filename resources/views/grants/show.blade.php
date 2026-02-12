@@ -504,7 +504,7 @@
             </div>
 
             <!-- Submission & Affiliation Info -->
-            @if($grant->submitter || $grant->faculty)
+            @if($grant->submitter || $grant->approver || $grant->faculty)
             <div style="margin-bottom: 2.5rem;">
                 <h2 class="section-title">
                     <i class="fas fa-info" style="color: #3b82f6; margin-right: 0.5rem;"></i>Additional Information
@@ -517,6 +517,22 @@
                         @if($grant->submitted_at)
                         <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
                             <i class="far fa-calendar"></i> {{ $grant->submitted_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($grant->approver)
+                    <div class="detail-item">
+                        @if($grant->grant_status === 'rejected' || $grant->status === 'rejected')
+                            <div class="detail-label"><i class="fas fa-user-times" style="margin-right: 0.5rem;"></i>Rejected By</div>
+                        @else
+                            <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Approved By</div>
+                        @endif
+                        <div class="detail-value">{{ $grant->approver->name }}</div>
+                        @if($grant->approved_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $grant->approved_at->format('F d, Y') }}
                         </div>
                         @endif
                     </div>

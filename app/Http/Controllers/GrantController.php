@@ -279,7 +279,7 @@ class GrantController extends Controller
      */
     public function show($id)
     {
-        $grant = Grant::with(['submitter', 'workflow'])->findOrFail($id);
+        $grant = Grant::with(['submitter', 'approver', 'workflow.history.performer'])->findOrFail($id);
         
         // Load evidence files explicitly to ensure they're loaded correctly
         $grant->load(['evidenceFiles' => function($query) {
