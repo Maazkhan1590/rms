@@ -1,41 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-<style>
-    .policies-page-container {
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh - 120px);
-        overflow: hidden;
-    }
-    
-    .policies-table-container {
-        flex: 1;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .policies-table-wrapper {
-        flex: 1;
-        overflow-y: auto;
-        overflow-x: auto;
-        max-height: 100%;
-    }
-    
-    .policies-table-wrapper table thead {
-        position: sticky;
-        top: 0;
-        background-color: #fff;
-        z-index: 10;
-        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    .policies-table-wrapper table thead th {
-        background-color: #fff;
-        border-bottom: 2px solid #dee2e6;
-    }
-</style>
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle"></i> {{ session('success') }}
@@ -54,8 +19,8 @@
     </div>
 @endif
 
-<div class="card policies-page-container">
-    <div class="card-header" style="flex-shrink: 0;">
+<div class="card">
+    <div class="card-header">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div>
                 <h3 style="margin: 0; display: inline-block;">
@@ -109,10 +74,29 @@
 
 @push('styles')
 <style>
-    .card-body .table-responsive { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    #policies-table { width: 100%; margin: 0; table-layout: auto; }
-    .dataTables_wrapper { width: 100%; overflow-x: visible; }
-    .dataTables_wrapper .dataTables_scrollBody { overflow-x: visible !important; }
+    .card-body .table-responsive { 
+        display: block; 
+        width: 100%; 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+        min-height: 200px;
+    }
+    #policies-table { 
+        width: 100% !important; 
+        margin: 0; 
+        table-layout: auto; 
+        min-width: 1200px;
+    }
+    .dataTables_wrapper { 
+        width: 100%; 
+        overflow-x: auto;
+    }
+    .dataTables_wrapper .dataTables_scrollBody { 
+        overflow-x: auto !important; 
+    }
+    .dataTables_wrapper .dataTables_scrollHead { 
+        overflow-x: auto !important; 
+    }
 </style>
 @endpush
 
