@@ -48,8 +48,11 @@ class ScoringPolicyController extends Controller
             });
         }
 
-        // Get total count before pagination
-        $totalRecords = $query->count();
+        // Get total count before filtering
+        $totalRecords = ScoringPolicy::count();
+
+        // Get filtered count after search
+        $filteredRecords = $query->count();
 
         // Ordering
         $orderColumn = $request->input('order.0.column', 0);
@@ -73,18 +76,30 @@ class ScoringPolicyController extends Controller
         // Format data for DataTables
         $data = [];
         foreach ($policies as $policy) {
+            $statusBadge = $policy->is_active 
+                ? '<span class="badge badge-success">Active</span>' 
+                : '<span class="badge badge-secondary">Inactive</span>';
+            
+            $typeBadge = '<span class="badge badge-info">' . ucfirst($policy->type) . '</span>';
+            
+            $policyVersionBadge = $policy->policyVersion 
+                ? '<span class="badge badge-info">' . $policy->policyVersion->version_number . ' (' . $policy->policyVersion->year . ')</span>' 
+                : '<span class="text-muted">Not assigned</span>';
+            
+            $rulesBadge = '<span class="badge badge-info">' . $policy->rules->count() . ' Rules</span>';
+            
             $data[] = [
                 'id' => $policy->id,
-                'name' => $policy->name,
-                'type' => ucfirst($policy->type),
+                'name' => '<strong>' . e($policy->name) . '</strong>',
+                'type' => $typeBadge,
                 'category' => $policy->category ?? '-',
                 'subcategory' => $policy->subcategory ?? '-',
-                'points' => number_format($policy->points, 2),
-                'cap' => $policy->cap ? number_format($policy->cap, 2) : 'No cap',
-                'policy_version' => $policy->policyVersion ? $policy->policyVersion->version_number . ' (' . $policy->policyVersion->year . ')' : 'Not assigned',
-                'effective_period' => $policy->effective_from->format('M Y') . ($policy->effective_to ? ' → ' . $policy->effective_to->format('M Y') : ' → Ongoing'),
-                'status' => $policy->is_active ? 'Active' : 'Inactive',
-                'rules_count' => $policy->rules->count(),
+                'points' => '<strong style="color: var(--primary);">' . number_format($policy->points, 2) . '</strong>',
+                'cap' => $policy->cap ? '<strong>' . number_format($policy->cap, 2) . '</strong>' : '<span class="text-muted">No cap</span>',
+                'policy_version' => $policyVersionBadge,
+                'effective_period' => '<small>' . $policy->effective_from->format('M Y') . ($policy->effective_to ? ' → ' . $policy->effective_to->format('M Y') : ' → Ongoing') . '</small>',
+                'status' => $statusBadge,
+                'rules_count' => $rulesBadge,
                 'actions' => view('admin.policies.partials.actions', compact('policy'))->render(),
             ];
         }
@@ -92,7 +107,7 @@ class ScoringPolicyController extends Controller
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
             'data' => $data
         ]);
     }

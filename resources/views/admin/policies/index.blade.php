@@ -72,52 +72,17 @@
         </div>
     </div>
 
-    <div class="card-body policies-table-container" style="display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0;">
+    <div class="card-body">
         <!-- Information Alert -->
-        <div class="alert alert-info" style="margin-bottom: 20px; flex-shrink: 0;">
+        <div class="alert alert-info" style="margin-bottom: 20px;">
             <h5><i class="fas fa-info-circle"></i> Scoring Policy Guidelines</h5>
             <p><strong>Policy Integrity:</strong> Approved historical data remains locked. New rules apply prospectively only.</p>
             <p><strong>Types:</strong> Publication, Grant, RTN, Bonus Recognition</p>
             <p><strong>Caps:</strong> Set maximum points per category (e.g., Journals: 120, Conferences: 15, Publications Total: 150)</p>
         </div>
 
-        <!-- Search and Filters -->
-        <form method="GET" action="{{ route('admin.policies.index') }}" style="margin-bottom: 20px; flex-shrink: 0;">
-            <div class="row">
-                <div class="col-md-3">
-                    <input type="text" name="search" class="form-control" placeholder="Search policies..." 
-                           value="{{ request('search') }}">
-                </div>
-                <div class="col-md-2">
-                    <select name="type" class="form-control">
-                        <option value="">All Types</option>
-                        @foreach($types ?? [] as $type)
-                            <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
-                                {{ ucfirst($type) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <select name="active" class="form-control">
-                        <option value="">All Status</option>
-                        <option value="1" {{ request('active') == '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ request('active') == '0' ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                    <a href="{{ route('admin.policies.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-redo"></i> Reset
-                    </a>
-                </div>
-            </div>
-        </form>
-
-        <div class="policies-table-wrapper">
-            <table class="table table-bordered table-striped table-hover" style="margin-bottom: 0;">
+        <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table id="policies-table" class="table table-bordered table-striped table-hover">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -135,102 +100,63 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($policies as $policy)
-                        <tr data-entry-id="{{ $policy->id }}">
-                            <td>{{ $policy->id }}</td>
-                            <td><strong>{{ $policy->name }}</strong></td>
-                            <td>
-                                <span class="badge badge-info">
-                                    {{ ucfirst($policy->type) }}
-                                </span>
-                            </td>
-                            <td>{{ $policy->category ?? '-' }}</td>
-                            <td>{{ $policy->subcategory ?? '-' }}</td>
-                            <td>
-                                <strong style="color: var(--primary);">{{ number_format($policy->points, 2) }}</strong>
-                            </td>
-                            <td>
-                                @if($policy->cap)
-                                    <strong>{{ number_format($policy->cap, 2) }}</strong>
-                                @else
-                                    <span class="text-muted">No cap</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($policy->policyVersion)
-                                    <span class="badge badge-info">
-                                        {{ $policy->policyVersion->version_number }} ({{ $policy->policyVersion->year }})
-                                    </span>
-                                @else
-                                    <span class="text-muted">Not assigned</span>
-                                @endif
-                            </td>
-                            <td>
-                                <small>
-                                    {{ $policy->effective_from->format('M Y') }}
-                                    @if($policy->effective_to)
-                                        → {{ $policy->effective_to->format('M Y') }}
-                                    @else
-                                        → Ongoing
-                                    @endif
-                                </small>
-                            </td>
-                            <td>
-                                @if($policy->is_active)
-                                    <span class="badge badge-success">Active</span>
-                                @else
-                                    <span class="badge badge-secondary">Inactive</span>
-                                @endif
-                            </td>
-                            <td>
-                                <span class="badge badge-info">{{ $policy->rules->count() }} Rules</span>
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
-                                    <a class="btn btn-sm btn-info" href="{{ route('admin.policies.show', $policy->id) }}" title="View" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px;">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                    @can('policy_update')
-                                    <a class="btn btn-sm btn-warning" href="{{ route('admin.policies.edit', $policy->id) }}" title="Edit" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px;">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                    @endcan
-                                    @can('policy_delete')
-                                    <form action="{{ route('admin.policies.destroy', $policy->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This cannot be undone.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete" style="padding: 4px 8px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: inline-flex; align-items: center; gap: 4px; background-color: #ef4444; color: white; border: none; cursor: pointer;">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </form>
-                                    @endcan
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="12" class="text-center">
-                                <p style="padding: 2rem; color: #6c757d;">No scoring policies found.</p>
-                                @can('policy_create')
-                                <a href="{{ route('admin.policies.create') }}" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Create First Policy
-                                </a>
-                                @endcan
-                            </td>
-                        </tr>
-                    @endforelse
+                    <!-- DataTables will populate this via AJAX -->
                 </tbody>
             </table>
         </div>
-
-        </div>
-
-        <!-- Pagination -->
-        @if($policies->hasPages())
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6; flex-shrink: 0;">
-                {{ $policies->links() }}
-            </div>
-        @endif
     </div>
 </div>
+
+@push('styles')
+<style>
+    .card-body .table-responsive { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    #policies-table { width: 100%; margin: 0; table-layout: auto; }
+    .dataTables_wrapper { width: 100%; overflow-x: visible; }
+    .dataTables_wrapper .dataTables_scrollBody { overflow-x: visible !important; }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#policies-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("admin.policies.index") }}',
+            type: 'GET'
+        },
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'name', name: 'name', orderable: true },
+            { data: 'type', name: 'type', orderable: true },
+            { data: 'category', name: 'category', orderable: true },
+            { data: 'subcategory', name: 'subcategory', orderable: true },
+            { data: 'points', name: 'points', orderable: true },
+            { data: 'cap', name: 'cap', orderable: true },
+            { data: 'policy_version', name: 'policy_version_id', orderable: true },
+            { data: 'effective_period', name: 'effective_from', orderable: true },
+            { data: 'status', name: 'is_active', orderable: true },
+            { data: 'rules_count', name: 'rules', orderable: false },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 15,
+        lengthMenu: [[10, 15, 25, 50, 100], [10, 15, 25, 50, 100]],
+        language: {
+            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>'
+        },
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+             "<'row'<'col-sm-12'tr>>" +
+             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        select: false,
+        responsive: false,
+        autoWidth: false,
+        columnDefs: [
+            { targets: 0, orderable: true, searchable: true, className: '' }
+        ]
+    });
+});
+</script>
+@endpush
 @endsection

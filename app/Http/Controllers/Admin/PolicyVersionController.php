@@ -45,8 +45,11 @@ class PolicyVersionController extends Controller
             });
         }
 
-        // Get total count before pagination
-        $totalRecords = $query->count();
+        // Get total count before filtering
+        $totalRecords = PolicyVersion::count();
+
+        // Get filtered count after search
+        $filteredRecords = $query->count();
 
         // Ordering
         $orderColumn = $request->input('order.0.column', 0);
@@ -70,13 +73,19 @@ class PolicyVersionController extends Controller
         // Format data for DataTables
         $data = [];
         foreach ($versions as $version) {
+            $statusBadge = $version->is_active 
+                ? '<span class="badge badge-success">Active</span>' 
+                : '<span class="badge badge-secondary">Inactive</span>';
+            
+            $policiesBadge = '<span class="badge badge-info">' . $version->scoringPolicies->count() . ' Policies</span>';
+            
             $data[] = [
                 'id' => $version->id,
-                'version_number' => $version->version_number,
+                'version_number' => '<strong>' . e($version->version_number) . '</strong>',
                 'year' => $version->year,
                 'description' => \Str::limit($version->description ?? 'No description', 60),
-                'status' => $version->is_active ? 'Active' : 'Inactive',
-                'policies_count' => $version->scoringPolicies->count(),
+                'status' => $statusBadge,
+                'policies_count' => $policiesBadge,
                 'created_at' => $version->created_at->format('M d, Y'),
                 'actions' => view('admin.policy-versions.partials.actions', compact('version'))->render(),
             ];
@@ -85,7 +94,7 @@ class PolicyVersionController extends Controller
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
             'data' => $data
         ]);
     }
