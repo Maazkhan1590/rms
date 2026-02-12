@@ -218,7 +218,19 @@
                         </span>
                     @endif
                     @if($bonus->status)
-                        <span class="badge-pill" style="background: {{ $bonus->status === 'approved' ? '#22c55e' : ($bonus->status === 'submitted' || $bonus->status === 'pending' ? '#eab308' : '#6b7280') }}; color: #fff;">
+                        @php
+                            $statusColors = [
+                                'approved' => ['bg' => '#22c55e', 'text' => '#fff'],
+                                'pending' => ['bg' => '#eab308', 'text' => '#fff'],
+                                'pending_coordinator' => ['bg' => '#6b7280', 'text' => '#fff'],
+                                'pending_dean' => ['bg' => '#6b7280', 'text' => '#fff'],
+                                'submitted' => ['bg' => '#3b82f6', 'text' => '#fff'],
+                                'rejected' => ['bg' => '#ef4444', 'text' => '#fff'],
+                                'draft' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                            ];
+                            $color = $statusColors[$bonus->status] ?? ['bg' => '#6b7280', 'text' => '#fff'];
+                        @endphp
+                        <span class="badge-pill" style="background: {{ $color['bg'] }}; color: {{ $color['text'] }};">
                             {{ ucfirst($bonus->status) }}
                         </span>
                     @endif

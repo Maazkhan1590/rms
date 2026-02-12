@@ -238,6 +238,15 @@
             background-color: #475569;
         }
 
+        .status-rejected {
+            background-color: #ef4444;
+            border-color: #dc2626;
+        }
+
+        .status-rejected:hover {
+            background-color: #dc2626;
+        }
+
         /* Footer */
         .cv-footer {
             margin-top: 30px;
@@ -411,7 +420,7 @@
             </td>
             <td style="font-size: 8pt;">
 
-                <span class="status-badge status-{{ $publication->status === 'approved' ? 'approved' : ($publication->status === 'submitted' ? 'submitted' : 'draft') }}">
+                <span class="status-badge status-{{ $publication->status === 'approved' ? 'approved' : ($publication->status === 'rejected' ? 'rejected' : ($publication->status === 'submitted' ? 'submitted' : 'draft')) }}">
                     {{ ucfirst($publication->status ?? 'draft') }}
                 </span>
             </td>
@@ -485,7 +494,7 @@
             <td style="text-align: center;">{{ $rtn->year ?? 'N/A' }}</td>
             <td style="text-align: right; font-weight: 600; color: #1e40af;">{{ $rtn->points ? number_format($rtn->points, 2) : 'N/A' }}</td>
             <td style="text-align: center;">
-                <span class="status-badge status-{{ $rtn->status === 'approved' ? 'approved' : ($rtn->status === 'submitted' ? 'submitted' : 'draft') }}">
+                <span class="status-badge status-{{ $rtn->status === 'approved' ? 'approved' : ($rtn->status === 'rejected' ? 'rejected' : ($rtn->status === 'submitted' ? 'submitted' : 'draft')) }}">
                     {{ ucfirst($rtn->status ?? 'draft') }}
                 </span>
             </td>
@@ -519,7 +528,7 @@
             <td>{{ $bonus->organization ?? 'N/A' }}</td>
             <td style="text-align: center;">{{ $bonus->year ?? 'N/A' }}</td>
             <td style="text-align: center;">
-                <span class="status-badge status-{{ $bonus->status === 'approved' ? 'approved' : ($bonus->status === 'submitted' ? 'submitted' : 'draft') }}">
+                <span class="status-badge status-{{ $bonus->status === 'approved' ? 'approved' : ($bonus->status === 'rejected' ? 'rejected' : ($bonus->status === 'submitted' ? 'submitted' : 'draft')) }}">
                     {{ ucfirst($bonus->status ?? 'draft') }}
                 </span>
             </td>

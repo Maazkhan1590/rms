@@ -245,7 +245,19 @@
                         {{ strtoupper(str_replace('_', ' ', $publication->publication_type ?? 'Publication')) }}
                     </span>
                     @if($publication->status)
-                        <span class="badge-pill" style="background: {{ $publication->status === 'approved' ? '#22c55e' : ($publication->status === 'submitted' || $publication->status === 'pending' ? '#eab308' : '#6b7280') }}; color: #fff;">
+                        @php
+                            $statusColors = [
+                                'approved' => ['bg' => '#22c55e', 'text' => '#fff'],
+                                'pending' => ['bg' => '#eab308', 'text' => '#fff'],
+                                'pending_coordinator' => ['bg' => '#6b7280', 'text' => '#fff'],
+                                'pending_dean' => ['bg' => '#6b7280', 'text' => '#fff'],
+                                'submitted' => ['bg' => '#3b82f6', 'text' => '#fff'],
+                                'rejected' => ['bg' => '#ef4444', 'text' => '#fff'],
+                                'draft' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                            ];
+                            $color = $statusColors[$publication->status] ?? ['bg' => '#6b7280', 'text' => '#fff'];
+                        @endphp
+                        <span class="badge-pill" style="background: {{ $color['bg'] }}; color: {{ $color['text'] }};">
                             {{ ucfirst($publication->status) }}
                         </span>
                     @endif
