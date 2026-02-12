@@ -33,6 +33,19 @@ class GrantController extends Controller
     {
         abort_if(Gate::denies('grant_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        // If AJAX request for DataTables
+        if ($request->ajax()) {
+            return $this->getDataTableData($request);
+        }
+
+        return view('admin.grants.index');
+    }
+
+    /**
+     * Get DataTables data
+     */
+    private function getDataTableData(Request $request)
+    {
         $query = Grant::with(['submitter', 'approver', 'workflow']);
 
         // If current user is Faculty (non-admin), always show only their own grants
@@ -41,41 +54,12 @@ class GrantController extends Controller
             $query->where('submitted_by', $user->id);
         }
 
-        // Exclude drafts by default unless specifically requesting them
-        if ($request->has('grant_status') && $request->grant_status === 'draft') {
-            $query->where('grant_status', 'draft');
-        } else {
-            $query->where('grant_status', '!=', 'draft');
-        }
+        // Exclude drafts by default
+        $query->where('grant_status', '!=', 'draft');
 
-        // Filter by grant status (workflow status)
-        if ($request->has('grant_status') && $request->grant_status && $request->grant_status !== 'draft') {
-            $query->where('grant_status', $request->grant_status);
-        }
-
-        // Filter by year
-        if ($request->has('year') && $request->year) {
-            $query->where('award_year', $request->year);
-        }
-
-        // Filter by grant type
-        if ($request->has('type') && $request->type) {
-            $query->where('grant_type', $request->type);
-        }
-
-        // Filter by role
-        if ($request->has('role') && $request->role) {
-            $query->where('role', $request->role);
-        }
-
-        // Filter by user
-        if ($request->has('user_id') && $request->user_id) {
-            $query->where('submitted_by', $request->user_id);
-        }
-
-        // Search
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
+        // Global search
+        if ($request->has('search') && $request->search['value']) {
+            $search = $request->search['value'];
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('summary', 'like', "%{$search}%")
@@ -88,16 +72,125 @@ class GrantController extends Controller
             });
         }
 
-        $grants = $query->latest('created_at')->paginate(20);
+        // Get total count before pagination
+        $totalRecords = $query->count();
 
-        // Get filter options
-        $statuses = ['pending', 'submitted', 'approved', 'rejected', 'draft'];
-        $years = Grant::distinct()->pluck('award_year')->filter()->sortDesc()->values();
-        $types = Grant::distinct()->pluck('grant_type')->filter()->sort()->values();
-        $roles = Grant::distinct()->pluck('role')->filter()->sort()->values();
-        $users = User::whereHas('grants')->pluck('name', 'id');
+        // Ordering
+        $orderColumn = $request->input('order.0.column', 0);
+        $orderDir = $request->input('order.0.dir', 'desc');
+        
+        $columns = ['id', 'title', 'grant_type', 'role', 'external_internal', 'sponsor_name', 'amount_omr', 'units', 'submitted_by', 'award_year', 'grant_status', 'workflow.status', 'points_allocated'];
+        $orderBy = $columns[$orderColumn] ?? 'id';
+        
+        if ($orderBy === 'submitted_by') {
+            $query->leftJoin('users', 'grants.submitted_by', '=', 'users.id')
+                  ->orderBy('users.name', $orderDir)
+                  ->select('grants.*');
+        } elseif ($orderBy === 'workflow.status') {
+            $query->leftJoin('approval_workflows', function($join) {
+                $join->on('grants.id', '=', 'approval_workflows.submission_id')
+                     ->where('approval_workflows.submission_type', '=', 'grant');
+            })
+            ->orderBy('approval_workflows.status', $orderDir)
+            ->select('grants.*');
+        } else {
+            $query->orderBy($orderBy, $orderDir);
+        }
 
-        return view('admin.grants.index', compact('grants', 'statuses', 'years', 'types', 'roles', 'users'));
+        // Pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 15);
+        $grants = $query->skip($start)->take($length)->get();
+
+        // Reload relationships if they were lost due to joins
+        $grants->load(['submitter', 'approver', 'workflow']);
+
+        // Format data for DataTables
+        $data = $grants->map(function($grant) use ($user) {
+            $workflow = $grant->workflow ?? ApprovalWorkflow::where('submission_type', 'grant')
+                ->where('submission_id', $grant->id)
+                ->first();
+            
+            $workflowBadge = '<span class="badge badge-secondary">No Workflow</span>';
+            
+            if ($workflow) {
+                if ($workflow->status == 'pending_coordinator') {
+                    $workflowBadge = '<span class="badge badge-warning"><i class="fas fa-user-tie"></i> Coordinator</span>';
+                } elseif ($workflow->status == 'pending_dean') {
+                    $workflowBadge = '<span class="badge badge-info"><i class="fas fa-user-graduate"></i> Dean</span>';
+                } elseif ($workflow->status == 'approved') {
+                    $workflowBadge = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Complete</span>';
+                } elseif ($workflow->status == 'rejected') {
+                    $workflowBadge = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>';
+                } else {
+                    $workflowBadge = '<span class="badge badge-secondary">' . ucfirst(str_replace('_', ' ', $workflow->status)) . '</span>';
+                }
+            }
+
+            // Status badge based on grant_status
+            $statusBadge = match($grant->grant_status) {
+                'approved' => '<span class="badge badge-success">Approved</span>',
+                'pending' => '<span class="badge badge-warning">Pending</span>',
+                'rejected' => '<span class="badge badge-danger">Rejected</span>',
+                'submitted' => '<span class="badge badge-info">Submitted</span>',
+                default => '<span class="badge badge-secondary">' . ucfirst($grant->grant_status ?? 'N/A') . '</span>'
+            };
+
+            $actions = '<div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">';
+            $actions .= '<a class="btn btn-sm btn-outline-primary" href="' . route('admin.grants.show', $grant->id) . '" title="View" aria-label="View"><span class="material-icons-outlined">visibility</span></a>';
+
+            // Check if user can approve this workflow step
+            $canApprove = false;
+            if ($workflow) {
+                if ($workflow->assigned_to == $user->id) {
+                    $canApprove = true;
+                } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                    $canApprove = true;
+                } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                    $canApprove = true;
+                }
+            }
+            
+            $canShowActions = !in_array($grant->grant_status, ['approved', 'rejected']) 
+                              && $workflow && $workflow->status !== 'approved' 
+                              && $workflow->status !== 'rejected'
+                              && in_array($grant->grant_status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])
+                              && $canApprove;
+            
+            if ($canShowActions) {
+                $actions .= '<form action="' . route('admin.grants.approve', $grant->id) . '" method="POST" style="display: inline;" class="approve-grant-form">';
+                $actions .= csrf_field();
+                $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve"><span class="material-icons-outlined">check_circle</span></button>';
+                $actions .= '</form>';
+                $actions .= '<button type="button" class="btn btn-sm btn-outline-danger btn-reject-grant" title="Reject" aria-label="Reject" data-grant-id="' . $grant->id . '"><span class="material-icons-outlined">cancel</span></button>';
+            }
+            
+            $actions .= '</div>';
+
+            return [
+                'id' => $grant->id,
+                'title' => '<strong>' . \Str::limit($grant->title, 50) . '</strong>',
+                'grant_type' => '<span class="badge badge-info">' . ucfirst(str_replace('_', ' ', $grant->grant_type ?? 'N/A')) . '</span>',
+                'role' => '<span class="badge badge-secondary">' . strtoupper($grant->role ?? 'N/A') . '</span>',
+                'external_internal' => '<span class="badge ' . ($grant->external_internal == 'External' ? 'badge-danger' : 'badge-success') . '">' . ($grant->external_internal ?? 'N/A') . '</span>',
+                'sponsor_name' => \Str::limit($grant->sponsor_name ?? $grant->sponsor ?? 'N/A', 30),
+                'amount_omr' => $grant->amount_omr ? '<strong>' . number_format($grant->amount_omr, 2) . ' OMR</strong>' : '<span class="text-muted">-</span>',
+                'units' => $grant->units ? '<span class="badge badge-info">' . $grant->units . '</span>' : '<span class="text-muted">-</span>',
+                'submitter_name' => $grant->submitter ? $grant->submitter->name : 'N/A',
+                'award_year' => $grant->award_year ?? $grant->submission_year ?? 'N/A',
+                'grant_status' => $statusBadge,
+                'workflow_status' => $workflowBadge,
+                'points_allocated' => $grant->points_allocated ? '<strong style="color: var(--primary);">' . number_format($grant->points_allocated, 2) . '</strong>' : '<span class="text-muted">-</span>',
+                'actions' => $actions
+            ];
+        });
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $data
+        ]);
     }
 
     /**
@@ -224,6 +317,12 @@ class GrantController extends Controller
                 
                 // If workflow is fully approved, calculate points
                 if ($workflow->status === 'approved') {
+                    // Update grant_status to approved
+                    $grant->update([
+                        'grant_status' => 'approved',
+                        'status' => 'approved'
+                    ]);
+                    
                     // Calculate and assign points
                     $points = $this->scoringService->calculateGrantPoints($grant->fresh());
                     
@@ -239,6 +338,8 @@ class GrantController extends Controller
                     $grant->update([
                         'status' => $workflow->status == 'pending_coordinator' ? 'pending_coordinator' : 
                                    ($workflow->status == 'pending_dean' ? 'pending_dean' : 'submitted'),
+                        'grant_status' => $workflow->status == 'pending_coordinator' ? 'pending' : 
+                                         ($workflow->status == 'pending_dean' ? 'pending' : 'submitted'),
                     ]);
                 }
             }
@@ -289,6 +390,7 @@ class GrantController extends Controller
             $oldStatus = $grant->status;
             $grant->update([
                 'status' => 'rejected',
+                'grant_status' => 'rejected',
             ]);
 
             \DB::commit();

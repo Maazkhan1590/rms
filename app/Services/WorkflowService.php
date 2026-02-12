@@ -166,6 +166,10 @@ class WorkflowService
                         if (in_array('approver_id', $submission->getFillable()) || property_exists($submission, 'approver_id')) {
                             $submission->approver_id = $approver->id;
                         }
+                        // Update grant_status for grants
+                        if ($workflow->submission_type === 'grant' && in_array('grant_status', $submission->getFillable())) {
+                            $submission->grant_status = 'approved';
+                        }
                         $submission->save();
                     }
                 }
@@ -181,6 +185,10 @@ class WorkflowService
                     // Only set approver_id if the model has this attribute (publications/grants have it, RTN/bonus don't)
                     if (in_array('approver_id', $submission->getFillable()) || property_exists($submission, 'approver_id')) {
                         $submission->approver_id = $approver->id;
+                    }
+                    // Update grant_status for grants
+                    if ($workflow->submission_type === 'grant' && in_array('grant_status', $submission->getFillable())) {
+                        $submission->grant_status = 'approved';
                     }
                     $submission->save();
                 }
@@ -429,6 +437,11 @@ class WorkflowService
             // Only set approver_id if the model has this attribute (publications/grants have it, RTN/bonus don't)
             if ((in_array('approver_id', $submission->getFillable()) || property_exists($submission, 'approver_id')) && !$submission->approver_id) {
                 $submission->approver_id = $approver->id;
+            }
+            
+            // Update grant_status for grants when workflow is approved
+            if ($workflow->submission_type === 'grant' && in_array('grant_status', $submission->getFillable())) {
+                $submission->grant_status = 'approved';
             }
             
             // Lock points if applicable
