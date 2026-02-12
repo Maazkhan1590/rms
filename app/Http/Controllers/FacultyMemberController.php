@@ -58,7 +58,18 @@ class FacultyMemberController extends Controller
                 WHERE (submitted_by = users.id OR primary_author_id = users.id)
             ) as unique_publications_count')
             ->orderBy('name')
-            ->paginate(20);
+            ->paginate(10); // Changed from 20 to 10
+
+        // For AJAX requests, return JSON
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'html' => view('faculty-members.partials.card-grid', compact('facultyMembers'))->render(),
+                'hasMore' => $facultyMembers->hasMorePages(),
+                'nextPage' => $facultyMembers->currentPage() + 1,
+                'total' => $facultyMembers->total(),
+                'showing' => $facultyMembers->count() + (($facultyMembers->currentPage() - 1) * $facultyMembers->perPage())
+            ]);
+        }
 
         return view('faculty-members.index', compact('facultyMembers'));
     }
