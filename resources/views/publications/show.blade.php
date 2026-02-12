@@ -577,7 +577,11 @@
 
                     @if($publication->approver)
                     <div class="detail-item">
-                        <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Approved By</div>
+                        @if($publication->status === 'rejected')
+                            <div class="detail-label"><i class="fas fa-user-times" style="margin-right: 0.5rem;"></i>Rejected By</div>
+                        @else
+                            <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Approved By</div>
+                        @endif
                         <div class="detail-value">{{ $publication->approver->name }}</div>
                         @if($publication->approved_at)
                         <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
