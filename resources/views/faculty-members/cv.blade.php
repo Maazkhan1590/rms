@@ -214,28 +214,44 @@
             background: #f8fafc;
             border-radius: 6px;
         }
+        
+        /* Professional Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .info-table tr {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .info-table td {
+            padding: 10px 15px;
+            font-size: 10pt;
+        }
+        .info-table td:first-child {
+            font-weight: bold;
+            color: #1e3a8a;
+            width: 35%;
+        }
+        .info-table td:last-child {
+            color: #334155;
+        }
+        .na-text {
+            color: #94a3b8;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
     <!-- Professional Header -->
     <div class="cv-header">
-        <div class="cv-name">{{ $user->name }}</div>
-        @if($user->designation)
-            <div class="cv-title">{{ $user->designation }}</div>
-        @endif
-        @if($user->college)
-            <div class="cv-institution">{{ $user->college->name }}</div>
-        @endif
-        @if($user->department)
-            <div class="cv-institution">{{ $user->department->name }}</div>
-        @endif
+        <div class="cv-name">{{ $user->name ?? 'N/A' }}</div>
+        <div class="cv-title">{{ $user->designation ?? 'Faculty Member' }}</div>
+        <div class="cv-institution">{{ $user->college->name ?? 'N/A' }}</div>
+        <div class="cv-institution">{{ $user->department->name ?? 'N/A' }}</div>
         <div class="cv-contact">
-            @if($user->email)
-                <span class="cv-contact-item">✉ {{ $user->email }}</span>
-            @endif
-            @if($user->phone)
-                <span class="cv-contact-item">☎ {{ $user->phone }}</span>
-            @endif
+            <span class="cv-contact-item">✉ {{ $user->email ?? 'N/A' }}</span>
+            <span class="cv-contact-item">☎ {{ $user->phone ?? 'N/A' }}</span>
             @if($user->employee_id)
                 <span class="cv-contact-item">ID: {{ $user->employee_id }}</span>
             @endif
@@ -255,97 +271,123 @@
         @endif
     </div>
 
+    <!-- Professional Information -->
+    <div class="section">
+        <h2>Professional Information</h2>
+        <table class="info-table">
+            <tr>
+                <td>Full Name</td>
+                <td>{{ $user->name ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Employee ID</td>
+                <td>{{ $user->employee_id ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Designation</td>
+                <td>{{ $user->designation ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>College</td>
+                <td>{{ $user->college->name ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Department</td>
+                <td>{{ $user->department->name ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>{{ $user->email ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Phone</td>
+                <td>{{ $user->phone ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>ORCID</td>
+                <td>{{ $user->orcid ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Google Scholar</td>
+                <td>{{ $user->google_scholar ? 'Available' : 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>ResearchGate</td>
+                <td>{{ $user->research_gate ? 'Available' : 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td>Sohar Affiliation</td>
+                <td>{{ $user->sohar_affiliation ?? 'N/A' }}</td>
+            </tr>
+        </table>
+    </div>
+
     <!-- Research Impact Metrics -->
-    @if($user->h_index || $user->citation_number || $user->scopus_h_index || $user->scopus_citation_number)
     <div class="section">
         <h2>Research Impact Metrics</h2>
         <div class="metrics-box">
             <div class="metrics-grid">
-                @if($user->h_index || $user->citation_number)
                 <div class="metrics-row">
-                    @if($user->h_index)
-                        <div class="metrics-cell">
-                            <span class="metrics-label">H-Index:</span>
-                            <span class="metrics-value">{{ $user->h_index }}</span>
-                        </div>
-                    @endif
-                    @if($user->citation_number)
-                        <div class="metrics-cell">
-                            <span class="metrics-label">Total Citations:</span>
-                            <span class="metrics-value">{{ number_format($user->citation_number) }}</span>
-                        </div>
-                    @endif
+                    <div class="metrics-cell">
+                        <span class="metrics-label">H-Index:</span>
+                        <span class="metrics-value">{{ $user->h_index ?? 'N/A' }}</span>
+                    </div>
+                    <div class="metrics-cell">
+                        <span class="metrics-label">Total Citations:</span>
+                        <span class="metrics-value">{{ $user->citation_number ? number_format($user->citation_number) : 'N/A' }}</span>
+                    </div>
                 </div>
-                @endif
-                @if($user->scopus_h_index || $user->scopus_citation_number)
                 <div class="metrics-row">
-                    @if($user->scopus_h_index)
-                        <div class="metrics-cell">
-                            <span class="metrics-label">Scopus H-Index:</span>
-                            <span class="metrics-value">{{ $user->scopus_h_index }}</span>
-                        </div>
-                    @endif
-                    @if($user->scopus_citation_number)
-                        <div class="metrics-cell">
-                            <span class="metrics-label">Scopus Citations:</span>
-                            <span class="metrics-value">{{ number_format($user->scopus_citation_number) }}</span>
-                        </div>
-                    @endif
+                    <div class="metrics-cell">
+                        <span class="metrics-label">Scopus H-Index:</span>
+                        <span class="metrics-value">{{ $user->scopus_h_index ?? 'N/A' }}</span>
+                    </div>
+                    <div class="metrics-cell">
+                        <span class="metrics-label">Scopus Citations:</span>
+                        <span class="metrics-value">{{ $user->scopus_citation_number ? number_format($user->scopus_citation_number) : 'N/A' }}</span>
+                    </div>
                 </div>
-                @endif
-                @if($user->scopus_papers)
                 <div class="metrics-row">
                     <div class="metrics-cell" style="width: 100%;">
                         <span class="metrics-label">Scopus Indexed Papers:</span>
-                        <span class="metrics-value">{{ $user->scopus_papers }}</span>
+                        <span class="metrics-value">{{ $user->scopus_papers ?? 'N/A' }}</span>
                     </div>
                 </div>
-                @endif
             </div>
         </div>
     </div>
-    @endif
 
     <!-- Publications -->
-    @if($publications->count() > 0)
     <div class="section">
         <h2>Publications <span class="summary-count">({{ $publications->count() }})</span></h2>
+        @if($publications->count() > 0)
         @foreach($publications as $index => $publication)
             <div class="cv-item">
                 <div class="cv-item-number">[{{ $index + 1 }}]</div>
                 <div class="cv-item-title">
-                    {{ $publication->title }}
+                    {{ $publication->title ?? 'Untitled' }}
                 </div>
                 <div class="cv-item-meta">
-                    @if($publication->publication_type)
-                        <strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $publication->publication_type)) }}
-                    @endif
-                    @if($publication->publication_year)
-                        &nbsp;|&nbsp; <strong>Year:</strong> {{ $publication->publication_year }}
-                    @endif
+                    <strong>Type:</strong> {{ $publication->publication_type ? ucfirst(str_replace('_', ' ', $publication->publication_type)) : 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Year:</strong> {{ $publication->publication_year ?? 'N/A' }}
                     @if($publication->journal_name)
                         &nbsp;|&nbsp; <strong>Journal:</strong> {{ $publication->journal_name }}
                     @endif
                     @if($publication->conference_name)
                         &nbsp;|&nbsp; <strong>Conference:</strong> {{ $publication->conference_name }}
                     @endif
-                    @if($publication->volume || $publication->issue)
-                        &nbsp;|&nbsp; 
-                        @if($publication->volume)
-                            <strong>Vol.</strong> {{ $publication->volume }}
-                        @endif
-                        @if($publication->issue)
-                            <strong>Issue</strong> {{ $publication->issue }}
-                        @endif
+                    @if($publication->volume)
+                        &nbsp;|&nbsp; <strong>Vol.</strong> {{ $publication->volume }}
+                    @endif
+                    @if($publication->issue)
+                        &nbsp;|&nbsp; <strong>Issue</strong> {{ $publication->issue }}
                     @endif
                     @if($publication->pages)
                         &nbsp;|&nbsp; <strong>Pages:</strong> {{ $publication->pages }}
                     @endif
-                    @if($publication->status)
-                        &nbsp;|&nbsp; <span class="status-badge status-{{ $publication->status === 'approved' ? 'approved' : ($publication->status === 'submitted' ? 'submitted' : 'draft') }}">
-                            {{ ucfirst($publication->status) }}
-                        </span>
-                    @endif
+                    &nbsp;|&nbsp; <span class="status-badge status-{{ $publication->status === 'approved' ? 'approved' : ($publication->status === 'submitted' ? 'submitted' : 'draft') }}">
+                        {{ ucfirst($publication->status ?? 'draft') }}
+                    </span>
                 </div>
                 @if($publication->abstract)
                     <div class="cv-item-description">
@@ -359,40 +401,34 @@
                 @endif
             </div>
         @endforeach
+        @else
+            <div class="no-items">
+                No publications recorded for this faculty member.
+            </div>
+        @endif
     </div>
-    @endif
 
     <!-- Grants -->
-    @if($grants->count() > 0)
     <div class="section">
         <h2>Research Grants & Funding <span class="summary-count">({{ $grants->count() }})</span></h2>
+        @if($grants->count() > 0)
         @foreach($grants as $index => $grant)
             <div class="cv-item">
                 <div class="cv-item-number">[{{ $index + 1 }}]</div>
                 <div class="cv-item-title">
-                    {{ $grant->title }}
+                    {{ $grant->title ?? 'Untitled Grant' }}
                 </div>
                 <div class="cv-item-meta">
-                    @if($grant->grant_type)
-                        <strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $grant->grant_type)) }}
-                    @endif
-                    @if($grant->award_year)
-                        &nbsp;|&nbsp; <strong>Award Year:</strong> {{ $grant->award_year }}
-                    @endif
-                    @if($grant->amount_omr)
-                        &nbsp;|&nbsp; <strong>Funding:</strong> OMR {{ number_format($grant->amount_omr, 2) }}
-                    @endif
-                    @if($grant->sponsor_name)
-                        &nbsp;|&nbsp; <strong>Sponsor:</strong> {{ $grant->sponsor_name }}
-                    @endif
+                    <strong>Type:</strong> {{ $grant->grant_type ? ucfirst(str_replace('_', ' ', $grant->grant_type)) : 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Award Year:</strong> {{ $grant->award_year ?? 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Funding:</strong> {{ $grant->amount_omr ? 'OMR ' . number_format($grant->amount_omr, 2) : 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Sponsor:</strong> {{ $grant->sponsor_name ?? 'N/A' }}
                     @if($grant->role)
                         &nbsp;|&nbsp; <strong>Role:</strong> {{ $grant->role }}
                     @endif
-                    @if($grant->status)
-                        &nbsp;|&nbsp; <span class="status-badge status-{{ $grant->status === 'approved' ? 'approved' : ($grant->status === 'submitted' ? 'submitted' : 'draft') }}">
-                            {{ ucfirst($grant->status) }}
-                        </span>
-                    @endif
+                    &nbsp;|&nbsp; <span class="status-badge status-{{ $grant->status === 'approved' ? 'approved' : ($grant->status === 'submitted' ? 'submitted' : 'draft') }}">
+                        {{ ucfirst($grant->status ?? 'draft') }}
+                    </span>
                 </div>
                 @if($grant->description)
                     <div class="cv-item-description">
@@ -401,34 +437,30 @@
                 @endif
             </div>
         @endforeach
+        @else
+            <div class="no-items">
+                No grants or funded research recorded for this faculty member.
+            </div>
+        @endif
     </div>
-    @endif
 
     <!-- RTN Submissions -->
-    @if($rtnSubmissions->count() > 0)
     <div class="section">
         <h2>Research, Teaching & Networking Activities <span class="summary-count">({{ $rtnSubmissions->count() }})</span></h2>
+        @if($rtnSubmissions->count() > 0)
         @foreach($rtnSubmissions as $index => $rtn)
             <div class="cv-item">
                 <div class="cv-item-number">[{{ $index + 1 }}]</div>
                 <div class="cv-item-title">
-                    {{ $rtn->title }}
+                    {{ $rtn->title ?? 'Untitled Activity' }}
                 </div>
                 <div class="cv-item-meta">
-                    @if($rtn->rtn_type)
-                        <strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $rtn->rtn_type)) }}
-                    @endif
-                    @if($rtn->year)
-                        &nbsp;|&nbsp; <strong>Year:</strong> {{ $rtn->year }}
-                    @endif
-                    @if($rtn->points)
-                        &nbsp;|&nbsp; <strong>Research Points:</strong> {{ number_format($rtn->points, 2) }}
-                    @endif
-                    @if($rtn->status)
-                        &nbsp;|&nbsp; <span class="status-badge status-{{ $rtn->status === 'approved' ? 'approved' : ($rtn->status === 'submitted' ? 'submitted' : 'draft') }}">
-                            {{ ucfirst($rtn->status) }}
-                        </span>
-                    @endif
+                    <strong>Type:</strong> {{ $rtn->rtn_type ? ucfirst(str_replace('_', ' ', $rtn->rtn_type)) : 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Year:</strong> {{ $rtn->year ?? 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Research Points:</strong> {{ $rtn->points ? number_format($rtn->points, 2) : 'N/A' }}
+                    &nbsp;|&nbsp; <span class="status-badge status-{{ $rtn->status === 'approved' ? 'approved' : ($rtn->status === 'submitted' ? 'submitted' : 'draft') }}">
+                        {{ ucfirst($rtn->status ?? 'draft') }}
+                    </span>
                 </div>
                 @if($rtn->description)
                     <div class="cv-item-description">
@@ -437,34 +469,30 @@
                 @endif
             </div>
         @endforeach
+        @else
+            <div class="no-items">
+                No RTN activities recorded for this faculty member.
+            </div>
+        @endif
     </div>
-    @endif
 
     <!-- Bonus Recognitions -->
-    @if($bonusRecognitions->count() > 0)
     <div class="section">
         <h2>Awards & Professional Recognition <span class="summary-count">({{ $bonusRecognitions->count() }})</span></h2>
+        @if($bonusRecognitions->count() > 0)
         @foreach($bonusRecognitions as $index => $bonus)
             <div class="cv-item">
                 <div class="cv-item-number">[{{ $index + 1 }}]</div>
                 <div class="cv-item-title">
-                    {{ $bonus->title }}
+                    {{ $bonus->title ?? 'Untitled Recognition' }}
                 </div>
                 <div class="cv-item-meta">
-                    @if($bonus->recognition_type)
-                        <strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $bonus->recognition_type)) }}
-                    @endif
-                    @if($bonus->year)
-                        &nbsp;|&nbsp; <strong>Year:</strong> {{ $bonus->year }}
-                    @endif
-                    @if($bonus->organization)
-                        &nbsp;|&nbsp; <strong>Organization:</strong> {{ $bonus->organization }}
-                    @endif
-                    @if($bonus->status)
-                        &nbsp;|&nbsp; <span class="status-badge status-{{ $bonus->status === 'approved' ? 'approved' : ($bonus->status === 'submitted' ? 'submitted' : 'draft') }}">
-                            {{ ucfirst($bonus->status) }}
-                        </span>
-                    @endif
+                    <strong>Type:</strong> {{ $bonus->recognition_type ? ucfirst(str_replace('_', ' ', $bonus->recognition_type)) : 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Year:</strong> {{ $bonus->year ?? 'N/A' }}
+                    &nbsp;|&nbsp; <strong>Organization:</strong> {{ $bonus->organization ?? 'N/A' }}
+                    &nbsp;|&nbsp; <span class="status-badge status-{{ $bonus->status === 'approved' ? 'approved' : ($bonus->status === 'submitted' ? 'submitted' : 'draft') }}">
+                        {{ ucfirst($bonus->status ?? 'draft') }}
+                    </span>
                 </div>
                 @if($bonus->description)
                     <div class="cv-item-description">
@@ -473,8 +501,12 @@
                 @endif
             </div>
         @endforeach
+        @else
+            <div class="no-items">
+                No awards or recognitions recorded for this faculty member.
+            </div>
+        @endif
     </div>
-    @endif
 
     <!-- Footer -->
     <div class="cv-footer">
