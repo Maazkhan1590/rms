@@ -28,29 +28,29 @@
             padding-bottom: 20px;
             margin-bottom: 20px;
         }
-        
+
         .header-flex {
             width: 100%;
         }
-        
+
         .header-left {
             float: left;
             width: 60%;
         }
-        
+
         .header-right {
             float: right;
             width: 38%;
             text-align: right;
             font-size: 8.5pt;
         }
-        
+
         .clearfix::after {
             content: "";
             display: table;
             clear: both;
         }
-        
+
         .cv-name {
             font-size: 26pt;
             font-weight: bold;
@@ -58,27 +58,27 @@
             margin: 0 0 8px 0;
             letter-spacing: 0.3px;
         }
-        
+
         .cv-subtitle {
             font-size: 13pt;
             color: #1e40af;
             margin: 4px 0;
             font-weight: 600;
         }
-        
+
         .cv-institution {
             font-size: 11pt;
             color: #4b5563;
             margin: 3px 0;
         }
-        
+
         .contact-line {
             margin: 3px 0;
             color: #4b5563;
             font-size: 8.5pt;
             line-height: 1.5;
         }
-        
+
         .contact-icon {
             margin-right: 5px;
             font-weight: bold;
@@ -86,11 +86,11 @@
             font-family: 'DejaVu Sans', sans-serif;
             display: inline-block;
         }
-        
+
         .contact-icon.email {
             color: #d97706;
         }
-        
+
         .contact-icon.phone {
             color: #059669;
         }
@@ -106,7 +106,7 @@
             page-break-inside: avoid;
             page-break-after: avoid;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -114,7 +114,7 @@
             font-size: 9pt;
             page-break-inside: auto;
         }
-        
+
         tr {
             page-break-inside: avoid;
             page-break-after: auto;
@@ -137,7 +137,7 @@
         tr:nth-child(even) {
             background-color: #f9fafb;
         }
-        
+
         .profile-text {
             font-size: 10pt;
             line-height: 1.6;
@@ -146,26 +146,26 @@
             text-align: justify;
             page-break-inside: avoid;
         }
-        
+
         .authors-col {
             font-weight: normal;
         }
-        
+
         .authors-col strong {
             font-weight: bold;
             color: #1e40af;
         }
-        
+
         .title-col {
             font-weight: 500;
             line-height: 1.4;
         }
-        
+
         .journal-col {
             font-style: italic;
             color: #374151;
         }
-        
+
         .doi-link {
             color: #2563eb;
             text-decoration: none;
@@ -176,7 +176,7 @@
         .info-row {
             margin: 8px 0;
         }
-        
+
         .info-label {
             font-weight: 600;
             color: #1e40af;
@@ -184,7 +184,7 @@
             width: 30%;
             vertical-align: top;
         }
-        
+
         .info-value {
             display: inline-block;
             width: 68%;
@@ -201,15 +201,15 @@
             color: white;
             text-transform: uppercase;
         }
-        
+
         .status-approved {
             background-color: #059669;
         }
-        
+
         .status-submitted {
             background-color: #2563eb;
         }
-        
+
         .status-draft {
             background-color: #64748b;
         }
@@ -224,7 +224,7 @@
             color: #999999;
             page-break-inside: avoid;
         }
-        
+
         .no-data {
             text-align: center;
             padding: 15px;
@@ -245,8 +245,8 @@
         <div class="header-flex clearfix">
             <div class="header-left">
                 <h1 class="cv-name">{{ $user->name ?? 'N/A' }}</h1>
-                <p class="cv-subtitle">{{ $user->designation ?? 'Faculty Member' }} • {{ $user->department->name ?? 'N/A' }}</p>
-                <p class="cv-institution">{{ $user->college->name ?? 'N/A' }}</p>
+                <p class="cv-subtitle">{{ $user->designation ?? 'Faculty Member' }}</p>
+{{--                <p class="cv-institution">{{ $user->college->name ?? 'N/A' }}</p>--}}
             </div>
             <div class="header-right">
                 @if($user->email)
@@ -337,17 +337,18 @@
     </table>
 
     <!-- PUBLICATIONS -->
-    <div class="section-title">Selected Publications ({{ $publications->count() }})</div>
-    
+    <div class="section-title">Publications ({{ $publications->count() }})</div>
+
     @if($publications->count() > 0)
     <table>
         <thead>
         <tr>
             <th style="width: 4%;">#</th>
-            <th style="width: 18%;">Authors<br>(Your name in bold)</th>
+            <th style="width: 18%;">Authors</th>
             <th style="width: 34%;">Title</th>
             <th style="width: 24%;">Journal • Volume • Year</th>
-            <th style="width: 12%;">DOI / Status</th>
+            <th style="width: 12%;">DOI </th>
+            <th style="width: 12%;">Status</th>
         </tr>
         </thead>
         <tbody>
@@ -382,6 +383,10 @@
                 @if($publication->doi)
                     <a href="https://doi.org/{{ $publication->doi }}" class="doi-link">doi:{{ $publication->doi }}</a><br>
                 @endif
+
+            </td>
+            <td style="font-size: 8pt;">
+
                 <span class="status-badge status-{{ $publication->status === 'approved' ? 'approved' : ($publication->status === 'submitted' ? 'submitted' : 'draft') }}">
                     {{ ucfirst($publication->status ?? 'draft') }}
                 </span>
@@ -397,8 +402,8 @@
     @endif
 
     <!-- GRANTS & FUNDING -->
-    <div class="section-title">Grants & Funding ({{ $grants->count() }})</div>
-    
+    <div class="section-title">Grants ({{ $grants->count() }})</div>
+
     @if($grants->count() > 0)
     <table>
         <thead>
@@ -435,8 +440,8 @@
     @endif
 
     <!-- RTN ACTIVITIES -->
-    <div class="section-title">Research, Teaching & Networking Activities ({{ $rtnSubmissions->count() }})</div>
-    
+    <div class="section-title">RTN ({{ $rtnSubmissions->count() }})</div>
+
     @if($rtnSubmissions->count() > 0)
     <table>
         <thead>
@@ -471,8 +476,8 @@
     @endif
 
     <!-- AWARDS & HONORS -->
-    <div class="section-title">Awards & Honors ({{ $bonusRecognitions->count() }})</div>
-    
+    <div class="section-title">Bonus Recognition ({{ $bonusRecognitions->count() }})</div>
+
     @if($bonusRecognitions->count() > 0)
     <table>
         <thead>
@@ -500,7 +505,7 @@
     </table>
     @else
     <div class="no-data">
-        No awards or recognitions recorded for this faculty member.
+        No bonus recognition recorded for this faculty member.
     </div>
     @endif
 
