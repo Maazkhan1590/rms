@@ -251,10 +251,24 @@
     let evidenceFileCount = 0;
     
     function handleEvidenceFiles(input) {
-        const files = Array.from(input.files);
+        const newFiles = Array.from(input.files);
         const container = document.getElementById('evidenceFilesList');
+        const fileInput = document.getElementById('evidence_files');
         
-        files.forEach(file => {
+        // Get existing files from the input
+        const existingFiles = Array.from(fileInput.files);
+        
+        // Create a new DataTransfer to accumulate all files
+        const dt = new DataTransfer();
+        
+        // Add existing files first
+        existingFiles.forEach(file => dt.items.add(file));
+        
+        // Add new files
+        newFiles.forEach(file => {
+            dt.items.add(file);
+            
+            // Create display element
             const fileItem = document.createElement('div');
             fileItem.className = 'evidence-file-item';
             fileItem.dataset.fileIndex = evidenceFileCount;
@@ -275,6 +289,9 @@
             container.appendChild(fileItem);
             evidenceFileCount++;
         });
+        
+        // Update the file input with all accumulated files
+        fileInput.files = dt.files;
     }
     
     function removeEvidenceFile(button) {
