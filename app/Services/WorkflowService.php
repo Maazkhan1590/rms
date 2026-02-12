@@ -158,11 +158,14 @@ class WorkflowService
                     // No dean found, auto-approve
                     $workflow->status = 'approved';
                     $workflow->assigned_to = null;
-                    // Final approval - store approver_id
+                    // Final approval - store approver_id only if column exists
                     if ($submission) {
                         $submission->status = 'approved';
                         $submission->approved_at = now();
-                        $submission->approver_id = $approver->id; // Store the approver (coordinator in this case)
+                        // Only set approver_id if the model has this attribute (publications/grants have it, RTN/bonus don't)
+                        if (in_array('approver_id', $submission->getFillable()) || property_exists($submission, 'approver_id')) {
+                            $submission->approver_id = $approver->id;
+                        }
                         $submission->save();
                     }
                 }
@@ -171,11 +174,14 @@ class WorkflowService
                 $workflow->status = 'approved';
                 $workflow->assigned_to = null;
                 
-                // Final approval - store approver_id (Dean)
+                // Final approval - store approver_id only if column exists
                 if ($submission) {
                     $submission->status = 'approved';
                     $submission->approved_at = now();
-                    $submission->approver_id = $approver->id; // Store the Dean as final approver
+                    // Only set approver_id if the model has this attribute (publications/grants have it, RTN/bonus don't)
+                    if (in_array('approver_id', $submission->getFillable()) || property_exists($submission, 'approver_id')) {
+                        $submission->approver_id = $approver->id;
+                    }
                     $submission->save();
                 }
             }
@@ -420,7 +426,8 @@ class WorkflowService
             if (!$submission->approved_at) {
                 $submission->approved_at = now();
             }
-            if (!$submission->approver_id) {
+            // Only set approver_id if the model has this attribute (publications/grants have it, RTN/bonus don't)
+            if ((in_array('approver_id', $submission->getFillable()) || property_exists($submission, 'approver_id')) && !$submission->approver_id) {
                 $submission->approver_id = $approver->id;
             }
             

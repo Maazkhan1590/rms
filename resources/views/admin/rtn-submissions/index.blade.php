@@ -236,7 +236,7 @@
                                                           && $workflowStatus !== 'rejected';
                                     @endphp
                                     @if($canShowActions)
-                                        <form action="{{ route('admin.rtn-submissions.approve', $submission->id) }}" method="POST" style="display: inline;" class="rtn-approve-form">
+                                        <form action="{{ route('admin.rtn-submissions.approve', $submission->id) }}" method="POST" style="display: inline;" class="rtn-approve-form approve-rtn-form">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve">
                                                 <span class="material-icons-outlined">check_circle</span>
@@ -279,8 +279,8 @@
 </div>
 
 <!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Reject RTN Submission</h5>

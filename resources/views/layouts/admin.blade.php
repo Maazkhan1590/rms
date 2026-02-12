@@ -1243,6 +1243,24 @@
                     });
                 });
 
+                // Approve RTN submission forms
+                $(document).on('submit', '.approve-rtn-form, .rtn-approve-form', function (e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    Swal.fire({
+                        title: 'Approve RTN Submission?',
+                        text: 'Are you sure you want to approve this RTN submission?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form[0].submit();
+                        }
+                    });
+                });
+
                 // Approve publication forms
                 $(document).on('submit', '.approve-publication-form', function (e) {
                     e.preventDefault();
