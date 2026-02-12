@@ -57,25 +57,6 @@
                     <i class="fas fa-book"></i> Publications Management
                 </h3>
             </div>
-            <div style="margin-top: 10px; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <!-- Status Filters -->
-                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}"
-                   class="btn btn-sm {{ request('status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
-                    <i class="fas fa-clock"></i> Pending
-                </a>
-                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}"
-                   class="btn btn-sm {{ request('status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
-                    <i class="fas fa-check"></i> Approved
-                </a>
-                <a href="{{ route('admin.publications.index', array_merge(request()->except('status'), ['status' => 'rejected'])) }}"
-                   class="btn btn-sm {{ request('status') == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
-                    <i class="fas fa-times"></i> Rejected
-                </a>
-                <a href="{{ route('admin.publications.index', request()->except('status')) }}"
-                   class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <i class="fas fa-list"></i> All
-                </a>
-            </div>
         </div>
     </div>
 
