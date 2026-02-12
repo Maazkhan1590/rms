@@ -239,10 +239,31 @@
                                         <span class="material-icons-outlined">visibility</span>
                                     </a>
                                     @php
-                                        $workflowStatus = $grant->workflow->status ?? null;
-                                        $canShowActions = in_array($grant->grant_status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']) 
+                                        $workflow = $grant->workflow ?? null;
+                                        $workflowStatus = $workflow->status ?? null;
+                                        $user = auth()->user();
+                                        
+                                        // Check if user can approve this workflow step (same logic as controller)
+                                        $canApprove = false;
+                                        if ($workflow) {
+                                            if ($workflow->assigned_to == $user->id) {
+                                                $canApprove = true;
+                                            } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                                                $canApprove = true;
+                                            } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                                                $canApprove = true;
+                                            }
+                                        }
+                                        
+                                        // Hide approve/reject buttons if:
+                                        // 1. Grant status is approved or rejected, OR
+                                        // 2. Workflow status is approved or rejected, OR
+                                        // 3. User is not authorized to approve at current step
+                                        $canShowActions = !in_array($grant->grant_status, ['approved', 'rejected']) 
                                                           && $workflowStatus !== 'approved' 
-                                                          && $workflowStatus !== 'rejected';
+                                                          && $workflowStatus !== 'rejected'
+                                                          && in_array($grant->grant_status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])
+                                                          && $canApprove;
                                     @endphp
                                     @if($canShowActions)
                                         <form action="{{ route('admin.grants.approve', $grant->id) }}" method="POST" style="display: inline;" class="approve-grant-form">
@@ -288,8 +309,8 @@
 </div>
 
 <!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Reject Grant</h5>

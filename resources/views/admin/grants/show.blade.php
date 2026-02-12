@@ -394,9 +394,28 @@
                 <span style="vertical-align: middle;">Back to List</span>
             </a>
             @php
-                $workflowStatus = $grant->workflow->status ?? null;
+                $workflow = $grant->workflow ?? null;
+                $workflowStatus = $workflow->status ?? null;
                 $workflowCompleted = $workflowStatus && in_array($workflowStatus, ['approved', 'rejected']);
-                $canShowActions = in_array($grant->status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean']) && !$workflowCompleted;
+                $user = auth()->user();
+                
+                // Check if user can approve this workflow step (same logic as controller)
+                $canApprove = false;
+                if ($workflow) {
+                    if ($workflow->assigned_to == $user->id) {
+                        $canApprove = true;
+                    } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                        $canApprove = true;
+                    } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                        $canApprove = true;
+                    }
+                }
+                
+                // Hide approve/reject buttons if grant is approved/rejected OR workflow is completed OR user is not authorized
+                $canShowActions = !in_array($grant->grant_status, ['approved', 'rejected']) 
+                                  && !$workflowCompleted
+                                  && in_array($grant->grant_status, ['pending', 'submitted', 'pending_coordinator', 'pending_dean'])
+                                  && $canApprove;
             @endphp
             @if($canShowActions)
                 <form action="{{ route('admin.grants.approve', $grant->id) }}" method="POST" style="display: inline;">
@@ -416,8 +435,8 @@
 </div>
 
 <!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Reject Grant</h5>
