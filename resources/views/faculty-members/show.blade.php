@@ -263,7 +263,19 @@
                                     </div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $publication->status === 'approved' ? '#10b981' : ($publication->status === 'submitted' ? '#3b82f6' : '#6b7280') }}; color: white;">
+                                    @php
+                                        $statusColors = [
+                                            'approved' => '#10b981',
+                                            'pending' => '#eab308',
+                                            'pending_coordinator' => '#6b7280',
+                                            'pending_dean' => '#6b7280',
+                                            'submitted' => '#3b82f6',
+                                            'rejected' => '#ef4444',
+                                            'draft' => '#6b7280',
+                                        ];
+                                        $bgColor = $statusColors[$publication->status] ?? '#6b7280';
+                                    @endphp
+                                    <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                         {{ ucfirst($publication->status) }}
                                     </span>
                                 </div>
@@ -337,7 +349,19 @@
                                     </div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $grant->status === 'approved' ? '#10b981' : ($grant->status === 'submitted' ? '#3b82f6' : '#6b7280') }}; color: white;">
+                                    @php
+                                        $statusColors = [
+                                            'approved' => '#10b981',
+                                            'pending' => '#eab308',
+                                            'pending_coordinator' => '#6b7280',
+                                            'pending_dean' => '#6b7280',
+                                            'submitted' => '#3b82f6',
+                                            'rejected' => '#ef4444',
+                                            'draft' => '#6b7280',
+                                        ];
+                                        $bgColor = $statusColors[$grant->status ?? 'draft'] ?? '#6b7280';
+                                    @endphp
+                                    <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                         {{ ucfirst($grant->status ?? 'draft') }}
                                     </span>
                                 </div>
@@ -469,7 +493,19 @@
                                     </div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bonus->status === 'approved' ? '#10b981' : ($bonus->status === 'submitted' ? '#3b82f6' : '#6b7280') }}; color: white;">
+                                    @php
+                                        $statusColors = [
+                                            'approved' => '#10b981',
+                                            'pending' => '#eab308',
+                                            'pending_coordinator' => '#6b7280',
+                                            'pending_dean' => '#6b7280',
+                                            'submitted' => '#3b82f6',
+                                            'rejected' => '#ef4444',
+                                            'draft' => '#6b7280',
+                                        ];
+                                        $bgColor = $statusColors[$bonus->status ?? 'draft'] ?? '#6b7280';
+                                    @endphp
+                                    <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                         {{ ucfirst($bonus->status ?? 'draft') }}
                                     </span>
                                 </div>

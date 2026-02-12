@@ -458,7 +458,7 @@
             <td>{{ $grant->award_year ?? 'N/A' }}</td>
             <td>{{ $grant->role ?? 'PI' }}</td>
             <td style="text-align: center;">
-                <span class="status-badge status-{{ $grant->status === 'approved' ? 'approved' : ($grant->status === 'submitted' ? 'submitted' : 'draft') }}">
+                <span class="status-badge status-{{ $grant->status === 'approved' ? 'approved' : ($grant->status === 'rejected' ? 'rejected' : ($grant->status === 'submitted' ? 'submitted' : 'draft')) }}">
                     {{ ucfirst($grant->status ?? 'draft') }}
                 </span>
             </td>
