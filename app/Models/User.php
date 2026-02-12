@@ -229,6 +229,14 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
+    /**
+     * Get all email logs for this user
+     */
+    public function emailLogs()
+    {
+        return $this->hasMany(EmailLog::class);
+    }
+
         /**
          * Get all research fellowships for this user
          */

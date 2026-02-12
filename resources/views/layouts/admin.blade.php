@@ -352,6 +352,12 @@
                                 <span class="nav-label">Activity Logs</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.email-logs.index') }}" class="nav-link {{ request()->routeIs('admin.email-logs.*') ? 'active' : '' }}">
+                                <span class="nav-icon">📧</span>
+                                <span class="nav-label">Email Logs</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 @endcan

@@ -24,7 +24,7 @@
         }
 
         .email-header {
-            background: linear-gradient(135deg, #003d82 0%, #0056b3 50%, #4d8bff 100%);
+            background-color: #0056b3;
             padding: 30px 20px;
             text-align: center;
             color: white;
@@ -96,21 +96,27 @@
         }
 
         .email-footer {
-            background-color: #f8f9fa;
+            background-color: #0056b3;
             padding: 25px 30px;
             text-align: center;
-            border-top: 1px solid #e9ecef;
+            border-top: none;
+            color: white;
         }
 
         .email-footer p {
             font-size: 13px;
-            color: #6c757d;
+            color: rgba(255, 255, 255, 0.9);
             margin: 5px 0;
         }
 
         .email-footer a {
-            color: #0056b3;
+            color: #ffffff;
             text-decoration: none;
+            font-weight: 500;
+        }
+
+        .email-footer a:hover {
+            text-decoration: underline;
         }
 
         .social-links {
@@ -120,7 +126,7 @@
         .social-links a {
             display: inline-block;
             margin: 0 8px;
-            color: #6c757d;
+            color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
             font-size: 12px;
         }
@@ -231,7 +237,7 @@
                 © {{ date('Y') }} Research Management System. All rights reserved.
             </p>
 
-            <p style="font-size: 11px; color: #999; margin-top: 10px;">
+            <p style="font-size: 11px; color: rgba(255, 255, 255, 0.7); margin-top: 10px;">
                 This email was sent to {{ $notifiable->email ?? 'you' }}. 
                 If you did not expect this email, please contact support.
             </p>

@@ -232,6 +232,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Audit & Activity Logs
     Route::resource('audit-logs', 'AuditLogController')->only(['index', 'show']);
     Route::resource('activity-logs', 'ActivityLogController')->only(['index', 'show']);
+    Route::resource('email-logs', 'EmailLogController')->only(['index', 'show']);
+    Route::get('email-logs/stats', 'EmailLogController@stats')->name('email-logs.stats');
 
     // Site Content Management
     Route::resource('sliders', 'SliderController');

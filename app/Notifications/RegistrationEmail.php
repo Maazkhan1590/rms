@@ -35,7 +35,7 @@ class RegistrationEmail extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Account Registration - Research Management System')
+            ->subject('Welcome to Research Management System')
             ->greeting('Hello ' . $notifiable->name . '!')
             ->line('Thank you for registering with the Research Management System (RMS) - URC FCIT.')
             ->line('**Your Account Details:**')
@@ -43,16 +43,17 @@ class RegistrationEmail extends Notification implements ShouldQueue
             ->line('**Password:** ' . $this->password)
             ->line('**Account Status:** Pending Approval')
             ->line('**Important Information:**')
-            ->line('• Your account is currently **inactive** and pending admin approval.')
-            ->line('• You will receive an email notification once your account is approved.')
-            ->line('• Until then, you can browse publications and submit new ones as a guest.')
-            ->line('• Once approved, you will be able to access the full dashboard.')
-            ->action('Visit Home Page', url('/'))
-            ->line('**What you can do now:**')
-            ->line('• Browse all publications on the home page')
-            ->line('• Submit new publications (will be linked after approval)')
-            ->line('• Review publication details')
-            ->line('If you did not create this account, please ignore this email or contact support.')
+            ->line('• Your account is currently **pending admin approval** and will be activated shortly.')
+            ->line('• You will receive a confirmation email once your account is approved by our administrators.')
+            ->line('• After approval, you can log in and access your profile.')
+            ->line('• You can browse public profiles and publications while waiting for approval.')
+            ->action('Browse Publications', url('/publications'))
+            ->line('**After approval, you will be able to:**')
+            ->line('• Manage your research profile')
+            ->line('• Submit publications and research work')
+            ->line('• View analytics and reports')
+            ->line('• Generate and download your CV')
+            ->line('If you did not create this account, please contact support immediately.')
             ->salutation('Best regards,  
 Research Management System Team  
 URC FCIT');

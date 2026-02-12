@@ -42,8 +42,8 @@ class AccountApproved extends Notification implements ShouldQueue
             ->line('• Apply for grants and funding')
             ->line('• Track your research score and rankings')
             ->line('• Generate reports and analytics')
-            ->line('• Collaborate with other researchers')
-            ->action('Access Your Dashboard', url('/admin'))
+            ->line('• Update your profile and manage your research portfolio')
+            ->action('View Your Profile', route('faculty-members.show', $notifiable->id))
             ->line('If you need any assistance getting started, please don\'t hesitate to contact our support team.')
             ->salutation('Welcome aboard!  
 Research Management Team');

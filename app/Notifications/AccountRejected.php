@@ -35,23 +35,29 @@ class AccountRejected extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $message = (new MailMessage)
-            ->subject('RMS Account Application Update')
+            ->subject('RMS Account Application - Update Required')
             ->greeting('Hello ' . $notifiable->name . ',')
             ->line('Thank you for your interest in the Research Management System.');
         
         if ($this->reason) {
-            $message->line('Unfortunately, we are unable to approve your account at this time.')
-                   ->line('**Reason:** ' . $this->reason);
+            $message->line('We regret to inform you that we are unable to approve your account application at this time.')
+                   ->line('')
+                   ->line('**Reason for rejection:**')
+                   ->line($this->reason);
         } else {
-            $message->line('Unfortunately, we are unable to approve your account application at this time.');
+            $message->line('We regret to inform you that we are unable to approve your account application at this time.');
         }
         
-        $message->line('**What you can do:**')
+        $message->line('')
+               ->line('**What you can do next:**')
                ->line('• Review the requirements for faculty registration')
-               ->line('• Ensure all credentials are valid and up-to-date')
-               ->line('• Contact our support team for clarification')
-               ->line('You may reapply once you have addressed the issues mentioned above.')
+               ->line('• Ensure all submitted credentials are valid and up-to-date')
+               ->line('• Verify that all required information was provided correctly')
+               ->line('• Contact our support team for clarification and guidance')
+               ->line('')
+               ->line('You may submit a new registration application once you have addressed the concerns mentioned above.')
                ->action('Contact Support', 'mailto:support@rms.uos.edu.pk')
+               ->line('We appreciate your understanding and look forward to reviewing your updated application.')
                ->salutation('Best regards,  
 Research Management Team');
         
