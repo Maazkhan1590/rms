@@ -254,42 +254,93 @@
                         </table>
 
                         @if($workflow->history && $workflow->history->count() > 0)
-                        <h6 class="mt-3 mb-2">
-                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">history</span>
-                            <span style="vertical-align: middle;">Approval History</span>
+                        <h6 class="mt-4 mb-3">
+                            <span class="material-icons-outlined" style="font-size:20px;vertical-align:middle;color:#4f46e5;">history</span>
+                            <span style="vertical-align: middle;font-weight:600;">Approval Timeline</span>
                         </h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Action</th>
-                                        <th>Performed By</th>
-                                        <th>Comments</th>
-                                        <th>Status Change</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($workflow->history->sortByDesc('created_at') as $history)
-                                    <tr>
-                                        <td>{{ $history->created_at->format('M d, Y H:i') }}</td>
-                                        <td>
-                                            <span class="badge badge-{{ $history->action == 'approved' ? 'success' : ($history->action == 'rejected' ? 'danger' : 'info') }}">
+                        
+                        <!-- Professional Timeline -->
+                        <div class="approval-timeline">
+                            @foreach($workflow->history->sortBy('created_at') as $index => $history)
+                            @php
+                                $isApproved = $history->action == 'approved';
+                                $isRejected = $history->action == 'rejected';
+                                $isPending = !$isApproved && !$isRejected;
+                                
+                                $iconColor = $isApproved ? '#22c55e' : ($isRejected ? '#ef4444' : '#3b82f6');
+                                $iconBg = $isApproved ? '#f0fdf4' : ($isRejected ? '#fef2f2' : '#eff6ff');
+                                $icon = $isApproved ? 'check_circle' : ($isRejected ? 'cancel' : 'pending');
+                            @endphp
+                            
+                            <div class="timeline-item" style="position:relative;padding-left:50px;padding-bottom:30px;">
+                                <!-- Timeline Line -->
+                                @if(!$loop->last)
+                                <div style="position:absolute;left:20px;top:40px;bottom:-10px;width:3px;background:linear-gradient(180deg, {{ $iconColor }} 0%, #e5e7eb 100%);"></div>
+                                @endif
+                                
+                                <!-- Timeline Icon -->
+                                <div style="position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;background:{{ $iconBg }};border:3px solid {{ $iconColor }};display:flex;align-items:center;justify-content:center;z-index:1;">
+                                    <span class="material-icons-outlined" style="font-size:20px;color:{{ $iconColor }};">{{ $icon }}</span>
+                                </div>
+                                
+                                <!-- Timeline Content -->
+                                <div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+                                        <div>
+                                            <span class="badge" style="background:{{ $iconColor }};color:white;font-size:13px;padding:4px 10px;border-radius:4px;">
                                                 {{ ucfirst($history->action) }}
                                             </span>
-                                        </td>
-                                        <td>{{ $history->performer->name ?? 'N/A' }}</td>
-                                        <td>{{ $history->comments ?? '-' }}</td>
-                                        <td>
                                             @if($history->previous_status && $history->new_status)
-                                                <small>{{ ucfirst($history->previous_status) }} → {{ ucfirst($history->new_status) }}</small>
+                                            <span style="font-size:12px;color:#6b7280;margin-left:8px;">
+                                                {{ ucfirst(str_replace('_', ' ', $history->previous_status)) }} → {{ ucfirst(str_replace('_', ' ', $history->new_status)) }}
+                                            </span>
                                             @endif
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                        </div>
+                                        <span style="font-size:12px;color:#6b7280;white-space:nowrap;">
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">schedule</span>
+                                            {{ $history->created_at->format('M d, Y H:i') }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div style="margin-top:10px;">
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                                            <span class="material-icons-outlined" style="font-size:18px;color:#4f46e5;">person</span>
+                                            <strong style="color:#111827;">{{ $history->performer->name ?? 'N/A' }}</strong>
+                                            @if($history->performer && $history->performer->roles->count() > 0)
+                                                @php
+                                                    $roleNames = $history->performer->roles->pluck('name')->filter()->join(', ');
+                                                @endphp
+                                                @if($roleNames)
+                                                <span style="font-size:12px;color:#6b7280;">
+                                                    ({{ $roleNames }})
+                                                </span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                        
+                                        @if($history->comments)
+                                        <div style="margin-top:8px;padding:10px;background:#f9fafb;border-left:3px solid {{ $iconColor }};border-radius:4px;">
+                                            <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">Comments</div>
+                                            <div style="color:#374151;font-size:14px;">{{ $history->comments }}</div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
+                        
+                        <style>
+                            .approval-timeline {
+                                margin-top: 20px;
+                                padding: 10px 0;
+                            }
+                            .timeline-item:hover > div:last-child {
+                                box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+                                transform: translateY(-1px);
+                                transition: all 0.2s ease;
+                            }
+                        </style>
                         @endif
                     </div>
                 </div>
