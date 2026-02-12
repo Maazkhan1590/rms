@@ -238,7 +238,7 @@ class PublicationController extends Controller
                 // Admins CANNOT bypass workflow - they must be assigned or have coordinator/dean role
                 
                 if ($canApprove) {
-                    $actions .= '<form action="' . route('admin.publications.approve', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Approve this publication at current workflow step?\');">';
+                    $actions .= '<form action="' . route('admin.publications.approve', $publication->id) . '" method="POST" style="display: inline;" class="approve-publication-form">';
                     $actions .= csrf_field();
                     $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" style="padding: 4px 8px; font-size: 12px;" title="Approve"><span class=\"material-icons-outlined\">check_circle</span></button>';
                     $actions .= '</form>';
@@ -247,14 +247,6 @@ class PublicationController extends Controller
             }
             // No approve button if no workflow exists - must follow workflow process
             
-            // Only show delete button to admins or the publication owner when not approved
-            if (!$isApproved && ($user->isAdmin || $user->hasRole('admin') || $publication->submitted_by == $user->id)) {
-                $actions .= '<form action="' . route('admin.publications.destroy', $publication->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Are you sure?\');">';
-                $actions .= csrf_field();
-                $actions .= method_field('DELETE');
-                $actions .= '<button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 4px 8px; font-size: 12px;" title="Delete"><span class=\"material-icons-outlined\">delete</span></button>';
-                $actions .= '</form>';
-            }
             $actions .= '</div>';
 
             return [

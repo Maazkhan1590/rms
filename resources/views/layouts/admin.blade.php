@@ -1199,6 +1199,34 @@
                         }
                     }
                 });
+
+                // Global handler for "Approve Publication" forms
+                $(document).on('submit', '.approve-publication-form', function (e) {
+                    e.preventDefault();
+
+                    const form = $(this);
+
+                    if (window.Swal) {
+                        Swal.fire({
+                            title: 'Approve Publication?',
+                            text: 'Are you sure you want to approve this publication at the current workflow step?',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, approve it',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#16a34a',
+                            cancelButtonColor: '#6b7280'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form[0].submit(); // Use native submit to bypass jQuery
+                            }
+                        });
+                    } else {
+                        if (confirm('Approve this publication at current workflow step?')) {
+                            form[0].submit();
+                        }
+                    }
+                });
             });
         }
     </script>
