@@ -97,6 +97,10 @@
     }
 
     h2 {
+      page-break-after: avoid;
+    }
+
+    h2 {
       font-size: 21px;
       margin-bottom: 12px;
       color: var(--primary-color);
@@ -263,9 +267,18 @@
       }
       section {
         margin-bottom: 16px;
-        page-break-inside: auto;
+        page-break-inside: avoid;
+      }
+      h2 {
+        page-break-after: avoid;
+      }
+      h2:first-of-type {
+        page-break-before: auto;
       }
       table {
+        page-break-inside: avoid;
+      }
+      .question-box {
         page-break-inside: avoid;
       }
     }
@@ -831,6 +844,153 @@
         </ol>
 
         <p><strong>Total Questions: 24</strong></p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Estimated Timelines for Pending Modules</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40%;">Module Name</th>
+            <th style="width: 30%;">Estimated Timeline</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Research Investments</strong></td>
+            <td><strong>1 week</strong></td>
+            <td class="notes">After client responses to questions</td>
+          </tr>
+          <tr>
+            <td><strong>Partnerships & MOUs</strong></td>
+            <td><strong>1 week</strong></td>
+            <td class="notes">After client responses to questions</td>
+          </tr>
+          <tr>
+            <td><strong>Adjunct Professors</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">After client responses to questions</td>
+          </tr>
+          <tr>
+            <td><strong>Commercializations</strong></td>
+            <td><strong>1 week</strong></td>
+            <td class="notes">After client responses to questions</td>
+          </tr>
+          <tr>
+            <td><strong>Consultancies & KT</strong></td>
+            <td><strong>1 week</strong></td>
+            <td class="notes">After client responses to questions</td>
+          </tr>
+          <tr>
+            <td><strong>Awards</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">After confirming if separate module needed</td>
+          </tr>
+          <tr>
+            <td><strong>Conference Activities</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Supervision & Exams</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Editorial Appointments</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Student Involvements</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Internal Fundings</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Block Fundings</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>SDG Contributions</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>SDG Mappings</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>SDG List</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">After confirming if separate module needed</td>
+          </tr>
+          <tr>
+            <td><strong>Research Fellows</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>TRN Course Details</strong></td>
+            <td><strong>1 week</strong></td>
+            <td class="notes">After client responses to questions and Excel structure clarification</td>
+          </tr>
+          <tr>
+            <td><strong>Faculty Profile</strong></td>
+            <td><strong>3-5 days</strong></td>
+            <td class="notes">After confirming scope (faculty only or include Dean/Coordinator)</td>
+          </tr>
+          <tr>
+            <td><strong>Reporting System Enhancements</strong></td>
+            <td><strong>1 week</strong></td>
+            <td class="notes">Advanced analytics, CV exports, management charts</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="summary-box" style="margin-top: 16px;">
+        <h3>Total Timeline Summary</h3>
+        <table style="margin-top: 12px; width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 50%;">Category</th>
+              <th style="width: 25%;">Modules Count</th>
+              <th style="width: 25%;">Estimated Timeline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Modules requiring client responses</strong></td>
+              <td>6 modules</td>
+              <td><strong>5 weeks</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Standard implementation modules</strong></td>
+              <td>14 modules</td>
+              <td><strong>6 weeks</strong></td>
+            </tr>
+            <tr style="background: #e8f4f2; font-weight: 600;">
+              <td><strong>Total (All Pending Modules)</strong></td>
+              <td><strong>20 modules</strong></td>
+              <td><strong>11 weeks</strong><br/><em>(~2.5-3 months)</em></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 16px;"><strong>Note:</strong> Timelines are estimates and may vary based on:</p>
+        <ul>
+          <li>Client response time to questions</li>
+          <li>Complexity of requirements</li>
+          <li>Testing and refinement needs</li>
+          <li>Resource availability</li>
+          <li>Modules can be developed in parallel where possible</li>
+        </ul>
       </div>
     </section>
 
