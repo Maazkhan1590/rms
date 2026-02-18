@@ -166,8 +166,26 @@
 
     .submission-type-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+        .submission-type-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .submission-type-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .submission-type-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
     .submission-type-btn {
@@ -184,6 +202,7 @@
         font-size: 1rem;
         font-weight: 600;
         color: var(--text-color);
+        text-align: center;
     }
 
     .submission-type-btn:hover {
@@ -191,6 +210,7 @@
         background: rgba(100, 255, 218, 0.05);
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
+        color: var(--text-color);
     }
 
     .submission-type-btn i {
@@ -354,22 +374,82 @@
             <div id="submissionTypeSelection" class="submission-type-selection" style="margin-bottom: 2rem;">
                 <h3 style="margin-bottom: 1rem; color: var(--text-color);">What would you like to submit?</h3>
                 <div class="submission-type-grid">
-                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('publication')">
+                    <a href="{{ route('publications.create') }}" class="submission-type-btn" style="text-decoration: none;">
                         <i class="fas fa-book"></i>
                         <span>Publication</span>
-                    </button>
-                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('grant')">
+                    </a>
+                    <a href="{{ route('grants.create') }}" class="submission-type-btn" style="text-decoration: none;">
                         <i class="fas fa-money-bill-wave"></i>
                         <span>Grant</span>
-                    </button>
-                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('rtn')">
-                        <i class="fas fa-graduation-cap"></i>
+                    </a>
+                    <a href="{{ route('rtn-submissions.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-clipboard-list"></i>
                         <span>RTN</span>
-                    </button>
-                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('bonus')">
-                        <i class="fas fa-award"></i>
+                    </a>
+                    <a href="{{ route('bonus-recognitions.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-trophy"></i>
                         <span>Bonus Recognition</span>
-                    </button>
+                    </a>
+                    <a href="{{ route('partnerships.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-handshake"></i>
+                        <span>Partnership & MOU</span>
+                    </a>
+                    <a href="{{ route('commercializations.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-rocket"></i>
+                        <span>Commercialization</span>
+                    </a>
+                    <a href="{{ route('consultancies.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Consultancy & KT</span>
+                    </a>
+                    <a href="{{ route('awards.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-award"></i>
+                        <span>Award</span>
+                    </a>
+                    <a href="{{ route('research-investments.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-laptop"></i>
+                        <span>Research Investment</span>
+                    </a>
+                    <a href="{{ route('conference-activities.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-microphone"></i>
+                        <span>Conference Activity</span>
+                    </a>
+                    <a href="{{ route('supervision-exams.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Supervision & Exam</span>
+                    </a>
+                    <a href="{{ route('editorial-appointments.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-edit"></i>
+                        <span>Editorial Appointment</span>
+                    </a>
+                    <a href="{{ route('student-involvements.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Student Involvement</span>
+                    </a>
+                    <a href="{{ route('research-fellows.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Research Fellow</span>
+                    </a>
+                    <a href="{{ route('sdg-contributions.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-globe"></i>
+                        <span>SDG Contribution</span>
+                    </a>
+                    <a href="{{ route('internal-fundings.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>Internal Funding</span>
+                    </a>
+                    <a href="{{ route('block-fundings.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-cube"></i>
+                        <span>Block Funding</span>
+                    </a>
+                    <a href="{{ route('rtn-course-details.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-book-reader"></i>
+                        <span>RTN Course Detail</span>
+                    </a>
+                    <a href="{{ route('adjunct-professors.propose') }}" class="submission-type-btn" style="text-decoration: none;">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Adjunct Professor</span>
+                    </a>
                 </div>
             </div>
             
@@ -884,7 +964,7 @@
         publicationType.dispatchEvent(new Event('change'));
     }
 
-    // Submission Type Selection
+    // Submission Type Selection - Now handled by direct links, but keep function for backward compatibility
     function selectSubmissionType(type) {
         const form = document.getElementById('publicationForm');
         const selection = document.getElementById('submissionTypeSelection');
@@ -905,6 +985,19 @@
             window.location.href = "{{ route('bonus-recognitions.create') }}";
         }
     }
+    
+    // Check if we should show the form directly (e.g., from URL parameter)
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('show') === 'form') {
+            const form = document.getElementById('publicationForm');
+            const selection = document.getElementById('submissionTypeSelection');
+            if (form && selection) {
+                form.style.display = 'block';
+                selection.style.display = 'none';
+            }
+        }
+    });
 
     // Evidence Files Handling
     let evidenceFileCount = 0;
