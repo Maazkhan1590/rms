@@ -203,6 +203,13 @@
         font-weight: 600;
         color: var(--text-color);
         text-align: center;
+        width: 100%;
+        font-family: inherit;
+    }
+    
+    .submission-type-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.3);
     }
 
     .submission-type-btn:hover {
@@ -374,10 +381,10 @@
             <div id="submissionTypeSelection" class="submission-type-selection" style="margin-bottom: 2rem;">
                 <h3 style="margin-bottom: 1rem; color: var(--text-color);">What would you like to submit?</h3>
                 <div class="submission-type-grid">
-                    <a href="{{ route('publications.create') }}" class="submission-type-btn" style="text-decoration: none;">
+                    <button type="button" class="submission-type-btn" onclick="selectSubmissionType('publication')">
                         <i class="fas fa-book"></i>
                         <span>Publication</span>
-                    </a>
+                    </button>
                     <a href="{{ route('grants.create') }}" class="submission-type-btn" style="text-decoration: none;">
                         <i class="fas fa-money-bill-wave"></i>
                         <span>Grant</span>
@@ -789,27 +796,33 @@
     }
 
     function nextStep() {
-        // Validate current step
+        // Validate current step using jQuery Validation
+        const $form = $('#publicationForm');
         const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
         if (!currentStepContent) return;
 
-        const requiredFields = currentStepContent.querySelectorAll('[required]');
+        // Get all fields in current step
+        const $stepFields = $(currentStepContent).find('input, select, textarea');
+        
+        // Validate only fields in current step
         let isValid = true;
-        let firstInvalid = null;
-
-        requiredFields.forEach(field => {
-            field.classList.remove('is-invalid');
-            if (!field.value.trim()) {
-                isValid = false;
-                field.classList.add('is-invalid');
-                if (!firstInvalid) firstInvalid = field;
+        $stepFields.each(function() {
+            const $field = $(this);
+            if ($field.attr('required') || $field.hasClass('required')) {
+                if (!$form.validate().element($field)) {
+                    isValid = false;
+                }
             }
         });
 
         if (!isValid) {
-            if (firstInvalid) {
-                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstInvalid.focus();
+            // Scroll to first error
+            const firstError = $(currentStepContent).find('.is-invalid').first();
+            if (firstError.length) {
+                $('html, body').animate({
+                    scrollTop: firstError.offset().top - 100
+                }, 500);
+                firstError.focus();
             }
             return;
         }
@@ -867,6 +880,12 @@
         container.appendChild(newAuthor);
         authorCount++;
         updateRemoveButtons();
+        
+        // Re-validate form after adding new author
+        if (typeof window.revalidateForm === 'function') {
+            const $form = $('#publicationForm');
+            window.revalidateForm($form);
+        }
     }
 
     function removeAuthor(button) {
@@ -969,11 +988,32 @@
         const form = document.getElementById('publicationForm');
         const selection = document.getElementById('submissionTypeSelection');
         
+        if (!form || !selection) {
+            console.error('Form or selection element not found');
+            return;
+        }
+        
         if (type === 'publication') {
             // Show publication form
             form.style.display = 'block';
             selection.style.display = 'none';
             form.action = "{{ route('publications.store') }}";
+            
+            // Scroll to top of form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Initialize validation if needed
+            if (typeof window.revalidateForm === 'function') {
+                const $form = $('#publicationForm');
+                if ($form.length && !$form.data('validator')) {
+                    // Form validation will be initialized automatically
+                    setTimeout(function() {
+                        if (typeof initializeValidation === 'function') {
+                            initializeValidation();
+                        }
+                    }, 100);
+                }
+            }
         } else if (type === 'grant') {
             // Redirect to grant form
             window.location.href = "{{ route('grants.create') }}";
@@ -985,6 +1025,9 @@
             window.location.href = "{{ route('bonus-recognitions.create') }}";
         }
     }
+    
+    // Make function globally available
+    window.selectSubmissionType = selectSubmissionType;
     
     // Check if we should show the form directly (e.g., from URL parameter)
     document.addEventListener('DOMContentLoaded', function() {
