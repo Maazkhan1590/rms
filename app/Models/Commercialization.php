@@ -5,27 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SupervisionExam extends Model
+class Commercialization extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes, HasFactory;
+
+    protected $table = 'commercializations';
 
     protected $fillable = [
-        'user_id',
-        'staff_name',
-        'academic_year',
-        'role',
-        'degree',
-        'university',
-        'student_name',
-        'thesis_title',
-        'start_year',
-        'end_year',
-        'status',
-        'workflow_status',
+        'product_service_name',
+        'owner_team_id',
+        'owner_team',
+        'type',
+        'stage',
+        'launch_date',
+        'revenue_omr',
+        'ip_patent',
+        'client_market',
         'evidence_link',
-        'notes',
+        'sdg_s',
+        'reporting_period',
+        'year',
+        'status',
         'submitted_by',
         'approver_id',
         'submitted_at',
@@ -39,64 +40,81 @@ class SupervisionExam extends Model
     ];
 
     protected $casts = [
-        'start_year' => 'integer',
-        'end_year' => 'integer',
+        'launch_date' => 'date',
+        'revenue_omr' => 'decimal:2',
+        'ip_patent' => 'boolean',
         'submitted_at' => 'datetime',
         'approved_at' => 'datetime',
         'points_allocated' => 'decimal:2',
         'points_locked' => 'boolean',
         'evidence_required' => 'boolean',
         'evidence_uploaded' => 'boolean',
+        'year' => 'integer',
     ];
 
     /**
-     * Get the user that owns the supervision/exam record.
+     * Get the user who submitted this commercialization
      */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function submitter()
     {
         return $this->belongsTo(User::class, 'submitted_by');
     }
 
+    /**
+     * Get the user who approved this commercialization
+     */
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id');
     }
 
+    /**
+     * Get the owner team member
+     */
+    public function ownerTeam()
+    {
+        return $this->belongsTo(User::class, 'owner_team_id');
+    }
+
+    /**
+     * Get the policy version used for scoring
+     */
     public function policyVersion()
     {
         return $this->belongsTo(PolicyVersion::class);
     }
 
+    /**
+     * Get all evidence files for this commercialization
+     */
     public function evidenceFiles()
     {
         return $this->morphMany(EvidenceFile::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'supervision_exam');
+            ->where('submission_type', 'commercialization');
     }
 
+    /**
+     * Get approval workflow for this commercialization
+     */
     public function workflow()
     {
         return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'supervision_exam');
+            ->where('submission_type', 'commercialization');
     }
 
     /**
-     * Check if the supervision is currently ongoing.
+     * Scope to filter by status
      */
-    public function isOngoing(): bool
+    public function scopeWithStatus($query, string $status)
     {
-        return $this->status === 'Ongoing';
+        return $query->where('status', $status);
     }
 
     /**
-     * Check if the supervision is completed.
+     * Scope to filter by type
      */
-    public function isCompleted(): bool
+    public function scopeOfType($query, string $type)
     {
-        return $this->status === 'Completed';
+        return $query->where('type', $type);
     }
 }

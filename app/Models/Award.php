@@ -6,20 +6,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class StudentInvolvement extends Model
+class Award extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes, HasFactory;
+
+    protected $table = 'awards';
 
     protected $fillable = [
-        'user_id',
-        'category',
-        'count',
-        'notes',
-        'date',
-        'academic_year',
-        'status',
+        'award_name',
+        'description',
         'submitted_by',
         'approver_id',
+        'awarding_organization',
+        'award_date',
+        'award_type',
+        'category',
+        'achievement_description',
+        'evidence_link',
+        'evidence_description',
+        'status',
         'submitted_at',
         'approved_at',
         'points_allocated',
@@ -27,25 +32,19 @@ class StudentInvolvement extends Model
         'policy_version_id',
         'evidence_required',
         'evidence_uploaded',
-        'evidence_description',
-        'evidence_link',
+        'year',
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'count' => 'integer',
+        'award_date' => 'date',
         'submitted_at' => 'datetime',
         'approved_at' => 'datetime',
         'points_allocated' => 'decimal:2',
         'points_locked' => 'boolean',
         'evidence_required' => 'boolean',
         'evidence_uploaded' => 'boolean',
+        'year' => 'integer',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function submitter()
     {
@@ -65,20 +64,17 @@ class StudentInvolvement extends Model
     public function evidenceFiles()
     {
         return $this->morphMany(EvidenceFile::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'student_involvement');
+            ->where('submission_type', 'award');
     }
 
     public function workflow()
     {
         return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'student_involvement');
+            ->where('submission_type', 'award');
     }
 
-    /**
-     * Get total count by category.
-     */
-    public static function getTotalByCategory(string $category): int
+    public function scopeWithStatus($query, string $status)
     {
-        return self::where('category', $category)->sum('count');
+        return $query->where('status', $status);
     }
 }

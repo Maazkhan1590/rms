@@ -6,18 +6,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class StudentInvolvement extends Model
+class Consultancy extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes, HasFactory;
+
+    protected $table = 'consultancies_kts';
 
     protected $fillable = [
         'user_id',
-        'category',
-        'count',
-        'notes',
-        'date',
-        'academic_year',
+        'project_consultancy_name',
+        'start_date',
+        'end_date',
+        'client_sponsor',
+        'amount_omr',
         'status',
+        'commercialized',
+        'income_type',
+        'lead_staff',
+        'evidence_link',
+        'sdg_s',
+        'reporting_period',
+        'year',
         'submitted_by',
         'approver_id',
         'submitted_at',
@@ -28,24 +37,21 @@ class StudentInvolvement extends Model
         'evidence_required',
         'evidence_uploaded',
         'evidence_description',
-        'evidence_link',
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'count' => 'integer',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'amount_omr' => 'decimal:2',
+        'commercialized' => 'boolean',
         'submitted_at' => 'datetime',
         'approved_at' => 'datetime',
         'points_allocated' => 'decimal:2',
         'points_locked' => 'boolean',
         'evidence_required' => 'boolean',
         'evidence_uploaded' => 'boolean',
+        'year' => 'integer',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function submitter()
     {
@@ -57,6 +63,11 @@ class StudentInvolvement extends Model
         return $this->belongsTo(User::class, 'approver_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function policyVersion()
     {
         return $this->belongsTo(PolicyVersion::class);
@@ -65,20 +76,17 @@ class StudentInvolvement extends Model
     public function evidenceFiles()
     {
         return $this->morphMany(EvidenceFile::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'student_involvement');
+            ->where('submission_type', 'consultancy');
     }
 
     public function workflow()
     {
         return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'student_involvement');
+            ->where('submission_type', 'consultancy');
     }
 
-    /**
-     * Get total count by category.
-     */
-    public static function getTotalByCategory(string $category): int
+    public function scopeWithStatus($query, string $status)
     {
-        return self::where('category', $category)->sum('count');
+        return $query->where('status', $status);
     }
 }

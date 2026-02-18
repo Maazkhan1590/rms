@@ -70,6 +70,34 @@ class ApprovalWorkflow extends Model
                 return RtnSubmission::find($this->submission_id);
             case 'bonus':
                 return BonusRecognition::find($this->submission_id);
+            case 'mou':
+                return PartnershipMou::find($this->submission_id);
+            case 'commercialization':
+                return Commercialization::find($this->submission_id);
+            case 'consultancy':
+                return Consultancy::find($this->submission_id);
+            case 'award':
+                return Award::find($this->submission_id);
+            case 'research_investment':
+                return ResearchInvestment::find($this->submission_id);
+            case 'conference_activity':
+                return ConferenceActivity::find($this->submission_id);
+            case 'supervision_exam':
+                return SupervisionExam::find($this->submission_id);
+            case 'editorial_appointment':
+                return EditorialAppointment::find($this->submission_id);
+            case 'student_involvement':
+                return StudentInvolvement::find($this->submission_id);
+            case 'research_fellow':
+                return ResearchFellow::find($this->submission_id);
+            case 'sdg_contribution':
+                return SdgContribution::find($this->submission_id);
+            case 'internal_funding':
+                return InternalFunding::find($this->submission_id);
+            case 'block_funding':
+                return BlockFunding::find($this->submission_id);
+            case 'rtn_course_detail':
+                return RtnCourseDetail::find($this->submission_id);
             default:
                 return null;
         }

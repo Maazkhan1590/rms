@@ -158,6 +158,54 @@ class User extends Authenticatable
     }
 
     /**
+     * Get all partnerships/MOUs submitted by this user
+     */
+    public function partnerships()
+    {
+        return $this->hasMany(PartnershipMou::class, 'submitted_by');
+    }
+
+    /**
+     * Get all commercializations submitted by this user
+     */
+    public function commercializations()
+    {
+        return $this->hasMany(Commercialization::class, 'submitted_by');
+    }
+
+    /**
+     * Get all consultancies submitted by this user
+     */
+    public function consultancies()
+    {
+        return $this->hasMany(Consultancy::class, 'submitted_by');
+    }
+
+    /**
+     * Get all awards submitted by this user
+     */
+    public function awards()
+    {
+        return $this->hasMany(Award::class, 'submitted_by');
+    }
+
+    /**
+     * Get all research investments submitted by this user
+     */
+    public function researchInvestments()
+    {
+        return $this->hasMany(ResearchInvestment::class, 'submitted_by');
+    }
+
+    /**
+     * Get all conference activities submitted by this user
+     */
+    public function conferenceActivities()
+    {
+        return $this->hasMany(ConferenceActivity::class, 'submitted_by');
+    }
+
+    /**
      * Get all RTN submissions by this user
      */
     public function rtnSubmissions()
@@ -259,6 +307,46 @@ class User extends Authenticatable
         public function supervisionExams()
         {
             return $this->hasMany(SupervisionExam::class);
+        }
+
+        /**
+         * Get all student involvements submitted by this user
+         */
+        public function studentInvolvements()
+        {
+            return $this->hasMany(StudentInvolvement::class, 'submitted_by');
+        }
+
+        /**
+         * Get all SDG contributions submitted by this user
+         */
+        public function sdgContributions()
+        {
+            return $this->hasMany(SdgContribution::class, 'submitted_by');
+        }
+
+        /**
+         * Get all internal fundings submitted by this user
+         */
+        public function internalFundings()
+        {
+            return $this->hasMany(InternalFunding::class, 'submitted_by');
+        }
+
+        /**
+         * Get all block fundings submitted by this user
+         */
+        public function blockFundings()
+        {
+            return $this->hasMany(BlockFunding::class, 'submitted_by');
+        }
+
+        /**
+         * Get all RTN course details submitted by this user
+         */
+        public function rtnCourseDetails()
+        {
+            return $this->hasMany(RtnCourseDetail::class, 'submitted_by');
         }
 
     /**

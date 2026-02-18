@@ -6,18 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class StudentInvolvement extends Model
+class PartnershipMou extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes, HasFactory;
+
+    protected $table = 'partnerships_mous';
 
     protected $fillable = [
-        'user_id',
-        'category',
-        'count',
-        'notes',
-        'date',
-        'academic_year',
+        'partner_organization',
+        'type',
+        'date_signed',
+        'expiry_date',
+        'scope_theme',
+        'lead_staff_id',
+        'lead_staff',
+        'outputs_papers_grants_events',
         'status',
+        'evidence_link',
+        'sdg_s',
         'submitted_by',
         'approver_id',
         'submitted_at',
@@ -28,57 +34,84 @@ class StudentInvolvement extends Model
         'evidence_required',
         'evidence_uploaded',
         'evidence_description',
-        'evidence_link',
+        'year',
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'count' => 'integer',
+        'date_signed' => 'date',
+        'expiry_date' => 'date',
         'submitted_at' => 'datetime',
         'approved_at' => 'datetime',
         'points_allocated' => 'decimal:2',
         'points_locked' => 'boolean',
         'evidence_required' => 'boolean',
         'evidence_uploaded' => 'boolean',
+        'year' => 'integer',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
+    /**
+     * Get the user who submitted this MOU
+     */
     public function submitter()
     {
         return $this->belongsTo(User::class, 'submitted_by');
     }
 
+    /**
+     * Get the user who approved this MOU
+     */
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id');
     }
 
+    /**
+     * Get the lead staff member
+     */
+    public function leadStaff()
+    {
+        return $this->belongsTo(User::class, 'lead_staff_id');
+    }
+
+    /**
+     * Get the policy version used for scoring
+     */
     public function policyVersion()
     {
         return $this->belongsTo(PolicyVersion::class);
     }
 
+    /**
+     * Get all evidence files for this MOU
+     */
     public function evidenceFiles()
     {
         return $this->morphMany(EvidenceFile::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'student_involvement');
-    }
-
-    public function workflow()
-    {
-        return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
-            ->where('submission_type', 'student_involvement');
+            ->where('submission_type', 'mou');
     }
 
     /**
-     * Get total count by category.
+     * Get approval workflow for this MOU
      */
-    public static function getTotalByCategory(string $category): int
+    public function workflow()
     {
-        return self::where('category', $category)->sum('count');
+        return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
+            ->where('submission_type', 'mou');
+    }
+
+    /**
+     * Scope to filter by status
+     */
+    public function scopeWithStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope to filter by type
+     */
+    public function scopeOfType($query, string $type)
+    {
+        return $query->where('type', $type);
     }
 }
