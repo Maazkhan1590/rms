@@ -1,69 +1,4 @@
 <!-- Navigation -->
-<style>
-.nav-item.dropdown .dropdown-menu {
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    border: 1px solid #e5e7eb;
-    padding: 0.5rem 0;
-    margin-top: 0.5rem;
-}
-.nav-item.dropdown .dropdown-item {
-    padding: 0.6rem 1.25rem;
-    font-size: 0.9rem;
-    color: #374151;
-    transition: all 0.2s ease;
-}
-.nav-item.dropdown .dropdown-item:hover {
-    background: #f3f4f6;
-    color: #111827;
-}
-.nav-item.dropdown .dropdown-item i {
-    width: 20px;
-    margin-right: 0.5rem;
-    color: #6b7280;
-}
-.nav-item.dropdown .dropdown-header {
-    padding: 0.5rem 1.25rem;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6b7280;
-    font-weight: 600;
-}
-.nav-actions .dropdown-menu {
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    border: 1px solid #e5e7eb;
-    padding: 0.5rem 0;
-    margin-top: 0.5rem;
-    max-height: 70vh;
-    overflow-y: auto;
-    min-width: 250px;
-}
-.nav-actions .dropdown-item {
-    padding: 0.6rem 1.25rem;
-    font-size: 0.9rem;
-    color: #374151;
-    transition: all 0.2s ease;
-}
-.nav-actions .dropdown-item:hover {
-    background: #f3f4f6;
-    color: #111827;
-}
-.nav-actions .dropdown-item i {
-    width: 20px;
-    margin-right: 0.5rem;
-    color: #6b7280;
-}
-.nav-actions .dropdown-header {
-    padding: 0.5rem 1.25rem;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6b7280;
-    font-weight: 600;
-}
-</style>
 <nav class="navbar">
     <div class="nav-container">
         <a href="{{ route('welcome') }}" class="logo">
@@ -94,8 +29,8 @@
                     $user = auth()->user();
                     $isPureFaculty = $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean();
                 @endphp
-                <li class="nav-item {{ request()->routeIs('submit.*') ? 'active' : '' }}">
-                    <a href="{{ route('submit.index') }}" class="nav-link">
+                <li class="nav-item">
+                    <a href="{{ route('publications.create') }}" class="nav-link">
                         <i class="fas fa-plus-circle"></i> Submit
                     </a>
                 </li>
@@ -138,7 +73,7 @@
         </ul>
         <div class="nav-actions">
             @auth
-                <button class="btn-submit" onclick="window.location.href='{{ route('submit.index') }}'">
+                <button class="btn-submit" onclick="window.location.href='{{ route('publications.create') }}'">
                     <i class="fas fa-paper-plane"></i> Submit
                 </button>
             @else

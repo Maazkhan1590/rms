@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Academic Research Portal')</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/favicon/favicon.ico') }}">
@@ -15,74 +15,70 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/favicon/favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon/favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon/favicon.ico') }}">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     @if(request()->routeIs('welcome'))
-    <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
     @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Bootstrap CSS for dropdowns -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     @stack('styles')
 </head>
 <body>
-    @include('partials.public-header')
+@include('partials.public-header')
 
-    @if(session('success'))
+@if(session('success'))
     <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; background: #22c55e; color: white; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
         <i class="fas fa-check-circle"></i> {{ session('success') }}
     </div>
-    @endif
+@endif
 
-    @if(session('error'))
+@if(session('error'))
     <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; background: #ef4444; color: white; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
         <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
     </div>
-    @endif
+@endif
 
-    @yield('content')
+@yield('content')
 
-    @include('partials.public-footer')
+@include('partials.public-footer')
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap JS for dropdowns -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/script.js') }}"></script>
-    <!-- Form Submit Blocker - Prevents duplicate submissions -->
-    <script src="{{ asset('js/form-blocker.js') }}"></script>
-    @if(request()->routeIs('welcome'))
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ asset('js/script.js') }}"></script>
+<!-- Form Submit Blocker - Prevents duplicate submissions -->
+<script src="{{ asset('js/form-blocker.js') }}"></script>
+@if(request()->routeIs('welcome'))
     <script src="{{ asset('js/slider.js') }}"></script>
-    @endif
-    @if(request()->routeIs('login') || request()->routeIs('register'))
+@endif
+@if(request()->routeIs('login') || request()->routeIs('register'))
     <script src="{{ asset('js/auth.js') }}"></script>
-    @endif
-    @if(request()->routeIs('publications.*'))
+@endif
+@if(request()->routeIs('publications.*'))
     <script src="{{ asset('js/publications.js') }}"></script>
-    @endif
-    
-    @stack('scripts')
-    
-    <script>
-        // Set base URL for JavaScript (handles subdirectory deployment)
-        window.BASE_URL = '{{ url("/") }}';
-        window.ASSET_URL = '{{ asset("") }}';
-        
-        // Auto-hide success/error messages
-        setTimeout(() => {
-            const messages = document.querySelectorAll('[style*="position: fixed"]');
-            messages.forEach(msg => {
-                msg.style.opacity = '0';
-                msg.style.transition = 'opacity 0.5s';
-                setTimeout(() => msg.remove(), 500);
-            });
-        }, 5000);
-    </script>
+@endif
+
+@stack('scripts')
+
+<script>
+    // Set base URL for JavaScript (handles subdirectory deployment)
+    window.BASE_URL = '{{ url("/") }}';
+    window.ASSET_URL = '{{ asset("") }}';
+
+    // Auto-hide success/error messages
+    setTimeout(() => {
+        const messages = document.querySelectorAll('[style*="position: fixed"]');
+        messages.forEach(msg => {
+            msg.style.opacity = '0';
+            msg.style.transition = 'opacity 0.5s';
+            setTimeout(() => msg.remove(), 500);
+        });
+    }, 5000);
+</script>
 </body>
 </html>
