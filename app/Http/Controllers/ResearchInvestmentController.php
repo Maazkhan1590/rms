@@ -163,7 +163,7 @@ class ResearchInvestmentController extends Controller
             'reporting_period' => 'nullable|in:q1,q2,q3,q4',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
-            'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip|max:10240',
+            'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
             'evidence_urls.*' => 'nullable|url|max:500',
             'evidence_description' => 'nullable|string|max:1000',
