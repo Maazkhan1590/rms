@@ -131,12 +131,42 @@ class FacultyMemberController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
+        // Get all new modules
+        $partnerships = PartnershipMou::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $commercializations = Commercialization::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $consultancies = Consultancy::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $awards = Award::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $researchInvestments = ResearchInvestment::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $conferenceActivities = ConferenceActivity::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('date')->get();
+        $supervisionExams = SupervisionExam::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('academic_year')->get();
+        $editorialAppointments = EditorialAppointment::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $studentInvolvements = StudentInvolvement::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('academic_year')->get();
+        $researchFellows = ResearchFellow::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $sdgContributions = SdgContribution::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $internalFundings = InternalFunding::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $blockFundings = BlockFunding::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+        $rtnCourseDetails = RtnCourseDetail::where('submitted_by', $user->id)->with(['submitter', 'evidenceFiles'])->orderByDesc('year')->get();
+
         return view('faculty-members.show', compact(
             'user',
             'publications',
             'grants',
             'rtnSubmissions',
-            'bonusRecognitions'
+            'bonusRecognitions',
+            'partnerships',
+            'commercializations',
+            'consultancies',
+            'awards',
+            'researchInvestments',
+            'conferenceActivities',
+            'supervisionExams',
+            'editorialAppointments',
+            'studentInvolvements',
+            'researchFellows',
+            'sdgContributions',
+            'internalFundings',
+            'blockFundings',
+            'rtnCourseDetails'
         ));
     }
 

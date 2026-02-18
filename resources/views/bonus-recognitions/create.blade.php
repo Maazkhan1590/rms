@@ -82,6 +82,11 @@
     <div class="container">
         <div class="auth-container">
             <div class="auth-header">
+                <div style="margin-bottom: 1rem;">
+                    <a href="{{ route('submit.index') }}" style="color: #6b7280; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-arrow-left"></i> Back to Submissions
+                    </a>
+                </div>
                 <h1>Submit Bonus Recognition</h1>
                 <p>Submit your research recognition or achievement</p>
             </div>

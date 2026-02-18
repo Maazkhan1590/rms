@@ -161,6 +161,18 @@
                         <i class="fas fa-download"></i>
                         <span>Download CV</span>
                     </a>
+                    @auth
+                        @if(auth()->id() == $user->id)
+                        <a href="{{ route('profile.password.edit') }}" 
+                           class="btn btn-edit-profile" 
+                           style="display: inline-flex; align-items: center; gap: .5rem; padding: .65rem 1.25rem; background: #7c3aed; color: white; text-decoration: none; border-radius: 8px; font-size: .9rem; font-weight: 600; transition: background .2s ease; min-width: 180px; justify-content: center; margin-top: .5rem;"
+                           onmouseover="this.style.background='#6d28d9'"
+                           onmouseout="this.style.background='#7c3aed'">
+                            <i class="fas fa-edit"></i>
+                            <span>Edit Profile</span>
+                        </a>
+                        @endif
+                    @endauth
                 </div>
                 <div style="margin-bottom:.4rem; font-weight:500; color:#6b7280;">Detailed Information</div>
                 <div>Profile generated from RMS data</div>
@@ -169,8 +181,8 @@
 
         <hr style="border:none; border-top:1px solid #e5e7eb; margin:0 0 1.25rem;">
 
-        <!-- Profile Tabs: Publications / Grants / RTN / Recognitions -->
-        <div class="profile-tabs" style="margin-top:.5rem;">
+        <!-- Profile Tabs: All Modules -->
+        <div class="profile-tabs" style="margin-top:.5rem; overflow-x: auto; flex-wrap: wrap;">
             <button type="button" class="profile-tab active" data-tab="publications">
                 <span>Publications</span>
                 <span class="profile-tab-count">{{ $publications->total() }}</span>
@@ -186,6 +198,62 @@
             <button type="button" class="profile-tab" data-tab="bonus">
                 <span>Recognitions</span>
                 <span class="profile-tab-count">{{ $bonusRecognitions->count() }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="partnerships">
+                <span>Partnerships</span>
+                <span class="profile-tab-count">{{ isset($partnerships) ? $partnerships->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="commercializations">
+                <span>Commercializations</span>
+                <span class="profile-tab-count">{{ isset($commercializations) ? $commercializations->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="consultancies">
+                <span>Consultancies</span>
+                <span class="profile-tab-count">{{ isset($consultancies) ? $consultancies->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="awards">
+                <span>Awards</span>
+                <span class="profile-tab-count">{{ isset($awards) ? $awards->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="investments">
+                <span>Investments</span>
+                <span class="profile-tab-count">{{ isset($researchInvestments) ? $researchInvestments->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="conferences">
+                <span>Conferences</span>
+                <span class="profile-tab-count">{{ isset($conferenceActivities) ? $conferenceActivities->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="supervision">
+                <span>Supervision</span>
+                <span class="profile-tab-count">{{ isset($supervisionExams) ? $supervisionExams->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="editorial">
+                <span>Editorial</span>
+                <span class="profile-tab-count">{{ isset($editorialAppointments) ? $editorialAppointments->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="students">
+                <span>Students</span>
+                <span class="profile-tab-count">{{ isset($studentInvolvements) ? $studentInvolvements->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="fellows">
+                <span>Fellows</span>
+                <span class="profile-tab-count">{{ isset($researchFellows) ? $researchFellows->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="sdg">
+                <span>SDG</span>
+                <span class="profile-tab-count">{{ isset($sdgContributions) ? $sdgContributions->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="internal-funding">
+                <span>Internal Funding</span>
+                <span class="profile-tab-count">{{ isset($internalFundings) ? $internalFundings->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="block-funding">
+                <span>Block Funding</span>
+                <span class="profile-tab-count">{{ isset($blockFundings) ? $blockFundings->count() : 0 }}</span>
+            </button>
+            <button type="button" class="profile-tab" data-tab="rtn-courses">
+                <span>RTN Courses</span>
+                <span class="profile-tab-count">{{ isset($rtnCourseDetails) ? $rtnCourseDetails->count() : 0 }}</span>
             </button>
         </div>
 
@@ -519,6 +587,415 @@
                 </div>
             @endif
         </div>
+
+        <!-- Partnerships Tab -->
+        @if(isset($partnerships))
+        <div class="profile-tab-content" data-tab="partnerships" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Partnerships & MOUs ({{ $partnerships->count() }})
+            </h2>
+            @if($partnerships->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($partnerships as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('partnerships.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->partner_name ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Type:</strong> {{ $item->mou_type ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No partnerships found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Commercializations Tab -->
+        @if(isset($commercializations))
+        <div class="profile-tab-content" data-tab="commercializations" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Commercializations ({{ $commercializations->count() }})
+            </h2>
+            @if($commercializations->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($commercializations as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('commercializations.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Type:</strong> {{ $item->commercialization_type ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No commercializations found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Consultancies Tab -->
+        @if(isset($consultancies))
+        <div class="profile-tab-content" data-tab="consultancies" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Consultancies & KT ({{ $consultancies->count() }})
+            </h2>
+            @if($consultancies->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($consultancies as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('consultancies.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Type:</strong> {{ $item->income_type ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                                @if($item->amount_omr)
+                                    <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No consultancies found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Awards Tab -->
+        @if(isset($awards))
+        <div class="profile-tab-content" data-tab="awards" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Awards ({{ $awards->count() }})
+            </h2>
+            @if($awards->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($awards as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('awards.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Organization:</strong> {{ $item->organization ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No awards found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Research Investments Tab -->
+        @if(isset($researchInvestments))
+        <div class="profile-tab-content" data-tab="investments" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Research Investments ({{ $researchInvestments->count() }})
+            </h2>
+            @if($researchInvestments->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($researchInvestments as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('research-investments.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->item ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Category:</strong> {{ ucfirst(str_replace('_', ' ', $item->category ?? 'N/A')) }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                                @if($item->amount_omr)
+                                    <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No research investments found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Conference Activities Tab -->
+        @if(isset($conferenceActivities))
+        <div class="profile-tab-content" data-tab="conferences" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Conference Activities ({{ $conferenceActivities->count() }})
+            </h2>
+            @if($conferenceActivities->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($conferenceActivities as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('conference-activities.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->conference ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Activity:</strong> {{ ucfirst(str_replace('_', ' ', $item->activity_type ?? 'N/A')) }}</span>
+                                <span><strong>Country:</strong> {{ $item->country ?? 'N/A' }}</span>
+                                @if($item->date)
+                                    <span><strong>Date:</strong> {{ \Carbon\Carbon::parse($item->date)->format('M Y') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No conference activities found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Supervision & Exams Tab -->
+        @if(isset($supervisionExams))
+        <div class="profile-tab-content" data-tab="supervision" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Supervision & Examinations ({{ $supervisionExams->count() }})
+            </h2>
+            @if($supervisionExams->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($supervisionExams as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('supervision-exams.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->student_name ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Role:</strong> {{ ucfirst(str_replace('_', ' ', $item->role ?? 'N/A')) }}</span>
+                                <span><strong>Degree:</strong> {{ $item->degree ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No supervision records found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Editorial Appointments Tab -->
+        @if(isset($editorialAppointments))
+        <div class="profile-tab-content" data-tab="editorial" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Editorial Appointments ({{ $editorialAppointments->count() }})
+            </h2>
+            @if($editorialAppointments->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($editorialAppointments as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('editorial-appointments.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->journal_conference ?? 'N/A' }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Role:</strong> {{ $item->role ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No editorial appointments found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Student Involvements Tab -->
+        @if(isset($studentInvolvements))
+        <div class="profile-tab-content" data-tab="students" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Student Involvements ({{ $studentInvolvements->count() }})
+            </h2>
+            @if($studentInvolvements->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($studentInvolvements as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('student-involvements.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ ucfirst(str_replace('_', ' ', $item->category ?? 'N/A')) }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Count:</strong> {{ $item->count ?? 'N/A' }}</span>
+                                <span><strong>Academic Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No student involvements found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Research Fellows Tab -->
+        @if(isset($researchFellows))
+        <div class="profile-tab-content" data-tab="fellows" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Research Fellows ({{ $researchFellows->count() }})
+            </h2>
+            @if($researchFellows->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($researchFellows as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('research-fellows.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->publication_title ?? 'N/A', 60) }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Journal:</strong> {{ Str::limit($item->journal ?? 'N/A', 40) }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No research fellows found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- SDG Contributions Tab -->
+        @if(isset($sdgContributions))
+        <div class="profile-tab-content" data-tab="sdg" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                SDG Contributions ({{ $sdgContributions->count() }})
+            </h2>
+            @if($sdgContributions->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($sdgContributions as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('sdg-contributions.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->title ?? 'N/A', 60) }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>SDG:</strong> SDG {{ $item->sdg ?? 'N/A' }}</span>
+                                <span><strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $item->type ?? 'N/A')) }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No SDG contributions found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Internal Fundings Tab -->
+        @if(isset($internalFundings))
+        <div class="profile-tab-content" data-tab="internal-funding" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Internal Fundings ({{ $internalFundings->count() }})
+            </h2>
+            @if($internalFundings->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($internalFundings as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('internal-fundings.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->project_title ?? 'N/A', 60) }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Source:</strong> {{ $item->funding_source ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                                @if($item->amount_omr)
+                                    <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No internal fundings found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Block Fundings Tab -->
+        @if(isset($blockFundings))
+        <div class="profile-tab-content" data-tab="block-funding" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                Block Fundings ({{ $blockFundings->count() }})
+            </h2>
+            @if($blockFundings->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($blockFundings as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('block-fundings.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->project_title ?? 'N/A', 60) }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>Source:</strong> {{ $item->funding_source ?? 'N/A' }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                                @if($item->amount_omr)
+                                    <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No block fundings found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- RTN Course Details Tab -->
+        @if(isset($rtnCourseDetails))
+        <div class="profile-tab-content" data-tab="rtn-courses" style="display:none;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-color);">
+                RTN Course Details ({{ $rtnCourseDetails->count() }})
+            </h2>
+            @if($rtnCourseDetails->count() > 0)
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    @foreach($rtnCourseDetails as $item)
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                <a href="{{ route('rtn-course-details.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->course_code ?? 'N/A' }} - {{ Str::limit($item->course_name ?? 'N/A', 50) }}</a>
+                            </h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span><strong>RTN Type:</strong> {{ str_replace('_', ' ', strtoupper($item->rtn_type ?? 'N/A')) }}</span>
+                                <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 4rem 2rem;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary);">No RTN course details found.</p>
+                </div>
+            @endif
+        </div>
+        @endif
     </div>
 </section>
 @endsection

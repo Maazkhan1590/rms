@@ -43,6 +43,9 @@ Route::get('/clear-cache', function () {
 // Public Home Page
 Route::get('/', 'HomeController@index')->name('welcome');
 
+// Submissions Index Page
+Route::get('submit', 'SubmissionController@index')->name('submit.index')->middleware('auth');
+
 // Public Faculty Members Page
 Route::get('faculty-members', 'FacultyMemberController@index')->name('faculty-members.index');
 Route::get('faculty-members/{user}', 'FacultyMemberController@show')->name('faculty-members.show');
