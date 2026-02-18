@@ -7,6 +7,20 @@ use App\Models\Publication;
 use App\Models\Grant;
 use App\Models\RtnSubmission;
 use App\Models\BonusRecognition;
+use App\Models\PartnershipMou;
+use App\Models\Commercialization;
+use App\Models\Consultancy;
+use App\Models\Award;
+use App\Models\ResearchInvestment;
+use App\Models\ConferenceActivity;
+use App\Models\SupervisionExam;
+use App\Models\EditorialAppointment;
+use App\Models\StudentInvolvement;
+use App\Models\ResearchFellow;
+use App\Models\SdgContribution;
+use App\Models\InternalFunding;
+use App\Models\BlockFunding;
+use App\Models\RtnCourseDetail;
 use Illuminate\Http\Request;
 use Mpdf\Mpdf;
 use Illuminate\Support\Facades\View;
@@ -169,13 +183,125 @@ class FacultyMemberController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
+        // Get all partnerships & MOUs
+        $partnerships = PartnershipMou::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all commercializations
+        $commercializations = Commercialization::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all consultancies
+        $consultancies = Consultancy::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all awards
+        $awards = Award::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all research investments
+        $researchInvestments = ResearchInvestment::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all conference activities
+        $conferenceActivities = ConferenceActivity::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('date')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all supervision & exams
+        $supervisionExams = SupervisionExam::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('academic_year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all editorial appointments
+        $editorialAppointments = EditorialAppointment::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all student involvements
+        $studentInvolvements = StudentInvolvement::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('academic_year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all research fellows
+        $researchFellows = ResearchFellow::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all SDG contributions
+        $sdgContributions = SdgContribution::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all internal fundings
+        $internalFundings = InternalFunding::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all block fundings
+        $blockFundings = BlockFunding::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get all RTN course details
+        $rtnCourseDetails = RtnCourseDetail::where('submitted_by', $user->id)
+            ->with(['submitter', 'evidenceFiles'])
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+
         // Render the view to HTML
         $html = View::make('faculty-members.cv', compact(
             'user',
             'publications',
             'grants',
             'rtnSubmissions',
-            'bonusRecognitions'
+            'bonusRecognitions',
+            'partnerships',
+            'commercializations',
+            'consultancies',
+            'awards',
+            'researchInvestments',
+            'conferenceActivities',
+            'supervisionExams',
+            'editorialAppointments',
+            'studentInvolvements',
+            'researchFellows',
+            'sdgContributions',
+            'internalFundings',
+            'blockFundings',
+            'rtnCourseDetails'
         ))->render();
 
         // Create mPDF instance with enhanced configuration for icons and unicode support

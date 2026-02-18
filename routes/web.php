@@ -82,117 +82,121 @@ Route::get('bonus-recognitions/{bonus}', 'BonusRecognitionController@show')->nam
 Route::post('bonus-recognitions/{bonus}/submit', 'BonusRecognitionController@submit')->name('bonus-recognitions.submit');
 
 // Public Partnerships & MOUs Routes
-Route::get('partnerships', 'PartnershipController@index')->name('partnerships.index');
-Route::get('partnerships/load-more', 'PartnershipController@loadMore')->name('partnerships.load-more');
-Route::get('partnerships/create', 'PartnershipController@create')->name('partnerships.create');
-Route::post('partnerships', 'PartnershipController@store')->name('partnerships.store');
-Route::get('partnerships/{partnership}', 'PartnershipController@show')->name('partnerships.show');
-Route::post('partnerships/{partnership}/submit', 'PartnershipController@submit')->name('partnerships.submit');
+Route::get('partnerships', 'PartnershipController@index')->name('partnerships.index')->middleware('auth');
+Route::get('partnerships/load-more', 'PartnershipController@loadMore')->name('partnerships.load-more')->middleware('auth');
+Route::get('partnerships/create', 'PartnershipController@create')->name('partnerships.create')->middleware('auth');
+Route::post('partnerships', 'PartnershipController@store')->name('partnerships.store')->middleware('auth');
+Route::get('partnerships/{partnership}', 'PartnershipController@show')->name('partnerships.show')->middleware('auth');
+Route::post('partnerships/{partnership}/submit', 'PartnershipController@submit')->name('partnerships.submit')->middleware('auth');
 
 // Public Commercializations Routes
-Route::get('commercializations', 'CommercializationController@index')->name('commercializations.index');
-Route::get('commercializations/load-more', 'CommercializationController@loadMore')->name('commercializations.load-more');
-Route::get('commercializations/create', 'CommercializationController@create')->name('commercializations.create');
-Route::post('commercializations', 'CommercializationController@store')->name('commercializations.store');
-Route::get('commercializations/{commercialization}', 'CommercializationController@show')->name('commercializations.show');
-Route::post('commercializations/{commercialization}/submit', 'CommercializationController@submit')->name('commercializations.submit');
+Route::get('commercializations', 'CommercializationController@index')->name('commercializations.index')->middleware('auth');
+Route::get('commercializations/load-more', 'CommercializationController@loadMore')->name('commercializations.load-more')->middleware('auth');
+Route::get('commercializations/create', 'CommercializationController@create')->name('commercializations.create')->middleware('auth');
+Route::post('commercializations', 'CommercializationController@store')->name('commercializations.store')->middleware('auth');
+Route::get('commercializations/{commercialization}', 'CommercializationController@show')->name('commercializations.show')->middleware('auth');
+Route::post('commercializations/{commercialization}/submit', 'CommercializationController@submit')->name('commercializations.submit')->middleware('auth');
 
 // Public Consultancies & KT Routes
-Route::get('consultancies', 'ConsultancyController@index')->name('consultancies.index');
-Route::get('consultancies/load-more', 'ConsultancyController@loadMore')->name('consultancies.load-more');
-Route::get('consultancies/create', 'ConsultancyController@create')->name('consultancies.create');
-Route::post('consultancies', 'ConsultancyController@store')->name('consultancies.store');
-Route::get('consultancies/{consultancy}', 'ConsultancyController@show')->name('consultancies.show');
-Route::post('consultancies/{consultancy}/submit', 'ConsultancyController@submit')->name('consultancies.submit');
+Route::get('consultancies', 'ConsultancyController@index')->name('consultancies.index')->middleware('auth');
+Route::get('consultancies/load-more', 'ConsultancyController@loadMore')->name('consultancies.load-more')->middleware('auth');
+Route::get('consultancies/create', 'ConsultancyController@create')->name('consultancies.create')->middleware('auth');
+Route::post('consultancies', 'ConsultancyController@store')->name('consultancies.store')->middleware('auth');
+Route::get('consultancies/{consultancy}', 'ConsultancyController@show')->name('consultancies.show')->middleware('auth');
+Route::post('consultancies/{consultancy}/submit', 'ConsultancyController@submit')->name('consultancies.submit')->middleware('auth');
 
 // Public Awards Routes
-Route::get('awards', 'AwardController@index')->name('awards.index');
-Route::get('awards/load-more', 'AwardController@loadMore')->name('awards.load-more');
-Route::get('awards/create', 'AwardController@create')->name('awards.create');
-Route::post('awards', 'AwardController@store')->name('awards.store');
-Route::get('awards/{award}', 'AwardController@show')->name('awards.show');
-Route::post('awards/{award}/submit', 'AwardController@submit')->name('awards.submit');
+Route::get('awards', 'AwardController@index')->name('awards.index')->middleware('auth');
+Route::get('awards/load-more', 'AwardController@loadMore')->name('awards.load-more')->middleware('auth');
+Route::get('awards/create', 'AwardController@create')->name('awards.create')->middleware('auth');
+Route::post('awards', 'AwardController@store')->name('awards.store')->middleware('auth');
+Route::get('awards/{award}', 'AwardController@show')->name('awards.show')->middleware('auth');
+Route::post('awards/{award}/submit', 'AwardController@submit')->name('awards.submit')->middleware('auth');
 
 // Public Research Investments Routes
-Route::get('research-investments', 'ResearchInvestmentController@index')->name('research-investments.index');
-Route::get('research-investments/load-more', 'ResearchInvestmentController@loadMore')->name('research-investments.load-more');
-Route::get('research-investments/create', 'ResearchInvestmentController@create')->name('research-investments.create');
-Route::post('research-investments', 'ResearchInvestmentController@store')->name('research-investments.store');
-Route::get('research-investments/{investment}', 'ResearchInvestmentController@show')->name('research-investments.show');
-Route::post('research-investments/{investment}/submit', 'ResearchInvestmentController@submit')->name('research-investments.submit');
+Route::get('research-investments', 'ResearchInvestmentController@index')->name('research-investments.index')->middleware('auth');
+Route::get('research-investments/load-more', 'ResearchInvestmentController@loadMore')->name('research-investments.load-more')->middleware('auth');
+Route::get('research-investments/create', 'ResearchInvestmentController@create')->name('research-investments.create')->middleware('auth');
+Route::post('research-investments', 'ResearchInvestmentController@store')->name('research-investments.store')->middleware('auth');
+Route::get('research-investments/{investment}', 'ResearchInvestmentController@show')->name('research-investments.show')->middleware('auth');
+Route::post('research-investments/{investment}/submit', 'ResearchInvestmentController@submit')->name('research-investments.submit')->middleware('auth');
 
 // Public Conference Activities Routes
-Route::get('conference-activities', 'ConferenceActivityController@index')->name('conference-activities.index');
-Route::get('conference-activities/load-more', 'ConferenceActivityController@loadMore')->name('conference-activities.load-more');
-Route::get('conference-activities/create', 'ConferenceActivityController@create')->name('conference-activities.create');
-Route::post('conference-activities', 'ConferenceActivityController@store')->name('conference-activities.store');
-Route::get('conference-activities/{activity}', 'ConferenceActivityController@show')->name('conference-activities.show');
-Route::post('conference-activities/{activity}/submit', 'ConferenceActivityController@submit')->name('conference-activities.submit');
+Route::get('conference-activities', 'ConferenceActivityController@index')->name('conference-activities.index')->middleware('auth');
+Route::get('conference-activities/load-more', 'ConferenceActivityController@loadMore')->name('conference-activities.load-more')->middleware('auth');
+Route::get('conference-activities/create', 'ConferenceActivityController@create')->name('conference-activities.create')->middleware('auth');
+Route::post('conference-activities', 'ConferenceActivityController@store')->name('conference-activities.store')->middleware('auth');
+Route::get('conference-activities/{activity}', 'ConferenceActivityController@show')->name('conference-activities.show')->middleware('auth');
+Route::post('conference-activities/{activity}/submit', 'ConferenceActivityController@submit')->name('conference-activities.submit')->middleware('auth');
 
 // Public Supervision & Exams Routes
-Route::get('supervision-exams', 'SupervisionExamController@index')->name('supervision-exams.index');
-Route::get('supervision-exams/load-more', 'SupervisionExamController@loadMore')->name('supervision-exams.load-more');
-Route::get('supervision-exams/create', 'SupervisionExamController@create')->name('supervision-exams.create');
-Route::post('supervision-exams', 'SupervisionExamController@store')->name('supervision-exams.store');
-Route::get('supervision-exams/{supervision}', 'SupervisionExamController@show')->name('supervision-exams.show');
-Route::post('supervision-exams/{supervision}/submit', 'SupervisionExamController@submit')->name('supervision-exams.submit');
+Route::get('supervision-exams', 'SupervisionExamController@index')->name('supervision-exams.index')->middleware('auth');
+Route::get('supervision-exams/load-more', 'SupervisionExamController@loadMore')->name('supervision-exams.load-more')->middleware('auth');
+Route::get('supervision-exams/create', 'SupervisionExamController@create')->name('supervision-exams.create')->middleware('auth');
+Route::post('supervision-exams', 'SupervisionExamController@store')->name('supervision-exams.store')->middleware('auth');
+Route::get('supervision-exams/{supervision}', 'SupervisionExamController@show')->name('supervision-exams.show')->middleware('auth');
+Route::post('supervision-exams/{supervision}/submit', 'SupervisionExamController@submit')->name('supervision-exams.submit')->middleware('auth');
 
 // Public Editorial Appointments Routes
-Route::get('editorial-appointments', 'EditorialAppointmentController@index')->name('editorial-appointments.index');
-Route::get('editorial-appointments/load-more', 'EditorialAppointmentController@loadMore')->name('editorial-appointments.load-more');
-Route::get('editorial-appointments/create', 'EditorialAppointmentController@create')->name('editorial-appointments.create');
-Route::post('editorial-appointments', 'EditorialAppointmentController@store')->name('editorial-appointments.store');
-Route::get('editorial-appointments/{appointment}', 'EditorialAppointmentController@show')->name('editorial-appointments.show');
-Route::post('editorial-appointments/{appointment}/submit', 'EditorialAppointmentController@submit')->name('editorial-appointments.submit');
+Route::get('editorial-appointments', 'EditorialAppointmentController@index')->name('editorial-appointments.index')->middleware('auth');
+Route::get('editorial-appointments/load-more', 'EditorialAppointmentController@loadMore')->name('editorial-appointments.load-more')->middleware('auth');
+Route::get('editorial-appointments/create', 'EditorialAppointmentController@create')->name('editorial-appointments.create')->middleware('auth');
+Route::post('editorial-appointments', 'EditorialAppointmentController@store')->name('editorial-appointments.store')->middleware('auth');
+Route::get('editorial-appointments/{appointment}', 'EditorialAppointmentController@show')->name('editorial-appointments.show')->middleware('auth');
+Route::post('editorial-appointments/{appointment}/submit', 'EditorialAppointmentController@submit')->name('editorial-appointments.submit')->middleware('auth');
 
 // Public Student Involvements Routes
-Route::get('student-involvements', 'StudentInvolvementController@index')->name('student-involvements.index');
-Route::get('student-involvements/load-more', 'StudentInvolvementController@loadMore')->name('student-involvements.load-more');
-Route::get('student-involvements/create', 'StudentInvolvementController@create')->name('student-involvements.create');
-Route::post('student-involvements', 'StudentInvolvementController@store')->name('student-involvements.store');
-Route::get('student-involvements/{involvement}', 'StudentInvolvementController@show')->name('student-involvements.show');
-Route::post('student-involvements/{involvement}/submit', 'StudentInvolvementController@submit')->name('student-involvements.submit');
+Route::get('student-involvements', 'StudentInvolvementController@index')->name('student-involvements.index')->middleware('auth');
+Route::get('student-involvements/load-more', 'StudentInvolvementController@loadMore')->name('student-involvements.load-more')->middleware('auth');
+Route::get('student-involvements/create', 'StudentInvolvementController@create')->name('student-involvements.create')->middleware('auth');
+Route::post('student-involvements', 'StudentInvolvementController@store')->name('student-involvements.store')->middleware('auth');
+Route::get('student-involvements/{involvement}', 'StudentInvolvementController@show')->name('student-involvements.show')->middleware('auth');
+Route::post('student-involvements/{involvement}/submit', 'StudentInvolvementController@submit')->name('student-involvements.submit')->middleware('auth');
 
 // Public Research Fellows Routes
-Route::get('research-fellows', 'ResearchFellowController@index')->name('research-fellows.index');
-Route::get('research-fellows/load-more', 'ResearchFellowController@loadMore')->name('research-fellows.load-more');
-Route::get('research-fellows/create', 'ResearchFellowController@create')->name('research-fellows.create');
-Route::post('research-fellows', 'ResearchFellowController@store')->name('research-fellows.store');
-Route::get('research-fellows/{fellow}', 'ResearchFellowController@show')->name('research-fellows.show');
-Route::post('research-fellows/{fellow}/submit', 'ResearchFellowController@submit')->name('research-fellows.submit');
+Route::get('research-fellows', 'ResearchFellowController@index')->name('research-fellows.index')->middleware('auth');
+Route::get('research-fellows/load-more', 'ResearchFellowController@loadMore')->name('research-fellows.load-more')->middleware('auth');
+Route::get('research-fellows/create', 'ResearchFellowController@create')->name('research-fellows.create')->middleware('auth');
+Route::post('research-fellows', 'ResearchFellowController@store')->name('research-fellows.store')->middleware('auth');
+Route::get('research-fellows/{fellow}', 'ResearchFellowController@show')->name('research-fellows.show')->middleware('auth');
+Route::post('research-fellows/{fellow}/submit', 'ResearchFellowController@submit')->name('research-fellows.submit')->middleware('auth');
 
 // Public SDG Contributions Routes
-Route::get('sdg-contributions', 'SdgContributionController@index')->name('sdg-contributions.index');
-Route::get('sdg-contributions/load-more', 'SdgContributionController@loadMore')->name('sdg-contributions.load-more');
-Route::get('sdg-contributions/create', 'SdgContributionController@create')->name('sdg-contributions.create');
-Route::post('sdg-contributions', 'SdgContributionController@store')->name('sdg-contributions.store');
-Route::get('sdg-contributions/{contribution}', 'SdgContributionController@show')->name('sdg-contributions.show');
-Route::post('sdg-contributions/{contribution}/submit', 'SdgContributionController@submit')->name('sdg-contributions.submit');
+Route::get('sdg-contributions', 'SdgContributionController@index')->name('sdg-contributions.index')->middleware('auth');
+Route::get('sdg-contributions/load-more', 'SdgContributionController@loadMore')->name('sdg-contributions.load-more')->middleware('auth');
+Route::get('sdg-contributions/create', 'SdgContributionController@create')->name('sdg-contributions.create')->middleware('auth');
+Route::post('sdg-contributions', 'SdgContributionController@store')->name('sdg-contributions.store')->middleware('auth');
+Route::get('sdg-contributions/{contribution}', 'SdgContributionController@show')->name('sdg-contributions.show')->middleware('auth');
+Route::post('sdg-contributions/{contribution}/submit', 'SdgContributionController@submit')->name('sdg-contributions.submit')->middleware('auth');
 
 // Public Internal Fundings Routes
-Route::get('internal-fundings', 'InternalFundingController@index')->name('internal-fundings.index');
-Route::get('internal-fundings/load-more', 'InternalFundingController@loadMore')->name('internal-fundings.load-more');
-Route::get('internal-fundings/create', 'InternalFundingController@create')->name('internal-fundings.create');
-Route::post('internal-fundings', 'InternalFundingController@store')->name('internal-fundings.store');
-Route::get('internal-fundings/{funding}', 'InternalFundingController@show')->name('internal-fundings.show');
-Route::post('internal-fundings/{funding}/submit', 'InternalFundingController@submit')->name('internal-fundings.submit');
+Route::get('internal-fundings', 'InternalFundingController@index')->name('internal-fundings.index')->middleware('auth');
+Route::get('internal-fundings/load-more', 'InternalFundingController@loadMore')->name('internal-fundings.load-more')->middleware('auth');
+Route::get('internal-fundings/create', 'InternalFundingController@create')->name('internal-fundings.create')->middleware('auth');
+Route::post('internal-fundings', 'InternalFundingController@store')->name('internal-fundings.store')->middleware('auth');
+Route::get('internal-fundings/{funding}', 'InternalFundingController@show')->name('internal-fundings.show')->middleware('auth');
+Route::post('internal-fundings/{funding}/submit', 'InternalFundingController@submit')->name('internal-fundings.submit')->middleware('auth');
 
 // Public Block Fundings Routes
-Route::get('block-fundings', 'BlockFundingController@index')->name('block-fundings.index');
-Route::get('block-fundings/load-more', 'BlockFundingController@loadMore')->name('block-fundings.load-more');
-Route::get('block-fundings/create', 'BlockFundingController@create')->name('block-fundings.create');
-Route::post('block-fundings', 'BlockFundingController@store')->name('block-fundings.store');
-Route::get('block-fundings/{funding}', 'BlockFundingController@show')->name('block-fundings.show');
-Route::post('block-fundings/{funding}/submit', 'BlockFundingController@submit')->name('block-fundings.submit');
+Route::get('block-fundings', 'BlockFundingController@index')->name('block-fundings.index')->middleware('auth');
+Route::get('block-fundings/load-more', 'BlockFundingController@loadMore')->name('block-fundings.load-more')->middleware('auth');
+Route::get('block-fundings/create', 'BlockFundingController@create')->name('block-fundings.create')->middleware('auth');
+Route::post('block-fundings', 'BlockFundingController@store')->name('block-fundings.store')->middleware('auth');
+Route::get('block-fundings/{funding}', 'BlockFundingController@show')->name('block-fundings.show')->middleware('auth');
+Route::post('block-fundings/{funding}/submit', 'BlockFundingController@submit')->name('block-fundings.submit')->middleware('auth');
+
+// Public Adjunct Professors Routes
+Route::get('adjunct-professors/propose', 'AdjunctProfessorController@propose')->name('adjunct-professors.propose')->middleware('auth');
+Route::post('adjunct-professors', 'AdjunctProfessorController@store')->name('adjunct-professors.store')->middleware('auth');
 
 // Public RTN Course Details Routes
-Route::get('rtn-course-details', 'RtnCourseDetailController@index')->name('rtn-course-details.index');
-Route::get('rtn-course-details/load-more', 'RtnCourseDetailController@loadMore')->name('rtn-course-details.load-more');
-Route::get('rtn-course-details/create', 'RtnCourseDetailController@create')->name('rtn-course-details.create');
-Route::post('rtn-course-details', 'RtnCourseDetailController@store')->name('rtn-course-details.store');
-Route::get('rtn-course-details/{course}', 'RtnCourseDetailController@show')->name('rtn-course-details.show');
-Route::post('rtn-course-details/{course}/submit', 'RtnCourseDetailController@submit')->name('rtn-course-details.submit');
-Route::post('rtn-course-details/upload-excel', 'RtnCourseDetailController@uploadExcel')->name('rtn-course-details.upload-excel');
+Route::get('rtn-course-details', 'RtnCourseDetailController@index')->name('rtn-course-details.index')->middleware('auth');
+Route::get('rtn-course-details/load-more', 'RtnCourseDetailController@loadMore')->name('rtn-course-details.load-more')->middleware('auth');
+Route::get('rtn-course-details/create', 'RtnCourseDetailController@create')->name('rtn-course-details.create')->middleware('auth');
+Route::post('rtn-course-details', 'RtnCourseDetailController@store')->name('rtn-course-details.store')->middleware('auth');
+Route::get('rtn-course-details/{course}', 'RtnCourseDetailController@show')->name('rtn-course-details.show')->middleware('auth');
+Route::post('rtn-course-details/{course}/submit', 'RtnCourseDetailController@submit')->name('rtn-course-details.submit')->middleware('auth');
+Route::post('rtn-course-details/upload-excel', 'RtnCourseDetailController@uploadExcel')->name('rtn-course-details.upload-excel')->middleware('auth');
 
 // Redirect /home based on user role
 Route::get('/home', function () {
@@ -351,6 +355,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('rtn-course-details/{course}/reject', 'RtnCourseDetailController@reject')->name('rtn-course-details.reject');
     Route::post('rtn-course-details/upload-excel', 'RtnCourseDetailController@uploadExcel')->name('rtn-course-details.upload-excel');
     Route::resource('rtn-course-details', 'RtnCourseDetailController');
+
+    // Adjunct Professors (Admin)
+    Route::post('adjunct-professors/{adjunctProfessor}/approve', 'Admin\AdjunctProfessorController@approve')->name('adjunct-professors.approve');
+    Route::post('adjunct-professors/{adjunctProfessor}/reject', 'Admin\AdjunctProfessorController@reject')->name('adjunct-professors.reject');
+    Route::resource('adjunct-professors', 'Admin\AdjunctProfessorController');
 
     // Conference Activities
     Route::resource('conference-activities', 'ConferenceActivityController');

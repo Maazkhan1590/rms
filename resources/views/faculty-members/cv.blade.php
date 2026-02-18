@@ -542,6 +542,410 @@
     </div>
     @endif
 
+    <!-- PARTNERSHIPS & MOUs -->
+    @if(isset($partnerships) && $partnerships->count() > 0)
+    <div class="section-title">Partnerships & MOUs ({{ $partnerships->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 40%;">Partner/Organization</th>
+            <th style="width: 25%;">Type</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 20%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($partnerships as $partnership)
+        <tr>
+            <td class="title-col">{{ $partnership->partner_name ?? 'N/A' }}</td>
+            <td>{{ $partnership->mou_type ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $partnership->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $partnership->status === 'approved' ? 'approved' : ($partnership->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($partnership->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- COMMERCIALIZATIONS -->
+    @if(isset($commercializations) && $commercializations->count() > 0)
+    <div class="section-title">Commercializations ({{ $commercializations->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 50%;">Title</th>
+            <th style="width: 20%;">Type</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 15%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($commercializations as $commercialization)
+        <tr>
+            <td class="title-col">{{ $commercialization->title ?? 'N/A' }}</td>
+            <td>{{ $commercialization->commercialization_type ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $commercialization->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $commercialization->status === 'approved' ? 'approved' : ($commercialization->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($commercialization->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- CONSULTANCIES -->
+    @if(isset($consultancies) && $consultancies->count() > 0)
+    <div class="section-title">Consultancies & Knowledge Transfer ({{ $consultancies->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 40%;">Title</th>
+            <th style="width: 20%;">Type</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 15%;">Amount (OMR)</th>
+            <th style="width: 10%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($consultancies as $consultancy)
+        <tr>
+            <td class="title-col">{{ $consultancy->title ?? 'N/A' }}</td>
+            <td>{{ $consultancy->income_type ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $consultancy->year ?? 'N/A' }}</td>
+            <td style="text-align: right;">{{ $consultancy->amount_omr ? number_format($consultancy->amount_omr, 2) : 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $consultancy->status === 'approved' ? 'approved' : ($consultancy->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($consultancy->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- AWARDS -->
+    @if(isset($awards) && $awards->count() > 0)
+    <div class="section-title">Awards ({{ $awards->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 45%;">Award Name</th>
+            <th style="width: 30%;">Organization</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 10%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($awards as $award)
+        <tr>
+            <td class="title-col">{{ $award->title ?? 'N/A' }}</td>
+            <td>{{ $award->organization ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $award->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $award->status === 'approved' ? 'approved' : ($award->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($award->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- RESEARCH INVESTMENTS -->
+    @if(isset($researchInvestments) && $researchInvestments->count() > 0)
+    <div class="section-title">Research Investments ({{ $researchInvestments->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 35%;">Item</th>
+            <th style="width: 20%;">Category</th>
+            <th style="width: 15%;">Amount (OMR)</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 15%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($researchInvestments as $investment)
+        <tr>
+            <td class="title-col">{{ $investment->item ?? 'N/A' }}</td>
+            <td>{{ ucfirst(str_replace('_', ' ', $investment->category ?? 'N/A')) }}</td>
+            <td style="text-align: right;">{{ $investment->amount_omr ? number_format($investment->amount_omr, 2) : 'N/A' }}</td>
+            <td style="text-align: center;">{{ $investment->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $investment->status === 'approved' ? 'approved' : ($investment->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($investment->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- CONFERENCE ACTIVITIES -->
+    @if(isset($conferenceActivities) && $conferenceActivities->count() > 0)
+    <div class="section-title">Conference Activities ({{ $conferenceActivities->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 40%;">Conference</th>
+            <th style="width: 20%;">Activity Type</th>
+            <th style="width: 15%;">Country</th>
+            <th style="width: 15%;">Date</th>
+            <th style="width: 10%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($conferenceActivities as $activity)
+        <tr>
+            <td class="title-col">{{ $activity->conference ?? 'N/A' }}</td>
+            <td>{{ ucfirst(str_replace('_', ' ', $activity->activity_type ?? 'N/A')) }}</td>
+            <td>{{ $activity->country ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $activity->date ? \Carbon\Carbon::parse($activity->date)->format('M Y') : 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $activity->status === 'approved' ? 'approved' : ($activity->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($activity->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- SUPERVISION & EXAMS -->
+    @if(isset($supervisionExams) && $supervisionExams->count() > 0)
+    <div class="section-title">Supervision & Examinations ({{ $supervisionExams->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 30%;">Student Name</th>
+            <th style="width: 15%;">Role</th>
+            <th style="width: 15%;">Degree</th>
+            <th style="width: 25%;">Thesis Title</th>
+            <th style="width: 15%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($supervisionExams as $supervision)
+        <tr>
+            <td class="title-col">{{ $supervision->student_name ?? 'N/A' }}</td>
+            <td>{{ ucfirst(str_replace('_', ' ', $supervision->role ?? 'N/A')) }}</td>
+            <td>{{ $supervision->degree ?? 'N/A' }}</td>
+            <td>{{ Str::limit($supervision->thesis_title ?? 'N/A', 50) }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $supervision->workflow_status === 'approved' ? 'approved' : ($supervision->workflow_status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($supervision->workflow_status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- EDITORIAL APPOINTMENTS -->
+    @if(isset($editorialAppointments) && $editorialAppointments->count() > 0)
+    <div class="section-title">Editorial Appointments ({{ $editorialAppointments->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 50%;">Journal/Conference</th>
+            <th style="width: 20%;">Role</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 15%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($editorialAppointments as $appointment)
+        <tr>
+            <td class="title-col">{{ $appointment->journal_conference ?? 'N/A' }}</td>
+            <td>{{ $appointment->role ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $appointment->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $appointment->status === 'approved' ? 'approved' : ($appointment->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($appointment->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- STUDENT INVOLVEMENTS -->
+    @if(isset($studentInvolvements) && $studentInvolvements->count() > 0)
+    <div class="section-title">Student Involvements ({{ $studentInvolvements->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 30%;">Category</th>
+            <th style="width: 20%;">Count</th>
+            <th style="width: 25%;">Academic Year</th>
+            <th style="width: 25%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($studentInvolvements as $involvement)
+        <tr>
+            <td class="title-col">{{ ucfirst(str_replace('_', ' ', $involvement->category ?? 'N/A')) }}</td>
+            <td style="text-align: center;">{{ $involvement->count ?? 'N/A' }}</td>
+            <td style="text-align: center;">{{ $involvement->academic_year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $involvement->status === 'approved' ? 'approved' : ($involvement->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($involvement->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- RESEARCH FELLOWS -->
+    @if(isset($researchFellows) && $researchFellows->count() > 0)
+    <div class="section-title">Research Fellows ({{ $researchFellows->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 50%;">Publication Title</th>
+            <th style="width: 25%;">Journal</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 10%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($researchFellows as $fellow)
+        <tr>
+            <td class="title-col">{{ Str::limit($fellow->publication_title ?? 'N/A', 60) }}</td>
+            <td>{{ Str::limit($fellow->journal ?? 'N/A', 30) }}</td>
+            <td style="text-align: center;">{{ $fellow->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $fellow->workflow_status === 'approved' ? 'approved' : ($fellow->workflow_status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($fellow->workflow_status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- SDG CONTRIBUTIONS -->
+    @if(isset($sdgContributions) && $sdgContributions->count() > 0)
+    <div class="section-title">SDG Contributions ({{ $sdgContributions->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 40%;">Title</th>
+            <th style="width: 15%;">SDG</th>
+            <th style="width: 20%;">Type</th>
+            <th style="width: 15%;">Year</th>
+            <th style="width: 10%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($sdgContributions as $contribution)
+        <tr>
+            <td class="title-col">{{ Str::limit($contribution->title ?? 'N/A', 50) }}</td>
+            <td style="text-align: center;">SDG {{ $contribution->sdg ?? 'N/A' }}</td>
+            <td>{{ ucfirst(str_replace('_', ' ', $contribution->type ?? 'N/A')) }}</td>
+            <td style="text-align: center;">{{ $contribution->year ?? 'N/A' }}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-{{ $contribution->status === 'approved' ? 'approved' : ($contribution->status === 'rejected' ? 'rejected' : 'submitted') }}">
+                    {{ ucfirst($contribution->status ?? 'draft') }}
+                </span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- INTERNAL FUNDINGS -->
+    @if(isset($internalFundings) && $internalFundings->count() > 0)
+    <div class="section-title">Internal Fundings ({{ $internalFundings->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 40%;">Project Title</th>
+            <th style="width: 25%;">Funding Source</th>
+            <th style="width: 15%;">Amount (OMR)</th>
+            <th style="width: 20%;">Year</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($internalFundings as $funding)
+        <tr>
+            <td class="title-col">{{ Str::limit($funding->project_title ?? 'N/A', 50) }}</td>
+            <td>{{ $funding->funding_source ?? 'N/A' }}</td>
+            <td style="text-align: right;">{{ $funding->amount_omr ? number_format($funding->amount_omr, 2) : 'N/A' }}</td>
+            <td style="text-align: center;">{{ $funding->year ?? 'N/A' }}</td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- BLOCK FUNDINGS -->
+    @if(isset($blockFundings) && $blockFundings->count() > 0)
+    <div class="section-title">Block Fundings ({{ $blockFundings->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 40%;">Project Title</th>
+            <th style="width: 25%;">Funding Source</th>
+            <th style="width: 15%;">Amount (OMR)</th>
+            <th style="width: 20%;">Year</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($blockFundings as $funding)
+        <tr>
+            <td class="title-col">{{ Str::limit($funding->project_title ?? 'N/A', 50) }}</td>
+            <td>{{ $funding->funding_source ?? 'N/A' }}</td>
+            <td style="text-align: right;">{{ $funding->amount_omr ? number_format($funding->amount_omr, 2) : 'N/A' }}</td>
+            <td style="text-align: center;">{{ $funding->year ?? 'N/A' }}</td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    <!-- RTN COURSE DETAILS -->
+    @if(isset($rtnCourseDetails) && $rtnCourseDetails->count() > 0)
+    <div class="section-title">RTN Course Details ({{ $rtnCourseDetails->count() }})</div>
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 20%;">Course Code</th>
+            <th style="width: 40%;">Course Name</th>
+            <th style="width: 20%;">RTN Type</th>
+            <th style="width: 20%;">Year</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($rtnCourseDetails as $course)
+        <tr>
+            <td>{{ $course->course_code ?? 'N/A' }}</td>
+            <td class="title-col">{{ Str::limit($course->course_name ?? 'N/A', 50) }}</td>
+            <td>{{ str_replace('_', ' ', strtoupper($course->rtn_type ?? 'N/A')) }}</td>
+            <td style="text-align: center;">{{ $course->year ?? 'N/A' }}</td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
 </div>
 
 </body>

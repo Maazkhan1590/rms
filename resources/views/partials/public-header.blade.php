@@ -29,10 +29,32 @@
                     $user = auth()->user();
                     $isPureFaculty = $user->hasRole('Faculty') && !$user->isAdmin && !$user->isResearchCoordinator() && !$user->isDean();
                 @endphp
-                <li class="nav-item">
-                    <a href="{{ route('publications.create') }}" class="nav-link">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" id="submitDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-plus-circle"></i> Submit
                     </a>
+                    <div class="dropdown-menu" aria-labelledby="submitDropdown">
+                        <a class="dropdown-item" href="{{ route('publications.create') }}"><i class="fas fa-book"></i> Publication</a>
+                        <a class="dropdown-item" href="{{ route('grants.create') }}"><i class="fas fa-money-bill-wave"></i> Grant</a>
+                        <a class="dropdown-item" href="{{ route('rtn-submissions.create') }}"><i class="fas fa-clipboard-list"></i> RTN Submission</a>
+                        <a class="dropdown-item" href="{{ route('bonus-recognitions.create') }}"><i class="fas fa-trophy"></i> Bonus Recognition</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ route('partnerships.create') }}"><i class="fas fa-handshake"></i> Partnership & MOU</a>
+                        <a class="dropdown-item" href="{{ route('commercializations.create') }}"><i class="fas fa-rocket"></i> Commercialization</a>
+                        <a class="dropdown-item" href="{{ route('consultancies.create') }}"><i class="fas fa-briefcase"></i> Consultancy & KT</a>
+                        <a class="dropdown-item" href="{{ route('awards.create') }}"><i class="fas fa-award"></i> Award</a>
+                        <a class="dropdown-item" href="{{ route('research-investments.create') }}"><i class="fas fa-laptop"></i> Research Investment</a>
+                        <a class="dropdown-item" href="{{ route('conference-activities.create') }}"><i class="fas fa-microphone"></i> Conference Activity</a>
+                        <a class="dropdown-item" href="{{ route('supervision-exams.create') }}"><i class="fas fa-graduation-cap"></i> Supervision & Exam</a>
+                        <a class="dropdown-item" href="{{ route('editorial-appointments.create') }}"><i class="fas fa-edit"></i> Editorial Appointment</a>
+                        <a class="dropdown-item" href="{{ route('student-involvements.create') }}"><i class="fas fa-user-graduate"></i> Student Involvement</a>
+                        <a class="dropdown-item" href="{{ route('research-fellows.create') }}"><i class="fas fa-user-tie"></i> Research Fellow</a>
+                        <a class="dropdown-item" href="{{ route('sdg-contributions.create') }}"><i class="fas fa-globe"></i> SDG Contribution</a>
+                        <a class="dropdown-item" href="{{ route('internal-fundings.create') }}"><i class="fas fa-dollar-sign"></i> Internal Funding</a>
+                        <a class="dropdown-item" href="{{ route('block-fundings.create') }}"><i class="fas fa-cube"></i> Block Funding</a>
+                        <a class="dropdown-item" href="{{ route('rtn-course-details.create') }}"><i class="fas fa-book-reader"></i> RTN Course Detail</a>
+                        <a class="dropdown-item" href="{{ route('adjunct-professors.propose') }}"><i class="fas fa-chalkboard-teacher"></i> Adjunct Professor</a>
+                    </div>
                 </li>
                 <li class="nav-item">
                     @if($isPureFaculty)
@@ -73,9 +95,33 @@
         </ul>
         <div class="nav-actions">
             @auth
-                <button class="btn-submit" onclick="window.location.href='{{ route('publications.create') }}'">
-                    <i class="fas fa-paper-plane"></i> Submit
-                </button>
+                <div class="dropdown">
+                    <button class="btn-submit dropdown-toggle" type="button" id="submitBtnDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-paper-plane"></i> Submit
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="submitBtnDropdown">
+                        <a class="dropdown-item" href="{{ route('publications.create') }}"><i class="fas fa-book"></i> Publication</a>
+                        <a class="dropdown-item" href="{{ route('grants.create') }}"><i class="fas fa-money-bill-wave"></i> Grant</a>
+                        <a class="dropdown-item" href="{{ route('rtn-submissions.create') }}"><i class="fas fa-clipboard-list"></i> RTN Submission</a>
+                        <a class="dropdown-item" href="{{ route('bonus-recognitions.create') }}"><i class="fas fa-trophy"></i> Bonus Recognition</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ route('partnerships.create') }}"><i class="fas fa-handshake"></i> Partnership & MOU</a>
+                        <a class="dropdown-item" href="{{ route('commercializations.create') }}"><i class="fas fa-rocket"></i> Commercialization</a>
+                        <a class="dropdown-item" href="{{ route('consultancies.create') }}"><i class="fas fa-briefcase"></i> Consultancy & KT</a>
+                        <a class="dropdown-item" href="{{ route('awards.create') }}"><i class="fas fa-award"></i> Award</a>
+                        <a class="dropdown-item" href="{{ route('research-investments.create') }}"><i class="fas fa-laptop"></i> Research Investment</a>
+                        <a class="dropdown-item" href="{{ route('conference-activities.create') }}"><i class="fas fa-microphone"></i> Conference Activity</a>
+                        <a class="dropdown-item" href="{{ route('supervision-exams.create') }}"><i class="fas fa-graduation-cap"></i> Supervision & Exam</a>
+                        <a class="dropdown-item" href="{{ route('editorial-appointments.create') }}"><i class="fas fa-edit"></i> Editorial Appointment</a>
+                        <a class="dropdown-item" href="{{ route('student-involvements.create') }}"><i class="fas fa-user-graduate"></i> Student Involvement</a>
+                        <a class="dropdown-item" href="{{ route('research-fellows.create') }}"><i class="fas fa-user-tie"></i> Research Fellow</a>
+                        <a class="dropdown-item" href="{{ route('sdg-contributions.create') }}"><i class="fas fa-globe"></i> SDG Contribution</a>
+                        <a class="dropdown-item" href="{{ route('internal-fundings.create') }}"><i class="fas fa-dollar-sign"></i> Internal Funding</a>
+                        <a class="dropdown-item" href="{{ route('block-fundings.create') }}"><i class="fas fa-cube"></i> Block Funding</a>
+                        <a class="dropdown-item" href="{{ route('rtn-course-details.create') }}"><i class="fas fa-book-reader"></i> RTN Course Detail</a>
+                        <a class="dropdown-item" href="{{ route('adjunct-professors.propose') }}"><i class="fas fa-chalkboard-teacher"></i> Adjunct Professor</a>
+                    </div>
+                </div>
             @else
                 <button class="btn-submit" onclick="window.location.href='{{ route('register') }}'">
                     <i class="fas fa-paper-plane"></i> Submit

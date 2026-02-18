@@ -31,6 +31,23 @@ class UpdateProfileRequest extends FormRequest
         return [
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'designation' => ['nullable', 'string', 'max:255'],
+            'employee_id' => ['nullable', 'string', 'max:50'],
+            'college_id' => ['nullable', 'exists:colleges,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
+            'orcid' => ['nullable', 'string', 'max:255'],
+            'google_scholar' => ['nullable', 'url', 'max:500'],
+            'research_gate' => ['nullable', 'url', 'max:500'],
+            'citation_number' => ['nullable', 'integer', 'min:0'],
+            'h_index' => ['nullable', 'integer', 'min:0'],
+            'scopus_citation_number' => ['nullable', 'integer', 'min:0'],
+            'scopus_h_index' => ['nullable', 'integer', 'min:0'],
+            'scopus_papers' => ['nullable', 'integer', 'min:0'],
+            'sohar_affiliation' => ['nullable', 'boolean'],
+            'orcid_connected' => ['nullable', 'boolean'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
+            'credentials_file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
         ];
     }
 }

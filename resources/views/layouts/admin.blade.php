@@ -131,8 +131,8 @@
                     @endcanany
                 @endunless
 
-                @canany(['consultancy_access', 'commercialization_access', 'partnership_access', 'conference_access', 'investment_access'])
-                <div class="nav-section" style="display: none">
+                @canany(['consultancy_access', 'commercialization_access', 'partnership_access', 'conference_access', 'investment_access', 'award_access'])
+                <div class="nav-section">
                     <h3 class="nav-section-title">Research Activities</h3>
                     <ul>
                         @can('consultancy_access')
@@ -175,12 +175,20 @@
                             </a>
                         </li>
                         @endcan
+                        @can('award_access')
+                        <li>
+                            <a href="{{ route('admin.awards.index') }}" class="nav-link {{ request()->routeIs('admin.awards.*') ? 'active' : '' }}">
+                                <span class="nav-icon">🏆</span>
+                                <span class="nav-label">Awards</span>
+                            </a>
+                        </li>
+                        @endcan
                     </ul>
                 </div>
                 @endcanany
 
-                @canany(['supervision_access', 'editorial_access', 'student_access', 'internal_funding_access'])
-                <div class="nav-section" style="display: none">
+                @canany(['supervision_access', 'editorial_access', 'student_access', 'internal_funding_access', 'block_funding_access', 'research_fellow_access', 'rtn_course_access'])
+                <div class="nav-section">
                     <h3 class="nav-section-title">Academic Activities</h3>
                     <ul>
                         @can('supervision_access')
@@ -207,6 +215,14 @@
                             </a>
                         </li>
                         @endcan
+                        @can('research_fellow_access')
+                        <li>
+                            <a href="{{ route('admin.research-fellows.index') }}" class="nav-link {{ request()->routeIs('admin.research-fellows.*') ? 'active' : '' }}">
+                                <span class="nav-icon">👨‍🔬</span>
+                                <span class="nav-label">Research Fellows</span>
+                            </a>
+                        </li>
+                        @endcan
                         @can('internal_funding_access')
                         <li>
                             <a href="{{ route('admin.internal-fundings.index') }}" class="nav-link {{ request()->routeIs('admin.internal-fundings.*') ? 'active' : '' }}">
@@ -223,14 +239,23 @@
                             </a>
                         </li>
                         @endcan
+                        @can('rtn_course_access')
+                        <li>
+                            <a href="{{ route('admin.rtn-course-details.index') }}" class="nav-link {{ request()->routeIs('admin.rtn-course-details.*') ? 'active' : '' }}">
+                                <span class="nav-icon">📚</span>
+                                <span class="nav-label">RTN Course Details</span>
+                            </a>
+                        </li>
+                        @endcan
                     </ul>
                 </div>
                 @endcanany
 
-                @can('sdg_access')
-                <div class="nav-section" style="display: none">
+                @canany(['sdg_access', 'adjunct_professor_access'])
+                <div class="nav-section">
                     <h3 class="nav-section-title">SDG & Impact</h3>
                     <ul>
+                        @can('sdg_access')
                         <li>
                             <a href="{{ route('admin.sdg-contributions.index') }}" class="nav-link {{ request()->routeIs('admin.sdg-contributions.*') ? 'active' : '' }}">
                                 <span class="nav-icon">🌍</span>
@@ -243,9 +268,18 @@
                                 <span class="nav-label">SDG Mappings</span>
                             </a>
                         </li>
+                        @endcan
+                        @can('adjunct_professor_access')
+                        <li>
+                            <a href="{{ route('admin.adjunct-professors.index') }}" class="nav-link {{ request()->routeIs('admin.adjunct-professors.*') ? 'active' : '' }}">
+                                <span class="nav-icon">👔</span>
+                                <span class="nav-label">Adjunct Professors</span>
+                            </a>
+                        </li>
+                        @endcan
                     </ul>
                 </div>
-                @endcan
+                @endcanany
 
                 @can('workflow_access')
                 <div class="nav-section">

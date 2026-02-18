@@ -569,6 +569,90 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => 139,
                 'title' => 'site_content_delete',
             ],
+            // Awards
+            [
+                'id'    => 140,
+                'title' => 'award_access',
+            ],
+            [
+                'id'    => 141,
+                'title' => 'award_create',
+            ],
+            [
+                'id'    => 142,
+                'title' => 'award_read',
+            ],
+            [
+                'id'    => 143,
+                'title' => 'award_update',
+            ],
+            [
+                'id'    => 144,
+                'title' => 'award_delete',
+            ],
+            // Research Fellows
+            [
+                'id'    => 145,
+                'title' => 'research_fellow_access',
+            ],
+            [
+                'id'    => 146,
+                'title' => 'research_fellow_create',
+            ],
+            [
+                'id'    => 147,
+                'title' => 'research_fellow_read',
+            ],
+            [
+                'id'    => 148,
+                'title' => 'research_fellow_update',
+            ],
+            [
+                'id'    => 149,
+                'title' => 'research_fellow_delete',
+            ],
+            // RTN Course Details
+            [
+                'id'    => 150,
+                'title' => 'rtn_course_access',
+            ],
+            [
+                'id'    => 151,
+                'title' => 'rtn_course_create',
+            ],
+            [
+                'id'    => 152,
+                'title' => 'rtn_course_read',
+            ],
+            [
+                'id'    => 153,
+                'title' => 'rtn_course_update',
+            ],
+            [
+                'id'    => 154,
+                'title' => 'rtn_course_delete',
+            ],
+            // Adjunct Professors
+            [
+                'id'    => 155,
+                'title' => 'adjunct_professor_access',
+            ],
+            [
+                'id'    => 156,
+                'title' => 'adjunct_professor_create',
+            ],
+            [
+                'id'    => 157,
+                'title' => 'adjunct_professor_read',
+            ],
+            [
+                'id'    => 158,
+                'title' => 'adjunct_professor_update',
+            ],
+            [
+                'id'    => 159,
+                'title' => 'adjunct_professor_delete',
+            ],
         ];
 
         // Use updateOrCreate to avoid duplicate key errors
