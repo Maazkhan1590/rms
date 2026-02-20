@@ -257,13 +257,29 @@ class PublicationController extends Controller
                 'required',
                 'string',
                 'max:255',
-                'regex:/^10\.\d{4,}\/[-._;()\/:a-zA-Z0-9]+$/i'
+                'regex:/^10\.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/i'
             ],
             'isbn' => [
                 'required',
                 'string',
                 'max:20',
-                'regex:/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/i'
+                function ($attribute, $value, $fail) {
+                    // Remove ISBN prefix and spaces/hyphens for validation
+                    $cleaned = preg_replace('/^(?:ISBN(?:-1[03])?:? )?/i', '', $value);
+                    $cleaned = preg_replace('/[- ]/', '', $cleaned);
+                    
+                    // ISBN-10: exactly 10 digits (last can be X)
+                    if (preg_match('/^[0-9]{9}[0-9X]$/i', $cleaned)) {
+                        return;
+                    }
+                    
+                    // ISBN-13: exactly 13 digits, starting with 978 or 979
+                    if (preg_match('/^(97[89])[0-9]{10}$/', $cleaned)) {
+                        return;
+                    }
+                    
+                    $fail('Please enter a valid ISBN format (10 or 13 digits). Example: 978-0-123456-78-9 or 0-123456-78-X');
+                },
             ],
             'authors' => 'required|array|min:1',
             'authors.*.name' => [
@@ -293,9 +309,8 @@ class PublicationController extends Controller
             'publisher.required_if' => 'Publisher name is required when publication type is book or book chapter.',
             'publisher.regex' => 'Publisher name contains invalid characters.',
             'doi.required' => 'DOI is required.',
-            'doi.regex' => 'Please enter a valid DOI format (e.g., 10.1234/example).',
+            'doi.regex' => 'Please enter a valid DOI format (e.g., 10.1234/example). DOI must include a forward slash after the numbers (format: 10.xxxx/xxxxx).',
             'isbn.required' => 'ISBN is required.',
-            'isbn.regex' => 'Please enter a valid ISBN format.',
             'published_link.required' => 'Publication link is required.',
             'proceedings_link.required' => 'Proceedings link is required.',
             'authors.*.name.required' => 'Author name is required.',

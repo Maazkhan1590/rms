@@ -130,7 +130,7 @@
 
                 <div class="form-group">
                     <label for="title">
-                        Grant Title <span style="color: var(--danger);">*</span>
+                        Grant Title <span style="color: #dc3545;">*</span>
                     </label>
                     <input type="text" class="form-control" id="title" name="title" required 
                            placeholder="Enter grant title"
@@ -142,7 +142,7 @@
 
                 <div class="form-group">
                     <label for="grant_type">
-                        Grant Type <span style="color: var(--danger);">*</span>
+                        Grant Type <span style="color: #dc3545;">*</span>
                     </label>
                     <select class="form-control" id="grant_type" name="grant_type" required>
                         <option value="">Select Grant Type</option>
@@ -164,7 +164,7 @@
 
                 <div class="form-group">
                     <label for="role">
-                        Your Role <span style="color: var(--danger);">*</span>
+                        Your Role <span style="color: #dc3545;">*</span>
                     </label>
                     <select class="form-control" id="role" name="role" required>
                         <option value="">Select Role</option>
@@ -203,7 +203,7 @@
 
                 <div class="form-group">
                     <label for="award_year">
-                        Award Year <span style="color: var(--danger);">*</span>
+                        Award Year <span style="color: #dc3545;">*</span>
                     </label>
                     <input type="number" class="form-control" id="award_year" name="award_year" 
                            required min="1900" max="{{ date('Y') }}" 
@@ -522,7 +522,11 @@
 
     // Trigger on page load if value is already set
     document.getElementById('grant_type')?.dispatchEvent(new Event('change'));
+</script>
+@endsection
 
+@push('scripts')
+<script>
     // jQuery Validate with Regular Expressions
     $(document).ready(function() {
         // Load jQuery Validate library
@@ -762,4 +766,4 @@
         });
     }
 </script>
-@endsection
+@endpush

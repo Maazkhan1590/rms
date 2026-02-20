@@ -1106,13 +1106,27 @@
 
             $.validator.addMethod("doiFormat", function(value, element) {
                 if (this.optional(element)) return true;
-                return /^10\.\d{4,}\/[-._;()\/:a-zA-Z0-9]+$/i.test(value);
-            }, "Please enter a valid DOI format (e.g., 10.1234/example).");
+                // DOI format: 10.xxxx/xxxxx where xxxx is 4-9 digits, then / followed by alphanumeric characters
+                return /^10\.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/i.test(value);
+            }, "Please enter a valid DOI format (e.g., 10.1234/example). DOI must include a forward slash after the numbers.");
 
             $.validator.addMethod("isbnFormat", function(value, element) {
                 if (this.optional(element)) return true;
-                return /^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/i.test(value);
-            }, "Please enter a valid ISBN format.");
+                // Remove ISBN prefix and spaces/hyphens for validation
+                var cleaned = value.replace(/^(?:ISBN(?:-1[03])?:? )?/i, '').replace(/[- ]/g, '');
+                
+                // ISBN-10: exactly 10 digits (last can be X)
+                if (/^[0-9]{9}[0-9X]$/i.test(cleaned)) {
+                    return true;
+                }
+                
+                // ISBN-13: exactly 13 digits, starting with 978 or 979
+                if (/^(97[89])[0-9]{10}$/.test(cleaned)) {
+                    return true;
+                }
+                
+                return false;
+            }, "Please enter a valid ISBN format (10 or 13 digits). Example: 978-0-123456-78-9 or 0-123456-78-X");
 
             $.validator.addMethod("emailFormat", function(value, element) {
                 if (this.optional(element)) return true;
