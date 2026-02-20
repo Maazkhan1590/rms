@@ -1126,6 +1126,17 @@
                 return /^[a-zA-Z\s\-'\.]+$/.test(value) && value.trim().length >= 2;
             }, "Author name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).");
 
+            // Add custom pattern validation methods
+            $.validator.addMethod("titlePattern", function(value, element) {
+                if (this.optional(element)) return true;
+                return /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/.test(value);
+            }, "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.");
+
+            $.validator.addMethod("namePattern", function(value, element) {
+                if (this.optional(element)) return true;
+                return /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/.test(value);
+            }, "Contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.");
+
             // Initialize validation
             $('#publicationForm').validate({
                 errorClass: 'error',
@@ -1140,7 +1151,7 @@
                         required: true,
                         minlength: 3,
                         maxlength: 500,
-                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                        titlePattern: true
                     },
                     publication_type: {
                         required: true,
@@ -1156,15 +1167,15 @@
                     },
                     journal_name: {
                         maxlength: 255,
-                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                        namePattern: true
                     },
                     conference_name: {
                         maxlength: 255,
-                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                        namePattern: true
                     },
                     publisher: {
                         maxlength: 255,
-                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                        namePattern: true
                     },
                     doi: {
                         doiFormat: true,
@@ -1201,7 +1212,7 @@
                         required: "Publication Title is required.",
                         minlength: "Title must be at least 3 characters long.",
                         maxlength: "Title cannot exceed 500 characters.",
-                        pattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                        titlePattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
                     },
                     publication_type: {
                         required: "Publication Type is required.",
@@ -1217,15 +1228,15 @@
                     },
                     journal_name: {
                         maxlength: "Journal name cannot exceed 255 characters.",
-                        pattern: "Journal name contains invalid characters."
+                        namePattern: "Journal name contains invalid characters."
                     },
                     conference_name: {
                         maxlength: "Conference name cannot exceed 255 characters.",
-                        pattern: "Conference name contains invalid characters."
+                        namePattern: "Conference name contains invalid characters."
                     },
                     publisher: {
                         maxlength: "Publisher name cannot exceed 255 characters.",
-                        pattern: "Publisher name contains invalid characters."
+                        namePattern: "Publisher name contains invalid characters."
                     },
                     doi: {
                         doiFormat: "Please enter a valid DOI format (e.g., 10.1234/example).",
