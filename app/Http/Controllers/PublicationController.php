@@ -221,25 +221,86 @@ class PublicationController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:500',
-            'abstract' => 'nullable|string',
+            'title' => [
+                'required',
+                'string',
+                'min:3',
+                'max:500',
+                'regex:/^[a-zA-Z0-9\s\-_.,;:()\[\]\'"\/]+$/'
+            ],
+            'abstract' => 'nullable|string|max:5000',
             'publication_type' => 'required|in:journal,conference,book,book_chapter,patent,other',
-            'journal_name' => 'nullable|string|max:255',
-            'conference_name' => 'nullable|string|max:255',
-            'publisher' => 'nullable|string|max:255',
+            'journal_name' => [
+                'required_if:publication_type,journal',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9\s\-_.,;:()\[\]\'"\/]+$/',
+                'nullable'
+            ],
+            'conference_name' => [
+                'required_if:publication_type,conference',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9\s\-_.,;:()\[\]\'"\/]+$/',
+                'nullable'
+            ],
+            'publisher' => [
+                'required_if:publication_type,book',
+                'required_if:publication_type,book_chapter',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9\s\-_.,;:()\[\]\'"\/]+$/',
+                'nullable'
+            ],
             'publication_year' => 'required|integer|min:1900|max:' . date('Y'),
-            'doi' => 'nullable|string|max:255',
-            'isbn' => 'nullable|string|max:255',
+            'doi' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^10\.\d{4,}\/[-._;()\/:a-zA-Z0-9]+$/i'
+            ],
+            'isbn' => [
+                'required',
+                'string',
+                'max:20',
+                'regex:/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/i'
+            ],
             'authors' => 'required|array|min:1',
-            'authors.*.name' => 'required|string|max:255',
+            'authors.*.name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:255',
+                'regex:/^[a-zA-Z\s\-\'\.]+$/'
+            ],
             'authors.*.email' => 'nullable|email|max:255',
             'authors.*.is_primary' => 'boolean',
-            'published_link' => 'nullable|url|max:500',
-            'proceedings_link' => 'nullable|url|max:500',
+            'published_link' => 'required|url|max:500',
+            'proceedings_link' => 'required|url|max:500',
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,jpg,jpeg,png,gif|max:10240', // 10MB max per file
             'evidence_urls' => 'nullable|array',
             'evidence_urls.*' => 'nullable|url|max:500',
+        ], [
+            'title.required' => 'Publication Title is required.',
+            'title.min' => 'Title must be at least 3 characters long.',
+            'title.max' => 'Title cannot exceed 500 characters.',
+            'title.regex' => 'Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.',
+            'journal_name.required_if' => 'Journal name is required when publication type is journal.',
+            'journal_name.regex' => 'Journal name contains invalid characters.',
+            'conference_name.required_if' => 'Conference name is required when publication type is conference.',
+            'conference_name.regex' => 'Conference name contains invalid characters.',
+            'publisher.required_if' => 'Publisher name is required when publication type is book or book chapter.',
+            'publisher.regex' => 'Publisher name contains invalid characters.',
+            'doi.required' => 'DOI is required.',
+            'doi.regex' => 'Please enter a valid DOI format (e.g., 10.1234/example).',
+            'isbn.required' => 'ISBN is required.',
+            'isbn.regex' => 'Please enter a valid ISBN format.',
+            'published_link.required' => 'Publication link is required.',
+            'proceedings_link.required' => 'Proceedings link is required.',
+            'authors.*.name.required' => 'Author name is required.',
+            'authors.*.name.min' => 'Author name must be at least 2 characters long.',
+            'authors.*.name.regex' => 'Author name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).',
         ]);
 
         // Map form publication_type values to database enum values
