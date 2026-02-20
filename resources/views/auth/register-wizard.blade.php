@@ -706,7 +706,33 @@ function initializeRegisterWizardValidation() {
 </script>
 
 <style>
-    /* Form validation styles are in form-validation.css */
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error,
+    .form-control.is-invalid {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    .form-control.valid,
+    .form-control.is-valid {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .invalid-feedback {
+        display: block !important;
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+        font-weight: normal;
+    }
 </style>
 @endpush
 @endsection

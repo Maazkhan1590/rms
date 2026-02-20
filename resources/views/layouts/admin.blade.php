@@ -21,8 +21,6 @@
 
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
-    <!-- Form Validation CSS -->
-    <link rel="stylesheet" href="{{ asset('css/form-validation.css') }}">
     <!-- Material Icons for modern action buttons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
     <!-- DataTables core + extensions (vanilla theme) -->
