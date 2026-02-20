@@ -26,6 +26,35 @@
         font-size: 1rem;
     }
 
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+    }
+
+    label.error::before {
+        content: '⚠';
+        font-size: 1rem;
+        color: #dc3545 !important;
+    }
+
+    .form-error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
     textarea.form-control {
         resize: vertical;
         min-height: 120px;
@@ -335,6 +364,132 @@
             if (removeBtn) {
                 removeBtn.style.display = index === 0 ? 'none' : 'block';
             }
+        });
+    }
+
+    // jQuery Validate with Regular Expressions
+    $(document).ready(function() {
+        // Load jQuery Validate library
+        if (typeof $.fn.validate === 'undefined') {
+            $.getScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', function() {
+                initializeRTNValidation();
+            });
+        } else {
+            initializeRTNValidation();
+        }
+    });
+
+    function initializeRTNValidation() {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not available');
+            return;
+        }
+        var $ = window.jQuery;
+        
+        // Add custom validation methods
+        $.validator.addMethod("rtnType", function(value, element) {
+            return this.optional(element) || /^(RTN-3|RTN-4)$/.test(value);
+        }, "Please select a valid RTN type (RTN-3 or RTN-4).");
+
+        $.validator.addMethod("yearRange", function(value, element) {
+            const year = parseInt(value);
+            return this.optional(element) || (year >= 1900 && year <= new Date().getFullYear());
+        }, "Please enter a valid year between 1900 and current year.");
+
+        $.validator.addMethod("positiveNumber", function(value, element) {
+            return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value) && parseFloat(value) >= 0;
+        }, "Please enter a valid positive number (up to 2 decimal places).");
+
+        $.validator.addMethod("validUrl", function(value, element) {
+            if (this.optional(element)) return true;
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            return urlPattern.test(value);
+        }, "Please enter a valid URL.");
+
+        // Initialize validation
+        $('#rtnForm').validate({
+            errorClass: 'error',
+            validClass: 'valid',
+            errorElement: 'label',
+            errorPlacement: function(error, element) {
+                error.insertAfter(element);
+            },
+            rules: {
+                rtn_type: {
+                    required: true,
+                    rtnType: true
+                },
+                title: {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 500,
+                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                },
+                year: {
+                    required: true,
+                    yearRange: true,
+                    digits: true
+                },
+                units: {
+                    positiveNumber: true,
+                    min: 0
+                },
+                amount_omr: {
+                    positiveNumber: true,
+                    min: 0
+                },
+                description: {
+                    maxlength: 2000
+                },
+                evidence_description: {
+                    maxlength: 2000
+                },
+                'evidence_urls[]': {
+                    validUrl: true
+                }
+            },
+            messages: {
+                rtn_type: {
+                    required: "RTN Type is required.",
+                    rtnType: "Please select a valid RTN type."
+                },
+                title: {
+                    required: "Title is required.",
+                    minlength: "Title must be at least 3 characters long.",
+                    maxlength: "Title cannot exceed 500 characters.",
+                    pattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                },
+                year: {
+                    required: "Year is required.",
+                    yearRange: "Please enter a valid year between 1900 and current year.",
+                    digits: "Year must be a valid number."
+                },
+                units: {
+                    positiveNumber: "Units must be a valid positive number.",
+                    min: "Units cannot be negative."
+                },
+                amount_omr: {
+                    positiveNumber: "Amount must be a valid positive number.",
+                    min: "Amount cannot be negative."
+                },
+                description: {
+                    maxlength: "Description cannot exceed 2000 characters."
+                },
+                evidence_description: {
+                    maxlength: "Evidence description cannot exceed 2000 characters."
+                },
+                'evidence_urls[]': {
+                    validUrl: "Please enter a valid URL."
+                }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+
+        // Validate dynamically added URL fields
+        $(document).on('blur', '.evidence-url-input', function() {
+            $(this).valid();
         });
     }
 </script>

@@ -26,6 +26,35 @@
         font-size: 1rem;
     }
 
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+    }
+
+    label.error::before {
+        content: '⚠';
+        font-size: 1rem;
+        color: #dc3545 !important;
+    }
+
+    .form-error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
     textarea.form-control {
         resize: vertical;
         min-height: 120px;
@@ -493,5 +522,224 @@
 
     // Trigger on page load if value is already set
     document.getElementById('grant_type')?.dispatchEvent(new Event('change'));
+
+    // jQuery Validate with Regular Expressions
+    $(document).ready(function() {
+        // Load jQuery Validate library
+        if (typeof $.fn.validate === 'undefined') {
+            $.getScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', function() {
+                initializeGrantValidation();
+            });
+        } else {
+            initializeGrantValidation();
+        }
+    });
+
+    function initializeGrantValidation() {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not available');
+            return;
+        }
+        var $ = window.jQuery;
+        
+        // Add custom validation methods
+        $.validator.addMethod("grantType", function(value, element) {
+            const validTypes = ['RG', 'GRG', 'URG', 'EJAAD', 'external_grant', 'external_matching_grant', 'grg_urg_advisor', 'patent_copyright', 'grant_application', 'other'];
+            return this.optional(element) || validTypes.includes(value);
+        }, "Please select a valid grant type.");
+
+        $.validator.addMethod("role", function(value, element) {
+            const validRoles = ['PI', 'Co-PI', 'Co-I', 'Advisor', 'Mentor', 'Applicant'];
+            return this.optional(element) || validRoles.includes(value);
+        }, "Please select a valid role.");
+
+        $.validator.addMethod("yearRange", function(value, element) {
+            const year = parseInt(value);
+            return this.optional(element) || (year >= 1900 && year <= new Date().getFullYear());
+        }, "Please enter a valid year between 1900 and current year.");
+
+        $.validator.addMethod("positiveNumber", function(value, element) {
+            return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value) && parseFloat(value) >= 0;
+        }, "Please enter a valid positive number (up to 2 decimal places).");
+
+        $.validator.addMethod("validUrl", function(value, element) {
+            if (this.optional(element)) return true;
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            return urlPattern.test(value);
+        }, "Please enter a valid URL.");
+
+        $.validator.addMethod("dateRange", function(value, element) {
+            if (this.optional(element)) return true;
+            const date = new Date(value);
+            const minDate = new Date('1900-01-01');
+            const maxDate = new Date();
+            return date >= minDate && date <= maxDate;
+        }, "Please enter a valid date.");
+
+        $.validator.addMethod("sdgFormat", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^SDG\s*\d{1,2}$/i.test(value.trim());
+        }, "SDG format should be 'SDG 1' to 'SDG 17'.");
+
+        // Initialize validation
+        $('#grantForm').validate({
+            errorClass: 'error',
+            validClass: 'valid',
+            errorElement: 'label',
+            errorPlacement: function(error, element) {
+                error.insertAfter(element);
+            },
+            rules: {
+                title: {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 500,
+                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                },
+                grant_type: {
+                    required: true,
+                    grantType: true
+                },
+                role: {
+                    required: true,
+                    role: true
+                },
+                sponsor_name: {
+                    maxlength: 255,
+                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                },
+                amount_omr: {
+                    positiveNumber: true,
+                    min: 0
+                },
+                award_year: {
+                    required: true,
+                    yearRange: true,
+                    digits: true
+                },
+                grant_status: {
+                    required: false
+                },
+                application_date: {
+                    dateRange: true,
+                    date: true
+                },
+                start_date: {
+                    dateRange: true,
+                    date: true
+                },
+                end_date: {
+                    dateRange: true,
+                    date: true
+                },
+                amount_received_omr: {
+                    positiveNumber: true,
+                    min: 0
+                },
+                'sdgs[]': {
+                    sdgFormat: true
+                },
+                matching_grant_moa: {
+                    maxlength: 255
+                },
+                patent_registration_number: {
+                    maxlength: 255,
+                    pattern: /^[A-Z0-9\-]+$/
+                },
+                reference_code: {
+                    maxlength: 100,
+                    pattern: /^[A-Z0-9\-_]+$/
+                },
+                summary: {
+                    maxlength: 2000
+                },
+                'evidence_urls[]': {
+                    validUrl: true
+                }
+            },
+            messages: {
+                title: {
+                    required: "Grant Title is required.",
+                    minlength: "Title must be at least 3 characters long.",
+                    maxlength: "Title cannot exceed 500 characters.",
+                    pattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                },
+                grant_type: {
+                    required: "Grant Type is required.",
+                    grantType: "Please select a valid grant type."
+                },
+                role: {
+                    required: "Your Role is required.",
+                    role: "Please select a valid role."
+                },
+                sponsor_name: {
+                    maxlength: "Sponsor name cannot exceed 255 characters.",
+                    pattern: "Sponsor name contains invalid characters."
+                },
+                amount_omr: {
+                    positiveNumber: "Amount must be a valid positive number.",
+                    min: "Amount cannot be negative."
+                },
+                award_year: {
+                    required: "Award Year is required.",
+                    yearRange: "Please enter a valid year between 1900 and current year.",
+                    digits: "Year must be a valid number."
+                },
+                application_date: {
+                    dateRange: "Please enter a valid date.",
+                    date: "Please enter a valid date format (YYYY-MM-DD)."
+                },
+                start_date: {
+                    dateRange: "Please enter a valid date.",
+                    date: "Please enter a valid date format (YYYY-MM-DD)."
+                },
+                end_date: {
+                    dateRange: "Please enter a valid date.",
+                    date: "Please enter a valid date format (YYYY-MM-DD)."
+                },
+                amount_received_omr: {
+                    positiveNumber: "Amount received must be a valid positive number.",
+                    min: "Amount received cannot be negative."
+                },
+                'sdgs[]': {
+                    sdgFormat: "SDG format should be 'SDG 1' to 'SDG 17'."
+                },
+                matching_grant_moa: {
+                    maxlength: "MoA reference cannot exceed 255 characters."
+                },
+                patent_registration_number: {
+                    maxlength: "Patent registration number cannot exceed 255 characters.",
+                    pattern: "Patent registration number should contain only uppercase letters, numbers, and hyphens."
+                },
+                reference_code: {
+                    maxlength: "Reference code cannot exceed 100 characters.",
+                    pattern: "Reference code should contain only uppercase letters, numbers, hyphens, and underscores."
+                },
+                summary: {
+                    maxlength: "Summary cannot exceed 2000 characters."
+                },
+                'evidence_urls[]': {
+                    validUrl: "Please enter a valid URL."
+                }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+
+        // Validate dynamically added URL fields
+        $(document).on('blur', '.evidence-url-input', function() {
+            $(this).valid();
+        });
+
+        // Validate end date is after start date
+        $('#start_date, #end_date').on('change', function() {
+            const startDate = $('#start_date').val();
+            const endDate = $('#end_date').val();
+            if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                $('#end_date').valid();
+            }
+        });
+    }
 </script>
 @endsection

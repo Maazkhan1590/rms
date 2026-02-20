@@ -63,4 +63,110 @@
         </div>
     </div>
 </section>
+
+<style>
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+    }
+
+    label.error::before {
+        content: '⚠';
+        font-size: 1rem;
+        color: #dc3545 !important;
+    }
+
+    .form-error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+</style>
+
+<script>
+    // jQuery Validate with Regular Expressions for Login Form
+    $(document).ready(function() {
+        // Load jQuery Validate library
+        if (typeof $.fn.validate === 'undefined') {
+            $.getScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', function() {
+                initializeLoginValidation();
+            });
+        } else {
+            initializeLoginValidation();
+        }
+    });
+
+    function initializeLoginValidation() {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not available');
+            return;
+        }
+        var $ = window.jQuery;
+        
+        // Add custom validation methods
+        $.validator.addMethod("emailFormat", function(value, element) {
+            return this.optional(element) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }, "Please enter a valid email address.");
+
+        $.validator.addMethod("passwordFormat", function(value, element) {
+            if (this.optional(element)) return true;
+            // Password should be at least 6 characters
+            return value.length >= 6;
+        }, "Password must be at least 6 characters long.");
+
+        // Initialize validation
+        $('#login-form').validate({
+            errorClass: 'error',
+            validClass: 'valid',
+            errorElement: 'label',
+            errorPlacement: function(error, element) {
+                // For password field, insert after the password-input div
+                if (element.attr('name') === 'password') {
+                    error.insertAfter(element.closest('.password-input'));
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            rules: {
+                email: {
+                    required: true,
+                    emailFormat: true,
+                    maxlength: 255
+                },
+                password: {
+                    required: true,
+                    passwordFormat: true,
+                    minlength: 6
+                }
+            },
+            messages: {
+                email: {
+                    required: "Email address is required.",
+                    emailFormat: "Please enter a valid email address.",
+                    maxlength: "Email address cannot exceed 255 characters."
+                },
+                password: {
+                    required: "Password is required.",
+                    passwordFormat: "Password must be at least 6 characters long.",
+                    minlength: "Password must be at least 6 characters long."
+                }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+    }
+</script>
 @endsection

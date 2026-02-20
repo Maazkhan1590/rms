@@ -26,6 +26,35 @@
         font-size: 1rem;
     }
 
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+    }
+
+    label.error::before {
+        content: '⚠';
+        font-size: 1rem;
+        color: #dc3545 !important;
+    }
+
+    .form-error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
     textarea.form-control {
         resize: vertical;
         min-height: 120px;
@@ -353,5 +382,135 @@
 
     // Trigger on page load if value is already set
     document.getElementById('recognition_type')?.dispatchEvent(new Event('change'));
+
+    // jQuery Validate with Regular Expressions
+    $(document).ready(function() {
+        // Load jQuery Validate library
+        if (typeof $.fn.validate === 'undefined') {
+            $.getScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', function() {
+                initializeBonusValidation();
+            });
+        } else {
+            initializeBonusValidation();
+        }
+    });
+
+    function initializeBonusValidation() {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not available');
+            return;
+        }
+        var $ = window.jQuery;
+        
+        // Add custom validation methods
+        $.validator.addMethod("recognitionType", function(value, element) {
+            const validTypes = ['editorial_board', 'external_examiner', 'regulatory_body', 'workshop_seminar', 'keynote_plenary', 'journal_reviewer'];
+            return this.optional(element) || validTypes.includes(value);
+        }, "Please select a valid recognition type.");
+
+        $.validator.addMethod("yearRange", function(value, element) {
+            const year = parseInt(value);
+            return this.optional(element) || (year >= 1900 && year <= new Date().getFullYear());
+        }, "Please enter a valid year between 1900 and current year.");
+
+        $.validator.addMethod("validUrl", function(value, element) {
+            if (this.optional(element)) return true;
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            return urlPattern.test(value);
+        }, "Please enter a valid URL.");
+
+        $.validator.addMethod("alphanumericWithSpaces", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/.test(value);
+        }, "This field contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.");
+
+        // Initialize validation
+        $('#bonusForm').validate({
+            errorClass: 'error',
+            validClass: 'valid',
+            errorElement: 'label',
+            errorPlacement: function(error, element) {
+                error.insertAfter(element);
+            },
+            rules: {
+                recognition_type: {
+                    required: true,
+                    recognitionType: true
+                },
+                title: {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 500,
+                    alphanumericWithSpaces: true
+                },
+                organization: {
+                    maxlength: 255,
+                    alphanumericWithSpaces: true
+                },
+                journal_conference_name: {
+                    maxlength: 255,
+                    alphanumericWithSpaces: true
+                },
+                event_name: {
+                    maxlength: 255,
+                    alphanumericWithSpaces: true
+                },
+                year: {
+                    required: true,
+                    yearRange: true,
+                    digits: true
+                },
+                description: {
+                    maxlength: 2000
+                },
+                'evidence_urls[]': {
+                    validUrl: true
+                }
+            },
+            messages: {
+                recognition_type: {
+                    required: "Recognition Type is required.",
+                    recognitionType: "Please select a valid recognition type."
+                },
+                title: {
+                    required: "Title is required.",
+                    minlength: "Title must be at least 3 characters long.",
+                    maxlength: "Title cannot exceed 500 characters.",
+                    alphanumericWithSpaces: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                },
+                organization: {
+                    maxlength: "Organization name cannot exceed 255 characters.",
+                    alphanumericWithSpaces: "Organization name contains invalid characters."
+                },
+                journal_conference_name: {
+                    maxlength: "Journal/Conference name cannot exceed 255 characters.",
+                    alphanumericWithSpaces: "Journal/Conference name contains invalid characters."
+                },
+                event_name: {
+                    maxlength: "Event name cannot exceed 255 characters.",
+                    alphanumericWithSpaces: "Event name contains invalid characters."
+                },
+                year: {
+                    required: "Year is required.",
+                    yearRange: "Please enter a valid year between 1900 and current year.",
+                    digits: "Year must be a valid number."
+                },
+                description: {
+                    maxlength: "Description cannot exceed 2000 characters."
+                },
+                'evidence_urls[]': {
+                    validUrl: "Please enter a valid URL."
+                }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+
+        // Validate dynamically added URL fields
+        $(document).on('blur', '.evidence-url-input', function() {
+            $(this).valid();
+        });
+    }
 </script>
 @endsection

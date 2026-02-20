@@ -325,39 +325,68 @@ function updateStepDisplay() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Validation function
+// Validation function with jQuery Validate
 function validateStep(step) {
-    const stepElement = document.getElementById('step' + step);
-    const inputs = stepElement.querySelectorAll('input[required], select[required]');
-    let isValid = true;
-
-    inputs.forEach(input => {
-        if (!input.value.trim()) {
-            showError(input, input.placeholder + ' is required');
-            isValid = false;
-        } else if (input.type === 'email' && !isValidEmail(input.value)) {
-            showError(input, 'Please enter a valid email address');
-            isValid = false;
-        } else {
-            clearError(input);
-        }
-    });
-
-    // Additional validation for step 3
-    if (step === 3) {
-        const password = document.getElementById('password');
-        const confirm = document.getElementById('password_confirmation');
+    // Use jQuery Validate if available
+    if (typeof $.fn.validate !== 'undefined' && $('#registrationForm').data('validator')) {
+        const validator = $('#registrationForm').data('validator');
+        let isValid = true;
         
-        if (password.value.length < 8) {
-            showError(password, 'Password must be at least 8 characters');
-            isValid = false;
-        } else if (password.value !== confirm.value) {
-            showError(confirm, 'Passwords do not match');
-            isValid = false;
+        // Get all fields in current step
+        const stepElement = document.getElementById('step' + step);
+        const inputs = stepElement.querySelectorAll('input[required], select[required]');
+        
+        inputs.forEach(input => {
+            if (!validator.element(input)) {
+                isValid = false;
+            }
+        });
+        
+        // Additional validation for step 3
+        if (step === 3) {
+            const password = document.getElementById('password');
+            const confirm = document.getElementById('password_confirmation');
+            
+            if (!validator.element(password) || !validator.element(confirm)) {
+                isValid = false;
+            }
         }
-    }
+        
+        return isValid;
+    } else {
+        // Fallback validation
+        const stepElement = document.getElementById('step' + step);
+        const inputs = stepElement.querySelectorAll('input[required], select[required]');
+        let isValid = true;
 
-    return isValid;
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                showError(input, input.placeholder + ' is required');
+                isValid = false;
+            } else if (input.type === 'email' && !isValidEmail(input.value)) {
+                showError(input, 'Please enter a valid email address');
+                isValid = false;
+            } else {
+                clearError(input);
+            }
+        });
+
+        // Additional validation for step 3
+        if (step === 3) {
+            const password = document.getElementById('password');
+            const confirm = document.getElementById('password_confirmation');
+            
+            if (password.value.length < 8) {
+                showError(password, 'Password must be at least 8 characters');
+                isValid = false;
+            } else if (password.value !== confirm.value) {
+                showError(confirm, 'Passwords do not match');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
 }
 
 function isValidEmail(email) {
@@ -431,6 +460,279 @@ document.getElementById('registrationForm').addEventListener('submit', function(
 document.querySelectorAll('input, select').forEach(input => {
     input.addEventListener('input', () => clearError(input));
 });
+
+// jQuery Validate with Regular Expressions for Register Wizard Form
+// Wait for jQuery to be available
+function initRegisterWizardValidation() {
+    if (typeof window.jQuery === 'undefined' || !window.jQuery.fn) {
+        setTimeout(initRegisterWizardValidation, 100);
+        return;
+    }
+    
+    var $ = window.jQuery;
+    
+    $(document).ready(function() {
+        // Load jQuery Validate library
+        if (typeof $.fn.validate === 'undefined') {
+            $.getScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', function() {
+                initializeRegisterWizardValidation();
+            });
+        } else {
+            initializeRegisterWizardValidation();
+        }
+    });
+}
+
+initRegisterWizardValidation();
+
+function initializeRegisterWizardValidation() {
+    if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not available');
+        return;
+    }
+    var $ = window.jQuery;
+    
+    // Add custom validation methods
+    $.validator.addMethod("nameFormat", function(value, element) {
+        return this.optional(element) || /^[a-zA-Z\s\-'\.]+$/.test(value) && value.trim().length >= 2;
+    }, "Name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).");
+
+    $.validator.addMethod("emailFormat", function(value, element) {
+        return this.optional(element) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }, "Please enter a valid email address.");
+
+    $.validator.addMethod("phoneFormat", function(value, element) {
+        if (this.optional(element)) return true;
+        // Phone format: +1234567890 or 1234567890 or (123) 456-7890
+        return /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/.test(value);
+    }, "Please enter a valid phone number.");
+
+    $.validator.addMethod("passwordStrength", function(value, element) {
+        if (this.optional(element)) return true;
+        // Password must be at least 8 characters with uppercase, lowercase, number, and special character
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
+    }, "Password must be at least 8 characters with uppercase, lowercase, number, and special character.");
+
+    $.validator.addMethod("orcidFormat", function(value, element) {
+        if (this.optional(element)) return true;
+        // ORCID format: 0000-0002-1234-5678
+        return /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(value);
+    }, "Please enter a valid ORCID format (e.g., 0000-0002-1234-5678).");
+
+    $.validator.addMethod("validUrl", function(value, element) {
+        if (this.optional(element)) return true;
+        const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+        return urlPattern.test(value);
+    }, "Please enter a valid URL.");
+
+    $.validator.addMethod("employeeIdFormat", function(value, element) {
+        if (this.optional(element)) return true;
+        // Employee ID: alphanumeric, hyphens, underscores allowed
+        return /^[A-Za-z0-9\-_]+$/.test(value);
+    }, "Employee ID should contain only letters, numbers, hyphens, and underscores.");
+
+    $.validator.addMethod("fileSize", function(value, element) {
+        if (this.optional(element)) return true;
+        const file = element.files[0];
+        if (!file) return true;
+        // Check file size (2MB for credentials, 1MB for photo)
+        const maxSize = element.id === 'credentials' ? 2 * 1024 * 1024 : 1024 * 1024;
+        return file.size <= maxSize;
+    }, function(element) {
+        const maxSize = element.id === 'credentials' ? 2 : 1;
+        return `File size must not exceed ${maxSize}MB.`;
+    });
+
+    $.validator.addMethod("fileType", function(value, element) {
+        if (this.optional(element)) return true;
+        const file = element.files[0];
+        if (!file) return true;
+        if (element.id === 'credentials') {
+            return file.type === 'application/pdf';
+        } else if (element.id === 'profile_photo') {
+            return file.type.startsWith('image/');
+        }
+        return true;
+    }, function(element) {
+        if (element.id === 'credentials') {
+            return "Please upload a PDF file.";
+        } else if (element.id === 'profile_photo') {
+            return "Please upload an image file.";
+        }
+        return "Invalid file type.";
+    });
+
+    // Initialize validation
+    $('#registrationForm').validate({
+        errorClass: 'is-invalid',
+        validClass: 'is-valid',
+        errorElement: 'div',
+        errorPlacement: function(error, element) {
+            error.addClass('invalid-feedback');
+            error.insertAfter(element);
+        },
+        ignore: ':hidden:not([required])',
+        rules: {
+            name: {
+                required: true,
+                nameFormat: true,
+                minlength: 2,
+                maxlength: 255
+            },
+            email: {
+                required: true,
+                emailFormat: true,
+                maxlength: 255
+            },
+            phone: {
+                required: true,
+                phoneFormat: true,
+                minlength: 10,
+                maxlength: 20
+            },
+            department: {
+                required: true
+            },
+            designation: {
+                required: true
+            },
+            employee_id: {
+                required: true,
+                employeeIdFormat: true,
+                maxlength: 50
+            },
+            orcid: {
+                orcidFormat: true
+            },
+            google_scholar: {
+                validUrl: true,
+                maxlength: 500
+            },
+            research_gate: {
+                validUrl: true,
+                maxlength: 500
+            },
+            password: {
+                required: true,
+                passwordStrength: true,
+                minlength: 8
+            },
+            password_confirmation: {
+                required: true,
+                equalTo: '#password',
+                minlength: 8
+            },
+            credentials: {
+                required: true,
+                fileSize: true,
+                fileType: true
+            },
+            profile_photo: {
+                fileSize: true,
+                fileType: true
+            },
+            terms: {
+                required: true
+            }
+        },
+        messages: {
+            name: {
+                required: "Full name is required.",
+                nameFormat: "Name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).",
+                minlength: "Name must be at least 2 characters long.",
+                maxlength: "Name cannot exceed 255 characters."
+            },
+            email: {
+                required: "Email address is required.",
+                emailFormat: "Please enter a valid email address.",
+                maxlength: "Email address cannot exceed 255 characters."
+            },
+            phone: {
+                required: "Phone number is required.",
+                phoneFormat: "Please enter a valid phone number.",
+                minlength: "Phone number must be at least 10 digits.",
+                maxlength: "Phone number cannot exceed 20 characters."
+            },
+            department: {
+                required: "Please select a department."
+            },
+            designation: {
+                required: "Please select a designation."
+            },
+            employee_id: {
+                required: "Employee ID is required.",
+                employeeIdFormat: "Employee ID should contain only letters, numbers, hyphens, and underscores.",
+                maxlength: "Employee ID cannot exceed 50 characters."
+            },
+            orcid: {
+                orcidFormat: "Please enter a valid ORCID format (e.g., 0000-0002-1234-5678)."
+            },
+            google_scholar: {
+                validUrl: "Please enter a valid URL.",
+                maxlength: "URL cannot exceed 500 characters."
+            },
+            research_gate: {
+                validUrl: "Please enter a valid URL.",
+                maxlength: "URL cannot exceed 500 characters."
+            },
+            password: {
+                required: "Password is required.",
+                passwordStrength: "Password must be at least 8 characters with uppercase, lowercase, number, and special character (@$!%*?&).",
+                minlength: "Password must be at least 8 characters long."
+            },
+            password_confirmation: {
+                required: "Please confirm your password.",
+                equalTo: "Passwords do not match.",
+                minlength: "Password must be at least 8 characters long."
+            },
+            credentials: {
+                required: "Please upload your credentials (PDF file).",
+                fileSize: "File size must not exceed 2MB.",
+                fileType: "Please upload a PDF file."
+            },
+            profile_photo: {
+                fileSize: "File size must not exceed 1MB.",
+                fileType: "Please upload an image file (JPG, PNG)."
+            },
+            terms: {
+                required: "You must agree to the Terms of Service and Privacy Policy."
+            }
+        },
+        submitHandler: function(form) {
+            form.submit();
+        }
+    });
+}
 </script>
+
+<style>
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error,
+    .form-control.is-invalid {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    .form-control.valid,
+    .form-control.is-valid {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .invalid-feedback {
+        display: block !important;
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+        font-weight: normal;
+    }
+</style>
 @endpush
 @endsection

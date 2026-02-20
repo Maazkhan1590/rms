@@ -42,8 +42,12 @@
         background: var(--primary-color);
         z-index: 2;
         border-radius: 2px;
-        transition: width 0.3s ease;
+        transition: width 0.3s ease, background 0.3s ease;
         width: 0%;
+    }
+
+    .stepper-line.completed {
+        background: #16a34a;
     }
 
     .step-item {
@@ -79,15 +83,22 @@
     }
 
     .step-circle.completed {
-        background: var(--success);
+        background: #16a34a;
         color: white;
-        border-color: var(--success);
+        border-color: #16a34a;
     }
 
     .step-circle.completed::after {
         content: '✓';
         position: absolute;
         font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .step-item.completed .step-circle {
+        background: #16a34a !important;
+        border-color: #16a34a !important;
+        color: white !important;
     }
 
     .step-label {
@@ -145,6 +156,35 @@
     .form-error::before {
         content: '⚠';
         font-size: 1rem;
+    }
+
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+    }
+
+    label.error::before {
+        content: '⚠';
+        font-size: 1rem;
+        color: #dc3545 !important;
+    }
+
+    .form-error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
     }
 
     .form-actions {
@@ -681,7 +721,7 @@
             currentStepContent.style.display = 'block';
         }
 
-        // Update step items
+        // Update step items with green color for completed steps
         document.querySelectorAll('.step-item').forEach((item, index) => {
             const stepNum = index + 1;
             const circle = item.querySelector('.step-circle');
@@ -692,46 +732,72 @@
             if (stepNum < currentStep) {
                 item.classList.add('completed');
                 circle.classList.add('completed');
+                circle.style.background = '#16a34a';
+                circle.style.borderColor = '#16a34a';
+                circle.style.color = 'white';
             } else if (stepNum === currentStep) {
                 item.classList.add('active');
                 circle.classList.add('active');
             }
         });
 
-        // Update stepper line
+        // Update stepper line with green color for completed steps
         const stepperLine = document.getElementById('stepperLine');
         if (currentStep > 1) {
             const progress = ((currentStep - 1) / 2) * 80; // 80% is the line width
             stepperLine.style.width = progress + '%';
+            stepperLine.style.background = '#16a34a'; // Green color for completed line
+            stepperLine.classList.add('completed');
         } else {
             stepperLine.style.width = '0%';
+            stepperLine.style.background = 'var(--primary-color)';
+            stepperLine.classList.remove('completed');
         }
     }
 
     function nextStep() {
-        // Validate current step
-        const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
-        if (!currentStepContent) return;
-
-        const requiredFields = currentStepContent.querySelectorAll('[required]');
-        let isValid = true;
-        let firstInvalid = null;
-
-        requiredFields.forEach(field => {
-            field.classList.remove('is-invalid');
-            if (!field.value.trim()) {
-                isValid = false;
-                field.classList.add('is-invalid');
-                if (!firstInvalid) firstInvalid = field;
+        // Validate current step using jQuery Validate if available
+        if (typeof window.jQuery !== 'undefined' && typeof window.jQuery.fn.validate !== 'undefined') {
+            var $ = window.jQuery;
+            if ($('#publicationForm').length) {
+                const isValid = $('#publicationForm').valid();
+                if (!isValid) {
+                    // Scroll to first error
+                    const firstError = $('.error').first();
+                    if (firstError.length) {
+                        $('html, body').animate({
+                            scrollTop: firstError.offset().top - 100
+                        }, 500);
+                        firstError.focus();
+                    }
+                    return;
+                }
             }
-        });
+        } else {
+            // Fallback validation
+            const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+            if (!currentStepContent) return;
 
-        if (!isValid) {
-            if (firstInvalid) {
-                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstInvalid.focus();
+            const requiredFields = currentStepContent.querySelectorAll('[required]');
+            let isValid = true;
+            let firstInvalid = null;
+
+            requiredFields.forEach(field => {
+                field.classList.remove('is-invalid', 'error');
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid', 'error');
+                    if (!firstInvalid) firstInvalid = field;
+                }
+            });
+
+            if (!isValid) {
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalid.focus();
+                }
+                return;
             }
-            return;
         }
 
         if (currentStep < 3) {
@@ -1007,5 +1073,419 @@
             }
         });
     }
+
+    // jQuery Validate function will be defined in @push('scripts') section below
+            errorClass: 'error',
+            validClass: 'valid',
+            errorElement: 'label',
+            errorPlacement: function(error, element) {
+                error.insertAfter(element);
+            },
+            ignore: ':hidden:not([name*="[is_primary]"])',
+            rules: {
+                title: {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 500,
+                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                },
+                publication_type: {
+                    required: true,
+                    publicationType: true
+                },
+                publication_year: {
+                    required: true,
+                    yearRange: true,
+                    digits: true
+                },
+                abstract: {
+                    maxlength: 5000
+                },
+                journal_name: {
+                    maxlength: 255,
+                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                },
+                conference_name: {
+                    maxlength: 255,
+                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                },
+                publisher: {
+                    maxlength: 255,
+                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                },
+                doi: {
+                    doiFormat: true,
+                    maxlength: 255
+                },
+                isbn: {
+                    isbnFormat: true,
+                    maxlength: 20
+                },
+                published_link: {
+                    validUrl: true,
+                    maxlength: 500
+                },
+                proceedings_link: {
+                    validUrl: true,
+                    maxlength: 500
+                },
+                'authors[0][name]': {
+                    required: true,
+                    authorName: true,
+                    minlength: 2,
+                    maxlength: 255
+                },
+                'authors[0][email]': {
+                    emailFormat: true,
+                    maxlength: 255
+                },
+                'evidence_urls[]': {
+                    validUrl: true
+                }
+            },
+            messages: {
+                title: {
+                    required: "Publication Title is required.",
+                    minlength: "Title must be at least 3 characters long.",
+                    maxlength: "Title cannot exceed 500 characters.",
+                    pattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                },
+                publication_type: {
+                    required: "Publication Type is required.",
+                    publicationType: "Please select a valid publication type."
+                },
+                publication_year: {
+                    required: "Publication Year is required.",
+                    yearRange: "Please enter a valid year between 1900 and current year.",
+                    digits: "Year must be a valid number."
+                },
+                abstract: {
+                    maxlength: "Abstract cannot exceed 5000 characters."
+                },
+                journal_name: {
+                    maxlength: "Journal name cannot exceed 255 characters.",
+                    pattern: "Journal name contains invalid characters."
+                },
+                conference_name: {
+                    maxlength: "Conference name cannot exceed 255 characters.",
+                    pattern: "Conference name contains invalid characters."
+                },
+                publisher: {
+                    maxlength: "Publisher name cannot exceed 255 characters.",
+                    pattern: "Publisher name contains invalid characters."
+                },
+                doi: {
+                    doiFormat: "Please enter a valid DOI format (e.g., 10.1234/example).",
+                    maxlength: "DOI cannot exceed 255 characters."
+                },
+                isbn: {
+                    isbnFormat: "Please enter a valid ISBN format.",
+                    maxlength: "ISBN cannot exceed 20 characters."
+                },
+                published_link: {
+                    validUrl: "Please enter a valid URL.",
+                    maxlength: "Published link cannot exceed 500 characters."
+                },
+                proceedings_link: {
+                    validUrl: "Please enter a valid URL.",
+                    maxlength: "Proceedings link cannot exceed 500 characters."
+                },
+                'authors[0][name]': {
+                    required: "Author name is required.",
+                    authorName: "Author name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).",
+                    minlength: "Author name must be at least 2 characters long.",
+                    maxlength: "Author name cannot exceed 255 characters."
+                },
+                'authors[0][email]': {
+                    emailFormat: "Please enter a valid email address.",
+                    maxlength: "Email cannot exceed 255 characters."
+                },
+                'evidence_urls[]': {
+                    validUrl: "Please enter a valid URL."
+                }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+
+        // Validate dynamically added author fields
+        $(document).on('blur', '.author-name', function() {
+            $(this).rules('add', {
+                required: true,
+                authorName: true,
+                minlength: 2,
+                maxlength: 255,
+                messages: {
+                    required: "Author name is required.",
+                    authorName: "Author name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).",
+                    minlength: "Author name must be at least 2 characters long.",
+                    maxlength: "Author name cannot exceed 255 characters."
+                }
+            });
+            $(this).valid();
+        });
+
+        $(document).on('blur', '.author-email', function() {
+            $(this).rules('add', {
+                emailFormat: true,
+                maxlength: 255,
+                messages: {
+                    emailFormat: "Please enter a valid email address.",
+                    maxlength: "Email cannot exceed 255 characters."
+                }
+            });
+            $(this).valid();
+        });
+
+    }
 </script>
+
+@push('scripts')
+<script>
+    // jQuery Validate with Regular Expressions for Publication Form
+    // This runs after jQuery is loaded from the layout
+    (function() {
+        function initializePublicationValidation() {
+            // Ensure jQuery is available
+            if (typeof window.jQuery === 'undefined') {
+                console.error('jQuery is not available');
+                return;
+            }
+            var $ = window.jQuery;
+            
+            // Add custom validation methods
+            $.validator.addMethod("publicationType", function(value, element) {
+                const validTypes = ['journal', 'conference', 'book', 'book_chapter', 'patent', 'other'];
+                return this.optional(element) || validTypes.includes(value);
+            }, "Please select a valid publication type.");
+
+            $.validator.addMethod("yearRange", function(value, element) {
+                const year = parseInt(value);
+                return this.optional(element) || (year >= 1900 && year <= new Date().getFullYear());
+            }, "Please enter a valid year between 1900 and current year.");
+
+            $.validator.addMethod("validUrl", function(value, element) {
+                if (this.optional(element)) return true;
+                const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+                return urlPattern.test(value);
+            }, "Please enter a valid URL.");
+
+            $.validator.addMethod("doiFormat", function(value, element) {
+                if (this.optional(element)) return true;
+                return /^10\.\d{4,}\/[-._;()\/:a-zA-Z0-9]+$/i.test(value);
+            }, "Please enter a valid DOI format (e.g., 10.1234/example).");
+
+            $.validator.addMethod("isbnFormat", function(value, element) {
+                if (this.optional(element)) return true;
+                return /^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/i.test(value);
+            }, "Please enter a valid ISBN format.");
+
+            $.validator.addMethod("emailFormat", function(value, element) {
+                if (this.optional(element)) return true;
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            }, "Please enter a valid email address.");
+
+            $.validator.addMethod("authorName", function(value, element) {
+                if (this.optional(element)) return true;
+                return /^[a-zA-Z\s\-'\.]+$/.test(value) && value.trim().length >= 2;
+            }, "Author name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).");
+
+            // Initialize validation
+            $('#publicationForm').validate({
+                errorClass: 'error',
+                validClass: 'valid',
+                errorElement: 'label',
+                errorPlacement: function(error, element) {
+                    error.insertAfter(element);
+                },
+                ignore: ':hidden:not([name*="[is_primary]"])',
+                rules: {
+                    title: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 500,
+                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                    },
+                    publication_type: {
+                        required: true,
+                        publicationType: true
+                    },
+                    publication_year: {
+                        required: true,
+                        yearRange: true,
+                        digits: true
+                    },
+                    abstract: {
+                        maxlength: 5000
+                    },
+                    journal_name: {
+                        maxlength: 255,
+                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                    },
+                    conference_name: {
+                        maxlength: 255,
+                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                    },
+                    publisher: {
+                        maxlength: 255,
+                        pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                    },
+                    doi: {
+                        doiFormat: true,
+                        maxlength: 255
+                    },
+                    isbn: {
+                        isbnFormat: true,
+                        maxlength: 20
+                    },
+                    published_link: {
+                        validUrl: true,
+                        maxlength: 500
+                    },
+                    proceedings_link: {
+                        validUrl: true,
+                        maxlength: 500
+                    },
+                    'authors[0][name]': {
+                        required: true,
+                        authorName: true,
+                        minlength: 2,
+                        maxlength: 255
+                    },
+                    'authors[0][email]': {
+                        emailFormat: true,
+                        maxlength: 255
+                    },
+                    'evidence_urls[]': {
+                        validUrl: true
+                    }
+                },
+                messages: {
+                    title: {
+                        required: "Publication Title is required.",
+                        minlength: "Title must be at least 3 characters long.",
+                        maxlength: "Title cannot exceed 500 characters.",
+                        pattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                    },
+                    publication_type: {
+                        required: "Publication Type is required.",
+                        publicationType: "Please select a valid publication type."
+                    },
+                    publication_year: {
+                        required: "Publication Year is required.",
+                        yearRange: "Please enter a valid year between 1900 and current year.",
+                        digits: "Year must be a valid number."
+                    },
+                    abstract: {
+                        maxlength: "Abstract cannot exceed 5000 characters."
+                    },
+                    journal_name: {
+                        maxlength: "Journal name cannot exceed 255 characters.",
+                        pattern: "Journal name contains invalid characters."
+                    },
+                    conference_name: {
+                        maxlength: "Conference name cannot exceed 255 characters.",
+                        pattern: "Conference name contains invalid characters."
+                    },
+                    publisher: {
+                        maxlength: "Publisher name cannot exceed 255 characters.",
+                        pattern: "Publisher name contains invalid characters."
+                    },
+                    doi: {
+                        doiFormat: "Please enter a valid DOI format (e.g., 10.1234/example).",
+                        maxlength: "DOI cannot exceed 255 characters."
+                    },
+                    isbn: {
+                        isbnFormat: "Please enter a valid ISBN format.",
+                        maxlength: "ISBN cannot exceed 20 characters."
+                    },
+                    published_link: {
+                        validUrl: "Please enter a valid URL.",
+                        maxlength: "Published link cannot exceed 500 characters."
+                    },
+                    proceedings_link: {
+                        validUrl: "Please enter a valid URL.",
+                        maxlength: "Proceedings link cannot exceed 500 characters."
+                    },
+                    'authors[0][name]': {
+                        required: "Author name is required.",
+                        authorName: "Author name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).",
+                        minlength: "Author name must be at least 2 characters long.",
+                        maxlength: "Author name cannot exceed 255 characters."
+                    },
+                    'authors[0][email]': {
+                        emailFormat: "Please enter a valid email address.",
+                        maxlength: "Email cannot exceed 255 characters."
+                    },
+                    'evidence_urls[]': {
+                        validUrl: "Please enter a valid URL."
+                    }
+                },
+                submitHandler: function(form) {
+                    form.submit();
+                }
+            });
+
+            // Validate dynamically added author fields
+            $(document).on('blur', '.author-name', function() {
+                $(this).rules('add', {
+                    required: true,
+                    authorName: true,
+                    minlength: 2,
+                    maxlength: 255,
+                    messages: {
+                        required: "Author name is required.",
+                        authorName: "Author name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).",
+                        minlength: "Author name must be at least 2 characters long.",
+                        maxlength: "Author name cannot exceed 255 characters."
+                    }
+                });
+                $(this).valid();
+            });
+
+            $(document).on('blur', '.author-email', function() {
+                $(this).rules('add', {
+                    emailFormat: true,
+                    maxlength: 255,
+                    messages: {
+                        emailFormat: "Please enter a valid email address.",
+                        maxlength: "Email cannot exceed 255 characters."
+                    }
+                });
+                $(this).valid();
+            });
+
+            // Validate dynamically added URL fields
+            $(document).on('blur', '.evidence-url-input', function() {
+                $(this).valid();
+            });
+        }
+        
+        function initPublicationValidation() {
+            if (typeof window.jQuery === 'undefined' || !window.jQuery.fn) {
+                // jQuery not loaded yet, wait and try again
+                setTimeout(initPublicationValidation, 100);
+                return;
+            }
+            
+            var $ = window.jQuery;
+            
+            $(document).ready(function() {
+                // Load jQuery Validate library
+                if (typeof $.fn.validate === 'undefined') {
+                    $.getScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', function() {
+                        initializePublicationValidation();
+                    });
+                } else {
+                    initializePublicationValidation();
+                }
+            });
+        }
+        
+        // Start initialization
+        initPublicationValidation();
+    })();
+</script>
+@endpush
 @endsection

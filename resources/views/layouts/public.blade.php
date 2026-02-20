@@ -28,6 +28,32 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     
     @stack('styles')
+    
+    <!-- Global Error Message Styles - Red Color -->
+    <style>
+        /* Ensure all error messages are red */
+        .form-error,
+        label.error,
+        .error,
+        .invalid-feedback,
+        .text-danger {
+            color: #dc3545 !important;
+        }
+        
+        .form-control.error,
+        .form-control.is-invalid,
+        input.error,
+        select.error,
+        textarea.error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        }
+        
+        label.error::before,
+        .form-error::before {
+            color: #dc3545 !important;
+        }
+    </style>
 </head>
 <body>
     @include('partials.public-header')

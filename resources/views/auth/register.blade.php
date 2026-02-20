@@ -139,5 +139,181 @@
                 });
         }
     });
+
+    // jQuery Validate with Regular Expressions for Register Form
+    // Wait for jQuery to be available
+    function initRegisterValidation() {
+        if (typeof window.jQuery === 'undefined' || !window.jQuery.fn) {
+            setTimeout(initRegisterValidation, 100);
+            return;
+        }
+        
+        var $ = window.jQuery;
+        
+        $(document).ready(function() {
+            // Load jQuery Validate library
+            if (typeof $.fn.validate === 'undefined') {
+                $.getScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', function() {
+                    initializeRegisterValidation();
+                });
+            } else {
+                initializeRegisterValidation();
+            }
+        });
+    }
+    
+    initRegisterValidation();
+
+    function initializeRegisterValidation() {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not available');
+            return;
+        }
+        var $ = window.jQuery;
+        
+        // Add custom validation methods
+        $.validator.addMethod("nameFormat", function(value, element) {
+            return this.optional(element) || /^[a-zA-Z\s\-'\.]+$/.test(value) && value.trim().length >= 2;
+        }, "Name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).");
+
+        $.validator.addMethod("emailFormat", function(value, element) {
+            return this.optional(element) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }, "Please enter a valid email address.");
+
+        $.validator.addMethod("passwordStrength", function(value, element) {
+            if (this.optional(element)) return true;
+            // Password must be at least 8 characters with uppercase, lowercase, number, and special character
+            return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
+        }, "Password must be at least 8 characters with uppercase, lowercase, number, and special character.");
+
+        $.validator.addMethod("alphanumericWithSpaces", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/.test(value);
+        }, "This field contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.");
+
+        // Initialize validation
+        $('#register-form').validate({
+            errorClass: 'error',
+            validClass: 'valid',
+            errorElement: 'label',
+            errorPlacement: function(error, element) {
+                // For password fields, insert after the password-input div
+                if (element.attr('name') === 'password' || element.attr('name') === 'password_confirmation') {
+                    error.insertAfter(element.closest('.password-input'));
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            rules: {
+                name: {
+                    required: true,
+                    nameFormat: true,
+                    minlength: 2,
+                    maxlength: 255
+                },
+                email: {
+                    required: true,
+                    emailFormat: true,
+                    maxlength: 255
+                },
+                affiliation: {
+                    maxlength: 255,
+                    alphanumericWithSpaces: true
+                },
+                designation: {
+                    maxlength: 100,
+                    alphanumericWithSpaces: true
+                },
+                password: {
+                    required: true,
+                    passwordStrength: true,
+                    minlength: 8
+                },
+                password_confirmation: {
+                    required: true,
+                    equalTo: '#register-password',
+                    minlength: 8
+                },
+                terms: {
+                    required: true
+                }
+            },
+            messages: {
+                name: {
+                    required: "Full name is required.",
+                    nameFormat: "Name should contain only letters, spaces, hyphens, apostrophes, and periods (minimum 2 characters).",
+                    minlength: "Name must be at least 2 characters long.",
+                    maxlength: "Name cannot exceed 255 characters."
+                },
+                email: {
+                    required: "Email address is required.",
+                    emailFormat: "Please enter a valid email address.",
+                    maxlength: "Email address cannot exceed 255 characters."
+                },
+                affiliation: {
+                    maxlength: "Affiliation cannot exceed 255 characters.",
+                    alphanumericWithSpaces: "Affiliation contains invalid characters."
+                },
+                designation: {
+                    maxlength: "Designation cannot exceed 100 characters.",
+                    alphanumericWithSpaces: "Designation contains invalid characters."
+                },
+                password: {
+                    required: "Password is required.",
+                    passwordStrength: "Password must be at least 8 characters with uppercase, lowercase, number, and special character (@$!%*?&).",
+                    minlength: "Password must be at least 8 characters long."
+                },
+                password_confirmation: {
+                    required: "Please confirm your password.",
+                    equalTo: "Passwords do not match.",
+                    minlength: "Password must be at least 8 characters long."
+                },
+                terms: {
+                    required: "You must agree to the Terms of Service and Privacy Policy."
+                }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+    }
 </script>
+
+<style>
+    /* jQuery Validate Error Styles - Red Color */
+    .form-control.error {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    label.error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+    }
+
+    label.error::before {
+        content: '⚠';
+        font-size: 1rem;
+        color: #dc3545 !important;
+    }
+
+    .form-error {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
+    .invalid-feedback {
+        color: #dc3545 !important;
+        display: block !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+</style>
 @endsection
