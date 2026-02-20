@@ -689,7 +689,7 @@
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
                         <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fas fa-paper-plane"></i> Submit
+                            <i class="fas fa-save"></i> Save as Draft
                         </button>
                     </div>
                 </div>

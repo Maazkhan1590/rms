@@ -254,7 +254,7 @@
 
                 <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
                     <button type="submit" class="btn btn-primary btn-block">
-                        <i class="fas fa-paper-plane"></i> Submit RTN
+                        <i class="fas fa-save"></i> Save as Draft
                     </button>
                 </div>
             </form>
