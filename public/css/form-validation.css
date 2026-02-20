@@ -1,0 +1,105 @@
+/* Form Validation Error Styles - Red Color
+ * Common styles for all forms (Login, Register, Publication, RTN, Grant, Bonus)
+ */
+
+/* Error message text styles - Red color */
+.form-error,
+label.error,
+.error,
+.invalid-feedback,
+.text-danger,
+.error-message {
+    color: #dc3545 !important;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: block;
+    font-weight: normal;
+}
+
+/* Error icon before message */
+label.error::before,
+.form-error::before {
+    content: '⚠';
+    font-size: 1rem;
+    color: #dc3545 !important;
+    margin-right: 0.5rem;
+}
+
+/* Error input field styles - Red border */
+.form-control.error,
+.form-control.is-invalid,
+input.error,
+select.error,
+textarea.error,
+.form-control:invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Error label styles */
+label.error {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Invalid feedback for Bootstrap forms */
+.invalid-feedback {
+    display: block !important;
+    color: #dc3545 !important;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Error list styles */
+.error-list,
+.errors-list {
+    color: #dc3545 !important;
+}
+
+.error-list li,
+.errors-list li {
+    color: #dc3545 !important;
+}
+
+/* Focus state for error fields */
+.form-control.error:focus,
+.form-control.is-invalid:focus,
+input.error:focus,
+select.error:focus,
+textarea.error:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Success/Valid field styles (for contrast) */
+.form-control.valid,
+.form-control.is-valid {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Error message container */
+.error-container {
+    background-color: #fee;
+    border: 1px solid #dc3545;
+    border-left: 4px solid #dc3545;
+    color: #dc3545;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.error-container strong {
+    color: #dc3545;
+}
+
+.error-container ul {
+    margin: 0.5rem 0 0 1.5rem;
+    color: #dc3545;
+}
+
+.error-container li {
+    color: #dc3545;
+}

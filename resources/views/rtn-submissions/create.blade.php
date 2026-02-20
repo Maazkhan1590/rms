@@ -26,34 +26,7 @@
         font-size: 1rem;
     }
 
-    /* jQuery Validate Error Styles - Red Color */
-    .form-control.error {
-        border-color: #dc3545 !important;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-    }
-
-    label.error {
-        color: #dc3545 !important;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: normal;
-    }
-
-    label.error::before {
-        content: '⚠';
-        font-size: 1rem;
-        color: #dc3545 !important;
-    }
-
-    .form-error {
-        color: #dc3545 !important;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-        display: block;
-    }
+    /* Form validation styles are in form-validation.css */
 
     textarea.form-control {
         resize: vertical;
