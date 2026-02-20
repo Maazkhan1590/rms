@@ -605,6 +605,18 @@
             return /^SDG\s*\d{1,2}$/i.test(value.trim());
         }, "SDG format should be 'SDG 1' to 'SDG 17'.");
 
+        $.validator.addMethod("dateAfterStart", function(value, element) {
+            if (this.optional(element)) return true;
+            const startDate = $('#start_date').val();
+            if (!startDate) return true; // If start date is not set, skip validation
+            const endDate = new Date(value);
+            const start = new Date(startDate);
+            // Set time to midnight to compare dates only
+            endDate.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
+            return endDate >= start;
+        }, "The end date must be a date after or equal to start date.");
+
         // Initialize validation
         $('#grantForm').validate({
             errorClass: 'error',
@@ -654,7 +666,8 @@
                 },
                 end_date: {
                     dateRange: true,
-                    date: true
+                    date: true,
+                    dateAfterStart: true
                 },
                 amount_received_omr: {
                     positiveNumber: true,
@@ -719,7 +732,8 @@
                 },
                 end_date: {
                     dateRange: "Please enter a valid date.",
-                    date: "Please enter a valid date format (YYYY-MM-DD)."
+                    date: "Please enter a valid date format (YYYY-MM-DD).",
+                    dateAfterStart: "The end date must be a date after or equal to start date."
                 },
                 amount_received_omr: {
                     positiveNumber: "Amount received must be a valid positive number.",
@@ -756,13 +770,16 @@
             $(this).valid();
         });
 
-        // Validate end date is after start date
-        $('#start_date, #end_date').on('change', function() {
-            const startDate = $('#start_date').val();
+        // Validate end date is after start date when either date changes
+        $('#start_date').on('change', function() {
             const endDate = $('#end_date').val();
-            if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+            if (endDate) {
                 $('#end_date').valid();
             }
+        });
+
+        $('#end_date').on('change', function() {
+            $(this).valid();
         });
     }
 </script>
