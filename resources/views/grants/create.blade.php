@@ -568,6 +568,26 @@
             return urlPattern.test(value);
         }, "Please enter a valid URL.");
 
+        $.validator.addMethod("titlePattern", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/.test(value);
+        }, "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.");
+
+        $.validator.addMethod("namePattern", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/.test(value);
+        }, "Contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.");
+
+        $.validator.addMethod("patentPattern", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^[A-Z0-9\-]+$/.test(value);
+        }, "Patent registration number should contain only uppercase letters, numbers, and hyphens.");
+
+        $.validator.addMethod("referencePattern", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^[A-Z0-9\-_]+$/.test(value);
+        }, "Reference code should contain only uppercase letters, numbers, hyphens, and underscores.");
+
         $.validator.addMethod("dateRange", function(value, element) {
             if (this.optional(element)) return true;
             const date = new Date(value);
@@ -594,7 +614,7 @@
                     required: true,
                     minlength: 3,
                     maxlength: 500,
-                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                    titlePattern: true
                 },
                 grant_type: {
                     required: true,
@@ -606,7 +626,7 @@
                 },
                 sponsor_name: {
                     maxlength: 255,
-                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                    namePattern: true
                 },
                 amount_omr: {
                     positiveNumber: true,
@@ -644,11 +664,11 @@
                 },
                 patent_registration_number: {
                     maxlength: 255,
-                    pattern: /^[A-Z0-9\-]+$/
+                    patentPattern: true
                 },
                 reference_code: {
                     maxlength: 100,
-                    pattern: /^[A-Z0-9\-_]+$/
+                    referencePattern: true
                 },
                 summary: {
                     maxlength: 2000
@@ -662,7 +682,7 @@
                     required: "Grant Title is required.",
                     minlength: "Title must be at least 3 characters long.",
                     maxlength: "Title cannot exceed 500 characters.",
-                    pattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                    titlePattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
                 },
                 grant_type: {
                     required: "Grant Type is required.",
@@ -674,7 +694,7 @@
                 },
                 sponsor_name: {
                     maxlength: "Sponsor name cannot exceed 255 characters.",
-                    pattern: "Sponsor name contains invalid characters."
+                    namePattern: "Sponsor name contains invalid characters."
                 },
                 amount_omr: {
                     positiveNumber: "Amount must be a valid positive number.",
@@ -709,11 +729,11 @@
                 },
                 patent_registration_number: {
                     maxlength: "Patent registration number cannot exceed 255 characters.",
-                    pattern: "Patent registration number should contain only uppercase letters, numbers, and hyphens."
+                    patentPattern: "Patent registration number should contain only uppercase letters, numbers, and hyphens."
                 },
                 reference_code: {
                     maxlength: "Reference code cannot exceed 100 characters.",
-                    pattern: "Reference code should contain only uppercase letters, numbers, hyphens, and underscores."
+                    referencePattern: "Reference code should contain only uppercase letters, numbers, hyphens, and underscores."
                 },
                 summary: {
                     maxlength: "Summary cannot exceed 2000 characters."

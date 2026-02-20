@@ -406,6 +406,11 @@
             return urlPattern.test(value);
         }, "Please enter a valid URL.");
 
+        $.validator.addMethod("titlePattern", function(value, element) {
+            if (this.optional(element)) return true;
+            return /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/.test(value);
+        }, "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.");
+
         // Initialize validation
         $('#rtnForm').validate({
             errorClass: 'error',
@@ -423,7 +428,7 @@
                     required: true,
                     minlength: 3,
                     maxlength: 500,
-                    pattern: /^[a-zA-Z0-9\s\-_.,;:()\[\]'"\/]+$/
+                    titlePattern: true
                 },
                 year: {
                     required: true,
@@ -457,7 +462,7 @@
                     required: "Title is required.",
                     minlength: "Title must be at least 3 characters long.",
                     maxlength: "Title cannot exceed 500 characters.",
-                    pattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
+                    titlePattern: "Title contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed."
                 },
                 year: {
                     required: "Year is required.",
