@@ -130,7 +130,7 @@
 
                 <div class="form-group">
                     <label for="recognition_type">
-                        Recognition Type <span style="color: var(--danger);">*</span>
+                        Recognition Type <span style="color: #dc3545;">*</span>
                     </label>
                     <select class="form-control" id="recognition_type" name="recognition_type" required>
                         <option value="">Select Recognition Type</option>
@@ -148,7 +148,7 @@
 
                 <div class="form-group">
                     <label for="title">
-                        Title <span style="color: var(--danger);">*</span>
+                        Title <span style="color: #dc3545;">*</span>
                     </label>
                     <input type="text" class="form-control" id="title" name="title" required 
                            placeholder="Enter recognition title"
@@ -190,7 +190,7 @@
 
                 <div class="form-group">
                     <label for="year">
-                        Year <span style="color: var(--danger);">*</span>
+                        Year <span style="color: #dc3545;">*</span>
                     </label>
                     <input type="number" class="form-control" id="year" name="year" 
                            required min="1900" max="{{ date('Y') }}" 
@@ -382,7 +382,11 @@
 
     // Trigger on page load if value is already set
     document.getElementById('recognition_type')?.dispatchEvent(new Event('change'));
+</script>
+@endsection
 
+@push('scripts')
+<script>
     // jQuery Validate with Regular Expressions
     $(document).ready(function() {
         // Load jQuery Validate library
@@ -513,4 +517,4 @@
         });
     }
 </script>
-@endsection
+@endpush
