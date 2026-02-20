@@ -130,7 +130,7 @@
 
                 <div class="form-group">
                     <label for="rtn_type">
-                        RTN Type <span style="color: var(--danger);">*</span>
+                        RTN Type <span style="color: #dc3545;">*</span>
                     </label>
                     <select class="form-control" id="rtn_type" name="rtn_type" required>
                         <option value="">Select RTN Type</option>
@@ -144,7 +144,7 @@
 
                 <div class="form-group">
                     <label for="title">
-                        Title <span style="color: var(--danger);">*</span>
+                        Title <span style="color: #dc3545;">*</span>
                     </label>
                     <input type="text" class="form-control" id="title" name="title" required 
                            placeholder="Enter title of the work"
@@ -156,7 +156,7 @@
 
                 <div class="form-group">
                     <label for="year">
-                        Year <span style="color: var(--danger);">*</span>
+                        Year <span style="color: #dc3545;">*</span>
                     </label>
                     <input type="number" class="form-control" id="year" name="year" 
                            required min="1900" max="{{ date('Y') }}" 
@@ -366,7 +366,11 @@
             }
         });
     }
+</script>
+@endsection
 
+@push('scripts')
+<script>
     // jQuery Validate with Regular Expressions
     $(document).ready(function() {
         // Load jQuery Validate library
@@ -498,4 +502,4 @@
         });
     }
 </script>
-@endsection
+@endpush
