@@ -88,13 +88,6 @@
         border-color: #16a34a;
     }
 
-    .step-circle.completed::after {
-        content: '✓';
-        position: absolute;
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
     .step-item.completed .step-circle {
         background: #16a34a !important;
         border-color: #16a34a !important;
@@ -452,7 +445,7 @@
                     
                     <div class="form-group">
                         <label for="title">
-                            Publication Title <span style="color: var(--danger);">*</span>
+                            Publication Title <span style="color: #dc3545;">*</span>
                         </label>
                         <input type="text" class="form-control" id="title" name="title" required 
                                placeholder="Enter the full title of your publication"
@@ -464,7 +457,7 @@
 
                     <div class="form-group">
                         <label for="publication_type">
-                            Publication Type <span style="color: var(--danger);">*</span>
+                            Publication Type <span style="color: #dc3545;">*</span>
                         </label>
                         <select class="form-control" id="publication_type" name="publication_type" required>
                             <option value="">Select Publication Type</option>
@@ -482,7 +475,7 @@
 
                     <div class="form-group">
                         <label for="publication_year">
-                            Publication Year <span style="color: var(--danger);">*</span>
+                            Publication Year <span style="color: #dc3545;">*</span>
                         </label>
                         <input type="number" class="form-control" id="publication_year" name="publication_year" 
                                required min="1900" max="{{ date('Y') }}" 
@@ -515,7 +508,7 @@
                     
                     <div id="journal_fields" style="display: none;">
                         <div class="form-group">
-                            <label for="journal_name">Journal Name</label>
+                            <label for="journal_name">Journal Name <span style="color: #dc3545;">*</span></label>
                             <input type="text" class="form-control" id="journal_name" name="journal_name" 
                                    placeholder="Enter journal name"
                                    value="{{ old('journal_name') }}">
@@ -527,7 +520,7 @@
 
                     <div id="conference_fields" style="display: none;">
                         <div class="form-group">
-                            <label for="conference_name">Conference Name</label>
+                            <label for="conference_name">Conference Name <span style="color: #dc3545;">*</span></label>
                             <input type="text" class="form-control" id="conference_name" name="conference_name" 
                                    placeholder="Enter conference name"
                                    value="{{ old('conference_name') }}">
@@ -539,7 +532,7 @@
 
                     <div id="book_fields" style="display: none;">
                         <div class="form-group">
-                            <label for="publisher">Publisher</label>
+                            <label for="publisher">Publisher <span style="color: #dc3545;">*</span></label>
                             <input type="text" class="form-control" id="publisher" name="publisher" 
                                    placeholder="Enter publisher name"
                                    value="{{ old('publisher') }}">
@@ -550,9 +543,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="doi">DOI (Digital Object Identifier)</label>
+                        <label for="doi">DOI (Digital Object Identifier) <span style="color: #dc3545;">*</span></label>
                         <input type="text" class="form-control" id="doi" name="doi" 
-                               placeholder="10.xxxx/xxxxx"
+                               placeholder="10.xxxx/xxxxx" required
                                value="{{ old('doi') }}">
                         @error('doi')
                             <div class="form-error">{{ $message }}</div>
@@ -560,9 +553,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="isbn">ISBN</label>
+                        <label for="isbn">ISBN <span style="color: #dc3545;">*</span></label>
                         <input type="text" class="form-control" id="isbn" name="isbn" 
-                               placeholder="Enter ISBN"
+                               placeholder="Enter ISBN" required
                                value="{{ old('isbn') }}">
                         @error('isbn')
                             <div class="form-error">{{ $message }}</div>
@@ -570,9 +563,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="published_link">Publication Link</label>
+                        <label for="published_link">Publication Link <span style="color: #dc3545;">*</span></label>
                         <input type="url" class="form-control" id="published_link" name="published_link" 
-                               placeholder="https://..."
+                               placeholder="https://..." required
                                value="{{ old('published_link') }}">
                         @error('published_link')
                             <div class="form-error">{{ $message }}</div>
@@ -580,9 +573,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="proceedings_link">Proceedings Link</label>
+                        <label for="proceedings_link">Proceedings Link <span style="color: #dc3545;">*</span></label>
                         <input type="url" class="form-control" id="proceedings_link" name="proceedings_link" 
-                               placeholder="https://..."
+                               placeholder="https://..." required
                                value="{{ old('proceedings_link') }}">
                         @error('proceedings_link')
                             <div class="form-error">{{ $message }}</div>
@@ -660,7 +653,7 @@
                                 <div style="flex: 1;">
                                     <div class="form-group">
                                         <label>
-                                            Author Name <span style="color: var(--danger);">*</span>
+                                            Author Name <span style="color: #dc3545;">*</span>
                                         </label>
                                         <input type="text" class="form-control author-name" 
                                                name="authors[0][name]" required 
@@ -735,9 +728,14 @@
                 circle.style.background = '#16a34a';
                 circle.style.borderColor = '#16a34a';
                 circle.style.color = 'white';
+                // Show step number instead of checkmark
+                circle.textContent = stepNum;
             } else if (stepNum === currentStep) {
                 item.classList.add('active');
                 circle.classList.add('active');
+                circle.textContent = stepNum;
+            } else {
+                circle.textContent = stepNum;
             }
         });
 
@@ -1166,30 +1164,44 @@
                         maxlength: 5000
                     },
                     journal_name: {
+                        required: function() {
+                            return $('#publication_type').val() === 'journal';
+                        },
                         maxlength: 255,
                         namePattern: true
                     },
                     conference_name: {
+                        required: function() {
+                            return $('#publication_type').val() === 'conference';
+                        },
                         maxlength: 255,
                         namePattern: true
                     },
                     publisher: {
+                        required: function() {
+                            const pubType = $('#publication_type').val();
+                            return pubType === 'book' || pubType === 'book_chapter';
+                        },
                         maxlength: 255,
                         namePattern: true
                     },
                     doi: {
+                        required: true,
                         doiFormat: true,
                         maxlength: 255
                     },
                     isbn: {
+                        required: true,
                         isbnFormat: true,
                         maxlength: 20
                     },
                     published_link: {
+                        required: true,
                         validUrl: true,
                         maxlength: 500
                     },
                     proceedings_link: {
+                        required: true,
                         validUrl: true,
                         maxlength: 500
                     },
@@ -1227,30 +1239,37 @@
                         maxlength: "Abstract cannot exceed 5000 characters."
                     },
                     journal_name: {
+                        required: "Journal name is required.",
                         maxlength: "Journal name cannot exceed 255 characters.",
                         namePattern: "Journal name contains invalid characters."
                     },
                     conference_name: {
+                        required: "Conference name is required.",
                         maxlength: "Conference name cannot exceed 255 characters.",
                         namePattern: "Conference name contains invalid characters."
                     },
                     publisher: {
+                        required: "Publisher name is required.",
                         maxlength: "Publisher name cannot exceed 255 characters.",
                         namePattern: "Publisher name contains invalid characters."
                     },
                     doi: {
+                        required: "DOI is required.",
                         doiFormat: "Please enter a valid DOI format (e.g., 10.1234/example).",
                         maxlength: "DOI cannot exceed 255 characters."
                     },
                     isbn: {
+                        required: "ISBN is required.",
                         isbnFormat: "Please enter a valid ISBN format.",
                         maxlength: "ISBN cannot exceed 20 characters."
                     },
                     published_link: {
+                        required: "Publication link is required.",
                         validUrl: "Please enter a valid URL.",
                         maxlength: "Published link cannot exceed 500 characters."
                     },
                     proceedings_link: {
+                        required: "Proceedings link is required.",
                         validUrl: "Please enter a valid URL.",
                         maxlength: "Proceedings link cannot exceed 500 characters."
                     },
