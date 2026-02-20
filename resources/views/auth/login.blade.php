@@ -94,7 +94,9 @@
         display: block;
     }
 </style>
+@endsection
 
+@push('scripts')
 <script>
     // jQuery Validate with Regular Expressions for Login Form
     $(document).ready(function() {
@@ -169,4 +171,4 @@
         });
     }
 </script>
-@endsection
+@endpush
