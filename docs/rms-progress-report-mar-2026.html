@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RMS Modules Status & Questions – March 2026</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, Arial, sans-serif;
+      --primary-color: #1b4332;
+      --secondary-color: #2f5d62;
+      --accent-color: #0f3d3e;
+      --success-color: #065f46;
+      --warning-color: #7c4a03;
+      --danger-color: #991b1b;
+      --info-color: #1e40af;
+      --bg-light: #f7fafc;
+      --bg-success: #d1fae5;
+      --bg-warning: #fff3cd;
+      --bg-danger: #fee2e2;
+      --bg-info: #dbeafe;
+      --border-color: #e5e7eb;
+      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 40px;
+      color: #1f2933;
+      background: var(--bg-light);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 32px 36px;
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+    }
+
+    header {
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: var(--primary-color);
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .subtitle {
+      color: #52616b;
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .report-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-light);
+      border-radius: 6px;
+      margin-bottom: 26px;
+    }
+
+    .meta-item {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-item strong {
+      color: var(--accent-color);
+    }
+
+    section {
+      margin-bottom: 28px;
+    }
+
+    h2 {
+      page-break-after: avoid;
+      font-size: 21px;
+      margin-bottom: 12px;
+      color: var(--primary-color);
+      border-left: 4px solid var(--secondary-color);
+      padding-left: 12px;
+      font-weight: 600;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin: 18px 0 10px;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    p {
+      margin: 8px 0;
+      color: #374151;
+    }
+
+    ul, ol {
+      margin: 8px 0 8px 22px;
+    }
+
+    li {
+      margin: 4px 0;
+      color: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      margin-top: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      vertical-align: top;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    th {
+      background: #e8f4f2;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .done {
+      background: var(--bg-success);
+      color: var(--success-color);
+    }
+
+    .partial {
+      background: var(--bg-warning);
+      color: var(--warning-color);
+    }
+
+    .pending {
+      background: var(--bg-danger);
+      color: var(--danger-color);
+    }
+
+    .info {
+      background: var(--bg-info);
+      color: var(--info-color);
+    }
+
+    .notes {
+      color: #4b5563;
+    }
+
+    .summary-box {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .question-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    .question-box strong {
+      color: var(--info-color);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .risk-box {
+      background: #fff7ed;
+      border-left: 4px solid #f97316;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        margin: 0;
+        background: #ffffff;
+      }
+      .container {
+        box-shadow: none;
+        padding: 5px 8px;
+        margin: 0;
+      }
+      header {
+        margin-bottom: 6px;
+        padding-bottom: 5px;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px 0;
+      }
+      .subtitle {
+        margin-top: 2px;
+        font-size: 13px;
+      }
+      .report-meta {
+        padding: 6px 8px;
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-size: 16px;
+        margin-bottom: 4px;
+        margin-top: 8px;
+        padding-left: 8px;
+      }
+      h3 {
+        font-size: 14px;
+        margin: 6px 0 3px;
+      }
+      p {
+        margin: 2px 0;
+        line-height: 1.4;
+      }
+      ul, ol {
+        margin: 2px 0 2px 16px;
+      }
+      li {
+        margin: 1px 0;
+      }
+      th,
+      td {
+        padding: 4px 6px;
+        font-size: 11px;
+      }
+      button {
+        display: none !important;
+      }
+      section {
+        margin-bottom: 8px;
+        page-break-inside: auto;
+      }
+      .summary-box, .question-box, .risk-box {
+        padding: 6px 10px;
+        margin: 4px 0;
+      }
+      table {
+        margin-top: 4px;
+      }
+      tr {
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+      .container {
+        padding: 20px;
+      }
+      .report-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>RMS Modules Status & Questions Report</h1>
+      <div class="subtitle">Current module status and progress tracking</div>
+    </header>
+
+    <div class="report-meta">
+      <div class="meta-item"><strong>Project:</strong> Research Management System (RMS)</div>
+      <div class="meta-item"><strong>Report Date:</strong> March 3, 2026</div>
+      <div class="meta-item">
+        <strong>Status:</strong>
+        <span class="status done">Core Complete</span>
+        <span class="status partial">Extensions Mixed</span>
+      </div>
+    </div>
+
+    <section>
+      <h2>Executive Summary</h2>
+      <div class="summary-box">
+        <p>
+          Core RMS modules are fully implemented and operational: Publications, Grants, RTN Submissions, Bonus Recognitions, and the complete workflow/policy system.
+        </p>
+        <p>
+          This report provides comprehensive module-by-module status assessment, outstanding questions requiring stakeholder input, and estimated timelines for completion of remaining work.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Detailed Module Status (As of Today)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">Module Name</th>
+            <th style="width: 15%;">Status</th>
+            <th>Implementation Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Publications</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes"><ul><li>Public, faculty, and admin flows are available</li><li>Submission and admin decision workflow is implemented</li><li>Model, views, and controller coverage in place</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Grants</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes"><ul><li>End-to-end module available across routes/controller/views</li><li>Approval workflow integration available</li><li>Schema enhancements present</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>RTN Submissions</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes"><ul><li>Submission forms and listing flow implemented</li><li>Admin approve/reject actions implemented</li><li>Model + views + migration support available</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Bonus Recognitions</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes"><ul><li>Public submission and admin review screens implemented</li><li>Workflow and status handling implemented</li><li>Model and schema updates available</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Workflow System</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes"><ul><li>Pending queue, approve/reject/return/reassign actions available</li><li>Workflow assignments and visualization screens available</li><li>Approval history support in core models</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Scoring Policy Management</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes"><ul><li>Policy and policy version administration implemented</li><li>Activation flow present for versions</li><li>Admin UI present</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Faculty Member Directory & CV</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes"><ul><li>Public faculty listing and detail pages are available</li><li>CV view/download endpoints are available</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Reporting (Basic)</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes"><ul><li>Basic admin report views exist</li><li>Advanced analytics dashboards pending</li><li>CV-style enhanced templates pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Adjunct Professors</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration + model + propose/store route available</li><li>Full admin/public controller set and complete UI pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Research Fellows</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration + model available</li><li>Declared routes exist but end-to-end module still incomplete</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Supervision & Exams</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration + model available</li><li>Module routes declared, implementation layer not fully complete</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Editorial Appointments</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration + model available</li><li>Controller/view completion pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Student Involvements</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration + model available</li><li>Controller/view completion pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Partnerships & MOUs</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration and routes exist</li><li>End-to-end controller + UI implementation pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Research Investments</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration and routes exist</li><li>Faculty/admin complete module flow pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Consultancies & KT</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration and routes exist</li><li>Controller/UI completion still required</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Commercializations</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration and routes exist</li><li>Controller/UI completion still required</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Conference Activities</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration and routes exist</li><li>Full implementation still required</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>SDG Contributions</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes"><ul><li>Migration and routes exist</li><li>Controller/UI completion pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>SDG Mappings</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes"><ul><li>Admin route declared</li><li>Model/controller/view implementation not yet complete</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Awards</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes"><ul><li>Routes are declared</li><li>Module implementation remains pending</li><li><em>Needs business confirmation on separate module vs Bonus Recognition overlap.</em></li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Internal Fundings</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes"><ul><li>Routes declared</li><li>No end-to-end implementation yet</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Block Fundings</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes"><ul><li>Routes declared</li><li>No end-to-end implementation yet</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>RTN Course Details</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes"><ul><li>Routes declared including upload-excel endpoint</li><li>Module controller/model/view implementation still pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Faculty Profile Module</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes"><ul><li>No dedicated faculty self-service profile module delivered yet</li><li>Photo/profile enrichment pending</li></ul></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Modules In Progress (Priority View)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">Module Name</th>
+            <th style="width: 15%;">Status</th>
+            <th>Current Implementation & Missing Components</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Research Investments</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes"><ul><li>Schema and routes available</li><li>Faculty submission flow pending</li><li>Admin management and scoring integration pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Partnerships & MOUs</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes"><ul><li>Schema and routes available</li><li>Workflow/scoring details and UI implementation pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Adjunct Professors</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes"><ul><li>Base data model exists</li><li>Complete admin interface and faculty linkage pending</li></ul></td>
+          </tr>
+          <tr>
+            <td><strong>Reporting System</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes"><ul><li>Basic report pages available</li><li>Advanced dashboards and management insights pending</li><li>CV-style enhanced reporting pending</li></ul></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - MOU Module</h2>
+      <div class="question-box"><strong>Q1: Who can submit MOU entries?</strong></div>
+      <div class="question-box"><strong>Q2: Do MOUs need approval workflow?</strong></div>
+      <div class="question-box"><strong>Q3: Should MOUs contribute to faculty scoring?</strong></div>
+      <div class="question-box"><strong>Q4: What evidence files are required?</strong></div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Adjunct Professor Module</h2>
+      <div class="question-box"><strong>Q1: Who manages adjunct professor records?</strong></div>
+      <div class="question-box"><strong>Q2: How should adjunct professors be linked to faculty?</strong></div>
+      <div class="question-box"><strong>Q3: Should adjunct collaborations count in scoring?</strong></div>
+      <div class="question-box"><strong>Q4: How to link adjuncts to publications?</strong></div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - RTN Course Details & Types</h2>
+      <div class="question-box"><strong>Q1: What course information should be captured?</strong></div>
+      <div class="question-box"><strong>Q2: Who assigns RTN types to courses?</strong></div>
+      <div class="question-box"><strong>Q3: Are there more RTN types beyond RTN-3 and RTN-4?</strong></div>
+      <div class="question-box"><strong>Q4: What evidence is required for RTN course submissions?</strong></div>
+      <div class="question-box"><strong>Q5: How should RTN course data be imported from Excel?</strong></div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Commercializations Module</h2>
+      <div class="question-box"><strong>Q1: Who can submit commercialization entries?</strong></div>
+      <div class="question-box"><strong>Q2: Do commercializations need approval workflow?</strong></div>
+      <div class="question-box"><strong>Q3: Should commercializations contribute to faculty scoring?</strong></div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Consultancies & KT Module</h2>
+      <div class="question-box"><strong>Q1: Who can submit consultancy entries?</strong></div>
+      <div class="question-box"><strong>Q2: Do consultancies need approval workflow?</strong></div>
+      <div class="question-box"><strong>Q3: Should consultancies contribute to faculty scoring?</strong></div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Awards Module</h2>
+      <div class="question-box"><strong>Q1: Is Awards a separate module or part of Bonus Recognition?</strong></div>
+      <div class="question-box"><strong>Q2: Who can submit award entries?</strong></div>
+      <div class="question-box"><strong>Q3: Should awards contribute to faculty scoring?</strong></div>
+    </section>
+
+    <section>
+      <h2>Summary of Questions for Discussion</h2>
+      <div class="summary-box">
+        <h3>MOU Module (4 Questions)</h3>
+        <ol>
+          <li>Who can submit MOU entries?</li>
+          <li>Do MOUs need approval workflow?</li>
+          <li>Should MOUs contribute to faculty scoring?</li>
+          <li>What evidence files are required?</li>
+        </ol>
+
+        <h3>Adjunct Professor Module (4 Questions)</h3>
+        <ol>
+          <li>Who manages adjunct professor records?</li>
+          <li>How should adjunct professors be linked to faculty?</li>
+          <li>Should adjunct collaborations count in scoring?</li>
+          <li>How to link adjuncts to publications?</li>
+        </ol>
+
+        <h3>RTN Course Details & Types (5 Questions)</h3>
+        <ol>
+          <li>What course information should be captured?</li>
+          <li>Who assigns RTN types to courses?</li>
+          <li>Are there more RTN types beyond RTN-3 and RTN-4?</li>
+          <li>What evidence is required for RTN course submissions?</li>
+          <li>How should RTN course data be imported from Excel?</li>
+        </ol>
+
+        <h3>Commercializations Module (3 Questions)</h3>
+        <ol>
+          <li>Who can submit commercialization entries?</li>
+          <li>Do commercializations need approval workflow?</li>
+          <li>Should commercializations contribute to faculty scoring?</li>
+        </ol>
+
+        <h3>Consultancies & KT Module (3 Questions)</h3>
+        <ol>
+          <li>Who can submit consultancy entries?</li>
+          <li>Do consultancies need approval workflow?</li>
+          <li>Should consultancies contribute to faculty scoring?</li>
+        </ol>
+
+        <h3>Awards Module (3 Questions)</h3>
+        <ol>
+          <li>Is Awards a separate module or part of Bonus Recognition?</li>
+          <li>Who can submit award entries?</li>
+          <li>Should awards contribute to faculty scoring?</li>
+        </ol>
+
+        <p><strong>Total Questions: 22</strong></p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Estimated Timelines for Pending Modules</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40%;">Module Name</th>
+            <th style="width: 30%;">Estimated Timeline</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Research Investments</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>Partnerships & MOUs</strong></td><td><strong>2-3 days</strong></td><td class="notes">Client responses received - can proceed</td></tr>
+          <tr><td><strong>Adjunct Professors</strong></td><td><strong>2-3 days</strong></td><td class="notes">Client responses received - can proceed</td></tr>
+          <tr><td><strong>Commercializations</strong></td><td><strong>2-3 days</strong></td><td class="notes">Client responses received - can proceed</td></tr>
+          <tr><td><strong>Consultancies & KT</strong></td><td><strong>2-3 days</strong></td><td class="notes">Client responses received - can proceed</td></tr>
+          <tr><td><strong>Awards</strong></td><td><strong>2-3 days</strong></td><td class="notes">Client responses received - separate module confirmed</td></tr>
+          <tr><td><strong>Conference Activities</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>Supervision & Exams</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>Editorial Appointments</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>Student Involvements</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>Internal Fundings</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>Block Fundings</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>SDG Contributions</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>SDG Mappings</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>SDG List</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>Research Fellows</strong></td><td><strong>2-3 days</strong></td><td class="notes">Standard implementation</td></tr>
+          <tr><td><strong>TRN Course Details</strong></td><td><strong>2-3 days</strong></td><td class="notes">Client responses received - Excel format confirmed</td></tr>
+          <tr><td><strong>Faculty Profile</strong></td><td><strong>3-4 days</strong></td><td class="notes">Edit/complete profile, maximum information display, enhanced CV with FWCI</td></tr>
+          <tr><td><strong>Scoring Policy Page Enhancements</strong></td><td><strong>2-3 days</strong></td><td class="notes">Active policy view, clarity indicators, status filters</td></tr>
+          <tr><td><strong>Workflow Implementation View Page</strong></td><td><strong>2-3 days</strong></td><td class="notes">Visual workflow diagram, statistics, documentation</td></tr>
+          <tr><td><strong>Reporting System Enhancements</strong></td><td><strong>3-4 days</strong></td><td class="notes">Advanced analytics, CV exports, management charts</td></tr>
+        </tbody>
+      </table>
+      <div class="summary-box" style="margin-top: 16px;">
+        <h3>Total Timeline Summary</h3>
+        <table style="margin-top: 12px; width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 50%;">Category</th>
+              <th style="width: 25%;">Items Count</th>
+              <th style="width: 25%;">Estimated Timeline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Modules with client responses received</strong></td>
+              <td>6 modules</td>
+              <td><strong>1.5 weeks</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Standard implementation modules</strong></td>
+              <td>14 modules</td>
+              <td><strong>2 weeks</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Enhancement requirements</strong></td>
+              <td>3 enhancements</td>
+              <td><strong>1 week</strong></td>
+            </tr>
+            <tr style="background: #e8f4f2; font-weight: 600;">
+              <td><strong>Total (All Pending Modules + Enhancements)</strong></td>
+              <td><strong>23 items</strong></td>
+              <td><strong>4 weeks</strong><br/><em>(Maximum timeline)</em></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 16px;"><strong>Note:</strong> Timelines are estimates and may vary based on:</p>
+        <ul>
+          <li>Complexity of requirements</li>
+          <li>Testing and refinement needs</li>
+          <li>Parallel development capabilities</li>
+        </ul>
+        <p style="margin-top: 16px; font-weight: 600; color: var(--success-color);">Status: All client questions have been answered. Ready for development implementation.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const header = document.querySelector('header');
+      if (!header) return;
+
+      const printBtn = document.createElement('button');
+      printBtn.textContent = 'Print / Save as PDF';
+      printBtn.style.cssText =
+        'margin-top: 14px; padding: 8px 18px; background: #2f5d62; color: #ffffff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;';
+
+      printBtn.addEventListener('click', function () {
+        window.print();
+      });
+
+      header.appendChild(printBtn);
+    });
+  </script>
+</body>
+</html>
