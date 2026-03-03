@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RMS Modules Status & Questions – March 2026</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, Arial, sans-serif;
+      --primary-color: #1b4332;
+      --secondary-color: #2f5d62;
+      --accent-color: #0f3d3e;
+      --success-color: #065f46;
+      --warning-color: #7c4a03;
+      --danger-color: #991b1b;
+      --info-color: #1e40af;
+      --bg-light: #f7fafc;
+      --bg-success: #d1fae5;
+      --bg-warning: #fff3cd;
+      --bg-danger: #fee2e2;
+      --bg-info: #dbeafe;
+      --border-color: #e5e7eb;
+      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 40px;
+      color: #1f2933;
+      background: var(--bg-light);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 32px 36px;
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+    }
+
+    header {
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: var(--primary-color);
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .subtitle {
+      color: #52616b;
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .report-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-light);
+      border-radius: 6px;
+      margin-bottom: 26px;
+    }
+
+    .meta-item {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-item strong {
+      color: var(--accent-color);
+    }
+
+    section {
+      margin-bottom: 28px;
+    }
+
+    h2 {
+      page-break-after: avoid;
+    }
+
+    h2 {
+      font-size: 21px;
+      margin-bottom: 12px;
+      color: var(--primary-color);
+      border-left: 4px solid var(--secondary-color);
+      padding-left: 12px;
+      font-weight: 600;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin: 18px 0 10px;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    p {
+      margin: 8px 0;
+      color: #374151;
+    }
+
+    ul, ol {
+      margin: 8px 0 8px 22px;
+    }
+
+    li {
+      margin: 4px 0;
+      color: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      margin-top: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      vertical-align: top;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    th {
+      background: #e8f4f2;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .done {
+      background: var(--bg-success);
+      color: var(--success-color);
+    }
+
+    .partial {
+      background: var(--bg-warning);
+      color: var(--warning-color);
+    }
+
+    .pending {
+      background: var(--bg-danger);
+      color: var(--danger-color);
+    }
+
+    .info {
+      background: var(--bg-info);
+      color: var(--info-color);
+    }
+
+    .notes {
+      color: #4b5563;
+    }
+
+    .summary-box {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .question-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    .question-box strong {
+      color: var(--info-color);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .risk-box {
+      background: #fff7ed;
+      border-left: 4px solid #f97316;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        margin: 0;
+        background: #ffffff;
+      }
+      .container {
+        box-shadow: none;
+        padding: 5px 8px;
+        margin: 0;
+      }
+      header {
+        margin-bottom: 6px;
+        padding-bottom: 5px;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px 0;
+      }
+      .subtitle {
+        margin-top: 2px;
+        font-size: 13px;
+      }
+      .report-meta {
+        padding: 6px 8px;
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-size: 16px;
+        margin-bottom: 4px;
+        margin-top: 8px;
+        padding-left: 8px;
+        page-break-after: avoid;
+      }
+      h3 {
+        font-size: 14px;
+        margin: 6px 0 3px;
+        page-break-after: avoid;
+      }
+      p {
+        margin: 2px 0;
+        line-height: 1.4;
+      }
+      ul, ol {
+        margin: 2px 0 2px 16px;
+      }
+      li {
+        margin: 1px 0;
+      }
+      th,
+      td {
+        padding: 4px 6px;
+        font-size: 11px;
+      }
+      button {
+        display: none !important;
+      }
+      section {
+        margin-bottom: 8px;
+        page-break-inside: auto;
+      }
+      .summary-box, .question-box, .risk-box {
+        padding: 6px 10px;
+        margin: 4px 0;
+        page-break-inside: auto;
+      }
+      .question-box {
+        margin: 6px 0;
+        page-break-inside: auto;
+      }
+      table {
+        page-break-inside: auto;
+        margin-top: 4px;
+      }
+      tr {
+        page-break-inside: avoid;
+      }
+      h2:first-of-type {
+        page-break-before: auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+      .container {
+        padding: 20px;
+      }
+      .report-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>RMS Modules Status & Questions Report</h1>
+      <div class="subtitle">
+        Completed modules, in-progress modules, and questions for discussion
+      </div>
+    </header>
+
+    <div class="report-meta">
+      <div class="meta-item">
+        <strong>Project:</strong> Research Management System (RMS)
+      </div>
+      <div class="meta-item">
+        <strong>Report Date:</strong> March 3, 2026
+      </div>
+      <div class="meta-item">
+        <strong>Status:</strong>
+        <span class="status done">Core Complete</span>
+        <span class="status partial">Extensions In Progress</span>
+      </div>
+    </div>
+
+    <section>
+      <h2>Executive Summary</h2>
+      <div class="summary-box">
+        <p>
+          The Research Management System core functionality remains complete and operational as of March 3, 2026. Publications, Grants, RTN Submissions, 
+          Bonus Recognitions, and the complete approval workflow system are fully implemented and in use.
+        </p>
+        <p>
+          This updated report provides detailed status of all modules as of this date, identifies pending work, and documents the finalized questions and answers for MOU, Adjunct Professor, TRN Course Details, Commercializations, Consultancies, and Awards modules.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Completed Modules (From Codebase & Excel)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">Module Name</th>
+            <th style="width: 15%;">Status</th>
+            <th>Evidence / Implementation Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Publications</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Full functionality for both Admin and Faculty users</li>
+                <li>Submission workflow with approval system</li>
+                <li>Evidence file uploads</li>
+                <li>Scoring integration</li>
+                <li>Excel data import capability</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Grants</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Full functionality for both Admin and Faculty users</li>
+                <li>Workflow approval system</li>
+                <li>Evidence management</li>
+                <li>Scoring calculation</li>
+                <li>Excel data import capability</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>RTN Submissions</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>RTN-3: Student co-authors submission</li>
+                <li>RTN-4: Course file updates submission</li>
+                <li>Faculty submission forms</li>
+                <li>Admin approval workflow</li>
+                <li>Evidence file uploads</li>
+                <li>Scoring integration</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Bonus Recognitions</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Multiple recognition types</li>
+                <li>Faculty submission interface</li>
+                <li>Admin review and approval</li>
+                <li>Evidence documentation</li>
+                <li>Scoring system integration</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Database Schema & Core Services</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Dynamic scoring engine with policy-based weights</li>
+                <li>Workflow system with role-based approvals and history tracking</li>
+                <li>Evidence file validation and storage</li>
+                <li>Policy management system</li>
+                <li>Reporting functionality</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Admin Portal</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Dashboard with charts and statistics</li>
+                <li>User management</li>
+                <li>Workflow assignments</li>
+                <li>Scoring policies management</li>
+                <li>Reports and exports</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Faculty Portal</strong></td>
+            <td><span class="status partial">Partial</span></td>
+            <td class="notes">
+              <ul>
+                <li>Publication, Grant, RTN, Bonus submission forms completed</li>
+                <li>Dashboard partially implemented</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Workflow System</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Multi-level approval workflows</li>
+                <li>Role-based transitions</li>
+                <li>Approval history tracking</li>
+                <li>Status management (Draft, Submitted, Under Review, Approved, Returned, Rejected)</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Evidence File Management</strong></td>
+            <td><span class="status done">Completed</span></td>
+            <td class="notes">
+              <ul>
+                <li>Support for multiple file types and attachments</li>
+                <li>Multiple file categories</li>
+                <li>File validation (size, type)</li>
+                <li>Secure file storage</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Consultancies & KT</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Commercializations</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Awards</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+                <li><em>Note: Currently also handled through Bonus Recognition module. Please confirm if additional functionality is needed.</em></li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>SDG List</strong></td>
+            <td><span class="status partial">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ User interface and functionality pending</li>
+                <li><em>Note: SDG Contributions and SDG Mappings modules exist. Please confirm if separate SDG List management module is needed.</em></li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Conference Activities</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Supervision & Exams</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+                <li>Supports Main Supervisor, Co-Supervisor, External Examiner roles</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Editorial Appointments</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Student Involvements</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Internal Fundings</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Block Fundings</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>SDG Contributions</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic functionality implemented in the codebase</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>SDG Mappings</strong></td>
+            <td><span class="status partial">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ User interface and functionality pending</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Modules In Progress</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">Module Name</th>
+            <th style="width: 15%;">Status</th>
+            <th>Current Implementation & Missing Components</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Research Investments</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic listing/detail pages implemented</li>
+                <li>✅ Faculty submission form available</li>
+                <li>✅ Admin management interface available</li>
+                <li>❌ Workflow integration pending</li>
+                <li>❌ Scoring integration pending</li>
+              </ul>
+              <div class="info-box" style="margin-top: 8px; padding: 8px; background: #eff6ff; border-left: 3px solid #3b82f6;">
+                <strong>Fields:</strong> item, category (equipment/software/apc/travel/training/other), date, amount_omr, funding_source, evidence_link, reporting_period, year
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Partnerships & MOUs</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic listing/detail pages implemented</li>
+                <li>✅ Faculty submission form available</li>
+                <li>✅ Admin management interface available</li>
+                <li>❌ Workflow integration pending</li>
+                <li>❌ Scoring integration pending</li>
+              </ul>
+              <div class="info-box" style="margin-top: 8px; padding: 8px; background: #eff6ff; border-left: 3px solid #3b82f6;">
+                <strong>Fields:</strong> partner_organization, type (mou/moa/project/industry), date_signed, expiry_date, scope_theme, lead_staff_id, outputs_papers_grants_events, status (active/inactive/expired), evidence_link, sdg_s
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Adjunct Professors</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core admin user interface implemented</li>
+                <li>✅ Admin management interface available</li>
+                <li>❌ Faculty association/assignment workflow pending</li>
+              </ul>
+              <div class="info-box" style="margin-top: 8px; padding: 8px; background: #eff6ff; border-left: 3px solid #3b82f6;">
+                <strong>Fields:</strong> name, email, google_scholar, gs_citation_number, gs_h_index, gs_papers_2025, scopus_scholar, scopus_citation_number, scopus_h_index, scopus_papers_2025, publication_with_sohar, appointment_from, notes
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Research Fellows</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Core user interface and basic listing/detail pages implemented</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Reporting System</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Basic reporting functionality available</li>
+                <li>✅ Basic admin report screens</li>
+                <li>✅ Basic exports (Excel/PDF) available</li>
+                <li>❌ Advanced analytics dashboards pending</li>
+                <li>❌ CV-style exports and templates pending</li>
+                <li>❌ Management overview charts pending</li>
+                <li>❌ Breakdowns by college/department/faculty pending</li>
+                <li>❌ Enhanced CV with FWCI and maximum information pending</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Scoring Policy Management</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Basic scoring policy management available</li>
+                <li>❌ Active policy visual indicator pending</li>
+                <li>❌ Policy status clarity improvements pending</li>
+                <li>❌ Policy comparison view pending</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Workflow Management</strong></td>
+            <td><span class="status partial">In Progress</span></td>
+            <td class="notes">
+              <ul>
+                <li>✅ Workflow system implemented and working</li>
+                <li>✅ Basic workflow management available</li>
+                <li>❌ Workflow implementation view page pending</li>
+                <li>❌ Visual workflow diagram pending</li>
+                <li>❌ Workflow statistics dashboard pending</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Faculty Profile</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ Dedicated profile screens for faculty members not yet available</li>
+                <li>❌ Profile photo upload pending</li>
+                <li>❌ Edit/Complete profile functionality pending</li>
+                <li>❌ Maximum information display in faculty profile pending</li>
+                <li><em>Note: This module is for faculty members. Please confirm if Dean and Research Coordinator roles also need profile functionality.</em></li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Additional Enhancement Requirements</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">Enhancement Name</th>
+            <th style="width: 15%;">Status</th>
+            <th>Requirements & Implementation Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Edit Profile / Complete Profile Functionality</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ Faculty members should be able to edit and complete their profile information</li>
+                <li>❌ Edit personal details (name, email, phone, etc.)</li>
+                <li>❌ Update academic qualifications</li>
+                <li>❌ Add/edit research interests</li>
+                <li>❌ Manage profile photo upload</li>
+                <li>❌ Profile completion percentage indicator</li>
+                <li>❌ Profile validation and required fields highlighting</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Enhanced Faculty CV with Maximum Information</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ Display all research activities (publications, grants, RTN, awards, etc.)</li>
+                <li>❌ Include <strong>FWCI (Field-Weighted Citation Impact)</strong> metrics</li>
+                <li>❌ Display H-index (Google Scholar and Scopus)</li>
+                <li>❌ Show total citations</li>
+                <li>❌ Research points breakdown</li>
+                <li>❌ Complete academic profile (education, experience, memberships)</li>
+                <li>❌ All modules data (consultancies, commercializations, MOUs, etc.)</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Maximum Information in Faculty Profile</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ Display complete research portfolio</li>
+                <li>❌ Show all research metrics (FWCI, H-index, citations)</li>
+                <li>❌ Research points summary</li>
+                <li>❌ Publication statistics (by year, type, quartile)</li>
+                <li>❌ Grant statistics</li>
+                <li>❌ Visual charts and graphs</li>
+                <li>❌ Export options (PDF, Word, Excel)</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Active Policy View for Clarity (Scoring Policy Page)</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ Visual indicator for active policy with status filters</li>
+                <li>❌ Clear display of effective dates and policy comparison</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Workflow Implementation View Page</strong></td>
+            <td><span class="status pending">Pending</span></td>
+            <td class="notes">
+              <ul>
+                <li>❌ Visual workflow diagram and statistics dashboard</li>
+                <li>❌ Current status view and documentation</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - MOU Module</h2>
+      <div class="question-box">
+        <strong>Q1: Who can submit MOU entries?</strong>
+        <p><strong>Answer Received:</strong> Any faculty can submit (exactly like publications).</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q2: Do MOUs need approval workflow?</strong>
+        <p><strong>Answer Received:</strong> Yes, it needs MOU approval like publication normal.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q3: Should MOUs contribute to faculty scoring?</strong>
+        <p><strong>Answer Received:</strong> Yes, for now we will keep it open because this is new and there is no score for that. For now, it is counted under bonus.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q4: What evidence files are required?</strong>
+        <p><strong>Answer Received:</strong> They can submit either link (like usual) or they can upload files. In every evidence, they need to provide: a descriptive box (can mention some words), link (definitely needed), and they can upload some files (word file, PDF, zip file, whatever). This is for the MOU model.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Adjunct Professor Module (Agent-Professor)</h2>
+      <div class="question-box">
+        <strong>Q1: Who manages agent-professor records?</strong>
+        <p><strong>Answer Received:</strong> The research coordinator can do, the dean can do, research director can do, and of course, we can assign someone to coordinate agent-professor records. As for now, for example, we have agent-professor coordinator, so we will assign one of the faculties to do that.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q2: How should agent-professors be linked to faculty?</strong>
+        <p><strong>Answer Received:</strong> There is no direct link, they just need to refer. For example, this faculty will fill the application referring, saying that this faculty is proposed. So, any faculty can propose saying that agent faculty X to be added, then it will go to the research director, research director will approve, the dean will approve, and then it goes to the research coordinator will approve, and then the dean will approve, and then it goes to the research director for final approval.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q3: Should agent collaborations count in scoring?</strong>
+        <p><strong>Answer Received:</strong> Yes, keep it open, it is under bonus. How much? There is no score for now. In the policy, it's not mentioned, so we will discuss this with them once open, but definitely there will be scoring. Keep it open under bonus dynamically, maybe 5 points, 10 points, whatever.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q4: How to link agent to publications?</strong>
+        <p><strong>Answer Received:</strong> We need the records of the agent faculties alone, right? And that will be later on accounted with the school publications. So, for example, school of IT have published, for example, 40 papers, okay? 30 of them are from the faculty themselves and 20 from agent faculties, right? So, we need to know how many agent, how many academic, and how many is fellowship. So, in every school, you have three types. You have the normal faculty members who teach, you have fellowships who are under the faculty school just to do publications, and you have the agent professors. So, that is the three types that need to be counted for every school, okay?</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - TRN Course Details & Types</h2>
+      <div class="question-box">
+        <strong>Q1: What course information should be captured?</strong>
+        <p><strong>Answer Received:</strong> As per the Excel sent. They need to fill the information as per the Excel.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q2: Who assigns RTN types to courses?</strong>
+        <p><strong>Answer Received:</strong> The faculty himself, because he will be adding it to his course. He will choose his course, he will choose which type of RTN that he is adding.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q3: Are there more RTN types beyond RTN-3 and RTN-4?</strong>
+        <p><strong>Answer Received:</strong> No, only RTN 3, RTN 4 for now, but it is dynamic that we can introduce this to level 2, level 1. That's it. This is now for level 3, level 4. Maybe we can introduce it to level 2, level 4. So, later on, they can decide, right? Again, it should be dynamic where the research coordinator, or the research director assigning the policy at the beginning, they need to choose this, like choosing this course also.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q4: What evidence is required for RTN course submissions?</strong>
+        <p><strong>Answer Received:</strong> Again, any evidence is either link, description, or upload file.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q5: How should RTN course data be imported from Excel?</strong>
+        <p><strong>Answer Received:</strong> The same format, what I have sent you, need to be filled. So, the faculty will fill the information, can immediately upload it. But usually, the faculty member have one course, two course, not more than that. So, you don't need Excel to upload. Who does this? Now, it goes like adjunct professors. There is a coordinator for RTN, okay? For now, this is how we are doing it. There is an adjunct faculty for RTN. He is supposed to upload all this information to one Excel. In option 1, it says that the research coordinator and his faculty member can assign one faculty member to do the RTN through other professors, so he can get the information from them and then upload one Excel sheet directly to the system. The possibility where the faculty members themselves can add the RTN to the system directly. So, both scenarios should work, okay?</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Commercializations Module</h2>
+      <div class="question-box">
+        <strong>Q1: Who can submit commercialization entries?</strong>
+        <p><strong>Answer Received:</strong> Faculty, normal. And the research coordinator, by the way, the research coordinator and the dean, both of them also considered as a faculty, by the way. So, I am as a research coordinator. Also, I have my publications, so I can enter also my publications as a normal faculty. The dean also have the same.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q2: Do commercializations need approval workflow?</strong>
+        <p><strong>Answer Received:</strong> Yes, of course, same like publications.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q3: Should commercializations contribute to faculty scoring?</strong>
+        <p><strong>Answer Received:</strong> Of course, for now, there is no scoring. It is under bonus.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Consultancies & KT Module</h2>
+      <div class="question-box">
+        <strong>Q1: Who can submit consultancy entries?</strong>
+        <p><strong>Answer Received:</strong> Again, faculty.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q2: Do consultancies need approval workflow?</strong>
+        <p><strong>Answer Received:</strong> Yes, it needs approval workflow.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q3: Should consultancies contribute to faculty scoring?</strong>
+        <p><strong>Answer Received:</strong> Yes, we don't know the score. You keep it for now as a default. Keep all of this as score of, for example, five points, okay? We'll keep it aside. All under bonus.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Questions for Discussion - Awards Module</h2>
+      <div class="question-box">
+        <strong>Q1: Is Awards a separate module or part of Bonus Recognition?</strong>
+        <p><strong>Answer Received:</strong> It is outside the bonus for now, but it will be under the bonus. So, you can consider it under bonus.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q2: Who can submit award entries?</strong>
+        <p><strong>Answer Received:</strong> Again, the faculty member himself.</p>
+      </div>
+
+      <div class="question-box">
+        <strong>Q3: Should awards contribute to faculty scoring?</strong>
+        <p><strong>Answer Received:</strong> Yes, it does contribute. A majority of your questions ask how to treat every concept like awards, consultancy, commercialization, TRN. All are treated MOUs. All are treated normally like publications, like grants, normal. That's it.</p>
+      </div>
+      <div class="question-box" style="background: #f0fdf4; border-left: 4px solid #22c55e;">
+        <strong>Additional Note:</strong>
+        <p>It needs workflow approval (not asked but confirmed by client).</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Estimated Timelines for Pending Modules</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40%;">Module Name</th>
+            <th style="width: 30%;">Estimated Timeline</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Research Investments</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Partnerships & MOUs</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Client responses received - can proceed</td>
+          </tr>
+          <tr>
+            <td><strong>Adjunct Professors</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Client responses received - can proceed</td>
+          </tr>
+          <tr>
+            <td><strong>Commercializations</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Client responses received - can proceed</td>
+          </tr>
+          <tr>
+            <td><strong>Consultancies & KT</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Client responses received - can proceed</td>
+          </tr>
+          <tr>
+            <td><strong>Awards</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Client responses received - separate module confirmed</td>
+          </tr>
+          <tr>
+            <td><strong>Conference Activities</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Supervision & Exams</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Editorial Appointments</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Student Involvements</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Internal Fundings</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Block Fundings</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>SDG Contributions</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>SDG Mappings</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>SDG List</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Research Fellows</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Standard implementation</td>
+          </tr>
+          <tr>
+            <td><strong>TRN Course Details</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Client responses received - Excel format confirmed</td>
+          </tr>
+          <tr>
+            <td><strong>Faculty Profile</strong></td>
+            <td><strong>3-4 days</strong></td>
+            <td class="notes">Edit/complete profile, maximum information display, enhanced CV with FWCI</td>
+          </tr>
+          <tr>
+            <td><strong>Scoring Policy Page Enhancements</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Active policy view, clarity indicators, status filters</td>
+          </tr>
+          <tr>
+            <td><strong>Workflow Implementation View Page</strong></td>
+            <td><strong>2-3 days</strong></td>
+            <td class="notes">Visual workflow diagram, statistics, documentation</td>
+          </tr>
+          <tr>
+            <td><strong>Reporting System Enhancements</strong></td>
+            <td><strong>3-4 days</strong></td>
+            <td class="notes">Advanced analytics, CV exports, management charts</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="summary-box" style="margin-top: 16px;">
+        <h3>Total Timeline Summary</h3>
+        <table style="margin-top: 12px; width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 50%;">Category</th>
+              <th style="width: 25%;">Modules Count</th>
+              <th style="width: 25%;">Estimated Timeline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Modules with client responses received</strong></td>
+              <td>6 modules</td>
+              <td><strong>1.5 weeks</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Standard implementation modules</strong></td>
+              <td>14 modules</td>
+              <td><strong>2 weeks</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Enhancement requirements</strong></td>
+              <td>3 enhancements</td>
+              <td><strong>1 week</strong></td>
+            </tr>
+            <tr style="background: #e8f4f2; font-weight: 600;">
+              <td><strong>Total (All Pending Modules + Enhancements)</strong></td>
+              <td><strong>23 items</strong></td>
+              <td><strong>4 weeks</strong><br/><em>(Maximum timeline)</em></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 16px;"><strong>Note:</strong> Timelines are estimates and may vary based on:</p>
+        <ul>
+          <li>Complexity of requirements</li>
+          <li>Testing and refinement needs</li>
+          <li>Parallel development capabilities</li>
+        </ul>
+        <p style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #22c55e;"><strong>Status:</strong> All client questions have been answered. Ready for development implementation.</p>
+      </div>
+    </section>
+
+    <section style="display: none;">
+      <h2>Next Steps & Recommendations</h2>
+      <div class="risk-box">
+        <h3>Priority 1: Complete In-Progress Modules</h3>
+        <ul>
+          <li><strong>Research Investments:</strong> Implement user interface and workflow integration</li>
+          <li><strong>Partnerships & MOUs:</strong> Implement user interface and await responses to questions</li>
+          <li><strong>Adjunct Professors:</strong> Implement admin interface and await responses to questions</li>
+        </ul>
+
+        <h3>Priority 2: Await Responses to Questions</h3>
+        <ul>
+          <li>Gather responses to all 24 questions before implementing pending modules</li>
+          <li>Clarify TRN course details sheet structure and requirements</li>
+          <li>Determine RTN type expansion needs</li>
+          <li>Clarify Awards and SDG List module requirements (separate or integrated)</li>
+        </ul>
+
+        <h3>Priority 3: Complete Other Modules with Data Structure Ready</h3>
+        <ul>
+          <li>Implement user interface for Consultancies, Commercializations, Conference Activities</li>
+          <li>Implement Supervision & Exams, Editorial Appointments, Student Involvements</li>
+          <li>Implement Internal Fundings, Block Fundings, SDG Contributions</li>
+        </ul>
+
+        <h3>Priority 4: Enhance Existing Modules</h3>
+        <ul>
+          <li>Complete Faculty Profile module</li>
+          <li>Enhance Reporting System with advanced analytics</li>
+          <li>Add CV-style exports and templates</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Simple helper to allow printing/saving as PDF from the browser
+    document.addEventListener('DOMContentLoaded', function () {
+      const header = document.querySelector('header');
+      if (!header) return;
+
+      const printBtn = document.createElement('button');
+      printBtn.textContent = 'Print / Save as PDF';
+      printBtn.style.cssText =
+        'margin-top: 14px; padding: 8px 18px; background: #2f5d62; color: #ffffff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;';
+
+      printBtn.addEventListener('click', function () {
+        window.print();
+      });
+
+      header.appendChild(printBtn);
+    });
+  </script>
+</body>
+</html>
+
