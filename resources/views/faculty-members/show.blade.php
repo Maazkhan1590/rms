@@ -598,12 +598,49 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($partnerships as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This partnership needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('partnerships.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-partnership-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('partnerships.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->partner_name ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>Type:</strong> {{ $item->mou_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -626,12 +663,49 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($commercializations as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This commercialization needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('commercializations.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-commercialization-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('commercializations.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>Type:</strong> {{ $item->commercialization_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -654,6 +728,38 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($consultancies as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This consultancy needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('consultancies.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-consultancy-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('consultancies.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
                             </h3>
@@ -663,6 +769,11 @@
                                 @if($item->amount_omr)
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -685,12 +796,49 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($awards as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This award needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('awards.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-award-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('awards.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>Organization:</strong> {{ $item->organization ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -713,6 +861,38 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($researchInvestments as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This research investment needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('research-investments.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-investment-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('research-investments.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->item ?? 'N/A' }}</a>
                             </h3>
@@ -722,6 +902,11 @@
                                 @if($item->amount_omr)
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -744,6 +929,38 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($conferenceActivities as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This conference activity needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('conference-activities.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-conference-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('conference-activities.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->conference ?? 'N/A' }}</a>
                             </h3>
@@ -753,6 +970,11 @@
                                 @if($item->date)
                                     <span><strong>Date:</strong> {{ \Carbon\Carbon::parse($item->date)->format('M Y') }}</span>
                                 @endif
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -775,6 +997,38 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($supervisionExams as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This supervision entry needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('supervision-exams.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-supervision-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('supervision-exams.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->student_name ?? 'N/A' }}</a>
                             </h3>
@@ -782,6 +1036,11 @@
                                 <span><strong>Role:</strong> {{ ucfirst(str_replace('_', ' ', $item->role ?? 'N/A')) }}</span>
                                 <span><strong>Degree:</strong> {{ $item->degree ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -804,12 +1063,49 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($editorialAppointments as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This editorial appointment needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('editorial-appointments.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-editorial-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('editorial-appointments.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->journal_conference ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>Role:</strong> {{ $item->role ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -832,12 +1128,49 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($studentInvolvements as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This student involvement needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('student-involvements.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-student-involvement-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('student-involvements.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ ucfirst(str_replace('_', ' ', $item->category ?? 'N/A')) }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>Count:</strong> {{ $item->count ?? 'N/A' }}</span>
                                 <span><strong>Academic Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -860,12 +1193,49 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($researchFellows as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This research fellow entry needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('research-fellows.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-research-fellow-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('research-fellows.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->publication_title ?? 'N/A', 60) }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>Journal:</strong> {{ Str::limit($item->journal ?? 'N/A', 40) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -888,6 +1258,38 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($sdgContributions as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This SDG contribution needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('sdg-contributions.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-sdg-contribution-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('sdg-contributions.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->title ?? 'N/A', 60) }}</a>
                             </h3>
@@ -895,6 +1297,11 @@
                                 <span><strong>SDG:</strong> SDG {{ $item->sdg ?? 'N/A' }}</span>
                                 <span><strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $item->type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -917,6 +1324,38 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($internalFundings as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This internal funding needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('internal-fundings.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-internal-funding-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('internal-fundings.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->project_title ?? 'N/A', 60) }}</a>
                             </h3>
@@ -926,6 +1365,11 @@
                                 @if($item->amount_omr)
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -948,6 +1392,38 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($blockFundings as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This block funding needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('block-fundings.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-block-funding-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('block-fundings.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ Str::limit($item->project_title ?? 'N/A', 60) }}</a>
                             </h3>
@@ -957,6 +1433,11 @@
                                 @if($item->amount_omr)
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
@@ -979,12 +1460,49 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($rtnCourseDetails as $item)
                         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            @php
+                                $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
+                                $statusColors = [
+                                    'approved' => '#10b981',
+                                    'pending' => '#eab308',
+                                    'pending_coordinator' => '#6b7280',
+                                    'pending_dean' => '#6b7280',
+                                    'submitted' => '#3b82f6',
+                                    'rejected' => '#ef4444',
+                                    'draft' => '#6b7280',
+                                ];
+                                $bgColor = $statusColors[$itemStatus] ?? '#6b7280';
+                            @endphp
+                            @auth
+                                @if($itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id()))
+                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 0.875rem 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1;">
+                                            <p style="color: #92400e; font-size: 0.875rem; margin: 0; font-weight: 500;">
+                                                <i class="fas fa-exclamation-circle"></i> <strong>Draft Status</strong> - This RTN course detail needs to be submitted for approval.
+                                            </p>
+                                        </div>
+                                        <form action="{{ route('rtn-course-details.submit', $item->id) }}" method="POST" style="margin: 0;" class="submit-rtn-course-form">
+                                            @csrf
+                                            <button type="submit" style="padding: 0.5rem 1.25rem; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.3s;">
+                                                <i class="fas fa-paper-plane"></i> Submit for Approval
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
                                 <a href="{{ route('rtn-course-details.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->course_code ?? 'N/A' }} - {{ Str::limit($item->course_name ?? 'N/A', 50) }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>RTN Type:</strong> {{ str_replace('_', ' ', strtoupper($item->rtn_type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
+                                    {{ ucfirst($itemStatus) }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
