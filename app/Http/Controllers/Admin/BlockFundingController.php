@@ -128,7 +128,24 @@ class BlockFundingController extends Controller
             $actions = '<div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">';
             $actions .= '<a class="btn btn-sm btn-outline-primary" href="' . route('admin.block-fundings.show', $item->id) . '" title="View" aria-label="View"><span class="material-icons-outlined">visibility</span></a>';
             
-            if (in_array($item->status, ['pending_coordinator', 'pending_dean']) && $workflow && $workflow->assigned_to == auth()->id()) {
+            $canApprove = false;
+            if ($workflow) {
+                if ($workflow->assigned_to == auth()->id()) {
+                    $canApprove = true;
+                } elseif ($workflow->status == 'pending_coordinator' && auth()->user()->isResearchCoordinator()) {
+                    $canApprove = true;
+                } elseif ($workflow->status == 'pending_dean' && auth()->user()->isDean()) {
+                    $canApprove = true;
+                }
+            }
+
+            $canShowActions = !in_array($item->status, ['approved', 'rejected'])
+                && $workflow && $workflow->status !== 'approved'
+                && $workflow->status !== 'rejected'
+                && in_array($item->status, ['pending_coordinator', 'pending_dean', 'submitted'])
+                && $canApprove;
+
+            if ($canShowActions) {
                 $actions .= '<form action="' . route('admin.block-fundings.approve', $item->id) . '" method="POST" style="display: inline;" class="approve-submission-form">';
                 $actions .= csrf_field();
                 $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve"><span class="material-icons-outlined">check_circle</span></button>';
