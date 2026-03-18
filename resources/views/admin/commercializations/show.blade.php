@@ -135,6 +135,8 @@
                             @endif
                         </table>
 
+                        @include('admin.partials.workflow-timeline', ['workflow' => $commercialization->workflow])
+
                         @if(in_array($commercialization->workflow->status, ['pending_coordinator', 'pending_dean']) && $commercialization->workflow->assigned_to == auth()->id())
                         <div class="mt-3">
                             <form action="{{ route('admin.commercializations.approve', $commercialization->id) }}" method="POST" style="display: inline;">

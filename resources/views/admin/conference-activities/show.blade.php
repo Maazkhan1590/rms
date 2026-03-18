@@ -120,6 +120,8 @@
                             @endif
                         </table>
 
+                        @include('admin.partials.workflow-timeline', ['workflow' => $activity->workflow])
+
                         @if(in_array($activity->workflow->status, ['pending_coordinator', 'pending_dean']) && $activity->workflow->assigned_to == auth()->id())
                         <div class="mt-3">
                             <form action="{{ route('admin.conference-activities.approve', $activity->id) }}" method="POST" style="display: inline;">

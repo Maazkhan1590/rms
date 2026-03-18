@@ -148,6 +148,8 @@
                             </tr>
                             @endif
                         </table>
+
+                        @include('admin.partials.workflow-timeline', ['workflow' => $workflow])
                     </div>
                 </div>
             </div>

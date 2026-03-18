@@ -122,6 +122,8 @@
                             @endif
                         </table>
 
+                        @include('admin.partials.workflow-timeline', ['workflow' => $appointment->workflow])
+
                         @if(in_array($appointment->workflow->status, ['pending_coordinator', 'pending_dean']) && $appointment->workflow->assigned_to == auth()->id())
                         <div class="mt-3">
                             <form action="{{ route('admin.editorial-appointments.approve', $appointment->id) }}" method="POST" style="display: inline;">

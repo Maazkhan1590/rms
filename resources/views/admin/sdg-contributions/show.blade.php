@@ -115,6 +115,8 @@
                             @endif
                         </table>
 
+                        @include('admin.partials.workflow-timeline', ['workflow' => $contribution->workflow])
+
                         @if(in_array($contribution->workflow->status, ['pending_coordinator', 'pending_dean']) && $contribution->workflow->assigned_to == auth()->id())
                         <div class="mt-3">
                             <form action="{{ route('admin.sdg-contributions.approve', $contribution->id) }}" method="POST" style="display: inline;">

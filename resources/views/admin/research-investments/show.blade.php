@@ -128,6 +128,8 @@
                             @endif
                         </table>
 
+                        @include('admin.partials.workflow-timeline', ['workflow' => $investment->workflow])
+
                         @if(in_array($investment->workflow->status, ['pending_coordinator', 'pending_dean']) && $investment->workflow->assigned_to == auth()->id())
                         <div class="mt-3">
                             <form action="{{ route('admin.research-investments.approve', $investment->id) }}" method="POST" style="display: inline;">

@@ -138,6 +138,8 @@
                             @endif
                         </table>
 
+                        @include('admin.partials.workflow-timeline', ['workflow' => $supervision->workflow])
+
                         @if(in_array($supervision->workflow->status, ['pending_coordinator', 'pending_dean']) && $supervision->workflow->assigned_to == auth()->id())
                         <div class="mt-3">
                             <form action="{{ route('admin.supervision-exams.approve', $supervision->id) }}" method="POST" style="display: inline;">
