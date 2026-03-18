@@ -317,10 +317,10 @@
             </div>
             @endif
 
-            <!-- Evidence Section -->
+            <!-- Evidence & Attachments Section -->
             <div style="margin-bottom: 2.5rem;">
                 <h2 class="section-title">
-                    <i class="fas fa-paperclip" style="color: #3b82f6; margin-right: 0.5rem;"></i>Evidence
+                    <i class="fas fa-paperclip" style="color: #3b82f6; margin-right: 0.5rem;"></i>Evidence & Attachments
                 </h2>
                 
                 @if($partnership->evidence_description)
@@ -386,7 +386,53 @@
                 </table>
                 @endif
             </div>
+
+            <!-- Additional Information Section -->
+            @if($partnership->submitter || $partnership->approver || isset($partnership->faculty))
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-info" style="color: #3b82f6; margin-right: 0.5rem;"></i>Additional Information
+                </h2>
+                <div class="detail-grid">
+                    @if($partnership->submitter)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Submitted By</div>
+                        <div class="detail-value">{{ $partnership->submitter->name }}</div>
+                        @if($partnership->submitted_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $partnership->submitted_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($partnership->approver)
+                    <div class="detail-item">
+                        @if($partnership->status === 'rejected')
+                            <div class="detail-label"><i class="fas fa-user-times" style="margin-right: 0.5rem;"></i>Rejected By</div>
+                        @else
+                            <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Approved By</div>
+                        @endif
+                        <div class="detail-value">{{ $partnership->approver->name }}</div>
+                        @if($partnership->approved_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $partnership->approved_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if(isset($partnership->faculty) && $partnership->faculty)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Faculty</div>
+                        <div class="detail-value">{{ $partnership->faculty }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </section>
 @endsection
+

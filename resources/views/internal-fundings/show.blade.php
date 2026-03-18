@@ -242,7 +242,53 @@
                 @endif
             </div>
             @endif
+
+            <!-- Additional Information Section -->
+            @if($funding->submitter || $funding->approver || isset($funding->faculty))
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-info" style="color: #3b82f6; margin-right: 0.5rem;"></i>Additional Information
+                </h2>
+                <div class="detail-grid">
+                    @if($funding->submitter)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Submitted By</div>
+                        <div class="detail-value">{{ $funding->submitter->name }}</div>
+                        @if($funding->submitted_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $funding->submitted_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($funding->approver)
+                    <div class="detail-item">
+                        @if($funding->status === 'rejected')
+                            <div class="detail-label"><i class="fas fa-user-times" style="margin-right: 0.5rem;"></i>Rejected By</div>
+                        @else
+                            <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Approved By</div>
+                        @endif
+                        <div class="detail-value">{{ $funding->approver->name }}</div>
+                        @if($funding->approved_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $funding->approved_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if(isset($funding->faculty) && $funding->faculty)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Faculty</div>
+                        <div class="detail-value">{{ $funding->faculty }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </section>
 @endsection
+

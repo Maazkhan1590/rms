@@ -228,7 +228,53 @@
                 @endif
             </div>
             @endif
+
+            <!-- Additional Information Section -->
+            @if($involvement->submitter || $involvement->approver || isset($involvement->faculty))
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-info" style="color: #3b82f6; margin-right: 0.5rem;"></i>Additional Information
+                </h2>
+                <div class="detail-grid">
+                    @if($involvement->submitter)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Submitted By</div>
+                        <div class="detail-value">{{ $involvement->submitter->name }}</div>
+                        @if($involvement->submitted_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $involvement->submitted_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($involvement->approver)
+                    <div class="detail-item">
+                        @if($involvement->status === 'rejected')
+                            <div class="detail-label"><i class="fas fa-user-times" style="margin-right: 0.5rem;"></i>Rejected By</div>
+                        @else
+                            <div class="detail-label"><i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>Approved By</div>
+                        @endif
+                        <div class="detail-value">{{ $involvement->approver->name }}</div>
+                        @if($involvement->approved_at)
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                            <i class="far fa-calendar"></i> {{ $involvement->approved_at->format('F d, Y') }}
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if(isset($involvement->faculty) && $involvement->faculty)
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Faculty</div>
+                        <div class="detail-value">{{ $involvement->faculty }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </section>
 @endsection
+
