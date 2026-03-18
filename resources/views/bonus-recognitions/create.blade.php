@@ -127,7 +127,8 @@
                         Title <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="title" name="title" required 
-                           placeholder="Enter recognition title"
+                           placeholder="e.g., Keynote speaker invitation"
+                           title="Avoid special/control characters"
                            value="{{ old('title') }}">
                     @error('title')
                         <div class="form-error">{{ $message }}</div>
@@ -137,7 +138,9 @@
                 <div class="form-group">
                     <label for="organization">Organization</label>
                     <input type="text" class="form-control" id="organization" name="organization" 
-                           placeholder="Organization name"
+                           placeholder="e.g., IEEE"
+                           pattern="[A-Za-z0-9 \\.,&'()\\/\\-]{2,255}"
+                           title="Use letters/numbers and common punctuation only"
                            value="{{ old('organization') }}">
                     @error('organization')
                         <div class="form-error">{{ $message }}</div>
@@ -147,7 +150,8 @@
                 <div class="form-group" id="journal_group" style="display: none;">
                     <label for="journal_conference_name">Journal/Conference Name</label>
                     <input type="text" class="form-control" id="journal_conference_name" name="journal_conference_name" 
-                           placeholder="Enter journal/conference name"
+                           placeholder="e.g., Elsevier Journal / Conference name"
+                           title="Avoid special/control characters"
                            value="{{ old('journal_conference_name') }}">
                     @error('journal_conference_name')
                         <div class="form-error">{{ $message }}</div>
@@ -157,7 +161,8 @@
                 <div class="form-group" id="event_group" style="display: none;">
                     <label for="event_name">Event Name</label>
                     <input type="text" class="form-control" id="event_name" name="event_name" 
-                           placeholder="Enter event name"
+                           placeholder="e.g., Workshop on AI 2026"
+                           title="Avoid special/control characters"
                            value="{{ old('event_name') }}">
                     @error('event_name')
                         <div class="form-error">{{ $message }}</div>

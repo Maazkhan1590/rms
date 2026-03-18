@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SupervisionExam;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -162,21 +163,21 @@ class SupervisionExamController extends Controller
         }
 
         $validated = $request->validate([
-            'student_name' => 'required|string|max:255',
+            'student_name' => ValidationRules::personName(required: true, max: 255),
             'role' => 'required|in:Main,Co-Supervisor,Co,External Examiner,External',
             'degree' => 'required|in:MSc,PhD,MPhil,Other',
-            'university' => 'nullable|string|max:255',
+            'university' => ValidationRules::organization(required: false, max: 255),
             'thesis_title' => 'nullable|string',
             'start_year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'end_year' => 'nullable|integer|min:1900|max:' . (date('Y') + 10),
             'status' => 'required|in:Ongoing,Completed,Discontinued',
             'academic_year' => 'nullable|string|max:255',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'notes' => 'nullable|string',
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

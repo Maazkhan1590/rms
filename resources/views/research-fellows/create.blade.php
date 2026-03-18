@@ -42,7 +42,7 @@
                     <label for="publication_title">
                         Publication Title <span style="color: var(--danger);">*</span>
                     </label>
-                    <textarea class="form-control" id="publication_title" name="publication_title" rows="3" required>{{ old('publication_title') }}</textarea>
+                    <textarea class="form-control" id="publication_title" name="publication_title" rows="3" required placeholder="Enter publication title">{{ old('publication_title') }}</textarea>
                     @error('publication_title')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -53,6 +53,7 @@
                         <div class="form-group">
                             <label for="journal">Journal</label>
                             <input type="text" class="form-control" id="journal" name="journal"
+                                   placeholder="e.g., IEEE Transactions on ..."
                                    value="{{ old('journal') }}">
                         </div>
                     </div>
@@ -60,6 +61,7 @@
                         <div class="form-group">
                             <label for="doi">DOI</label>
                             <input type="text" class="form-control" id="doi" name="doi"
+                                   placeholder="e.g., 10.1000/xyz123"
                                    value="{{ old('doi') }}">
                         </div>
                     </div>
@@ -102,18 +104,19 @@
 
                 <div class="form-group">
                     <label for="notes">Notes</label>
-                    <textarea class="form-control" id="notes" name="notes" rows="4">{{ old('notes') }}</textarea>
+                    <textarea class="form-control" id="notes" name="notes" rows="4" placeholder="Optional notes">{{ old('notes') }}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="evidence_link">Evidence Link</label>
                     <input type="url" class="form-control" id="evidence_link" name="evidence_link"
+                           placeholder="https://example.com/evidence"
                            value="{{ old('evidence_link') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="evidence_description">Evidence Description</label>
-                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3">{{ old('evidence_description') }}</textarea>
+                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3" placeholder="Briefly describe the evidence">{{ old('evidence_description') }}</textarea>
                 </div>
 
                 <!-- Evidence Upload Section -->

@@ -118,7 +118,8 @@
                         Title <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="title" name="title" required 
-                           placeholder="Enter title of the work"
+                           placeholder="e.g., Joint paper with students"
+                           title="Avoid special/control characters"
                            value="{{ old('title') }}">
                     @error('title')
                         <div class="form-error">{{ $message }}</div>

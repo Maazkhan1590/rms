@@ -82,7 +82,10 @@
                                 Course Code <span style="color: var(--danger);">*</span>
                             </label>
                             <input type="text" class="form-control" id="course_code" name="course_code" required 
-                                   value="{{ old('course_code') }}" maxlength="50">
+                                   value="{{ old('course_code') }}" maxlength="50"
+                                   placeholder="e.g., COMP1010"
+                                   pattern="[A-Za-z0-9][A-Za-z0-9_\\-\\.\\/]{0,49}"
+                                   title="Letters/numbers and _ - . / only">
                             @error('course_code')
                                 <div class="form-error">{{ $message }}</div>
                             @enderror
@@ -113,7 +116,9 @@
                         Course Name <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="course_name" name="course_name" required 
-                           value="{{ old('course_name') }}" maxlength="255">
+                           value="{{ old('course_name') }}" maxlength="255"
+                           placeholder="e.g., Introduction to Programming"
+                           title="Avoid special/control characters">
                     @error('course_name')
                         <div class="form-error">{{ $message }}</div>
                     @enderror

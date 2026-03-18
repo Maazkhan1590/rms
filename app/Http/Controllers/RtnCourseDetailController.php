@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RtnCourseDetail;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -161,16 +162,16 @@ class RtnCourseDetailController extends Controller
         }
 
         $validated = $request->validate([
-            'course_code' => 'required|string|max:50',
-            'course_name' => 'required|string|max:255',
+            'course_code' => ValidationRules::referenceCode(required: true, max: 50),
+            'course_name' => ValidationRules::title(required: true, max: 255),
             'rtn_type' => 'required|in:RTN_3,RTN_4,RTN_5,RTN_6,other',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'notes' => 'nullable|string',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

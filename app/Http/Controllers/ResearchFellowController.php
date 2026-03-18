@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ResearchFellow;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -151,19 +152,19 @@ class ResearchFellowController extends Controller
         }
 
         $validated = $request->validate([
-            'publication_title' => 'required|string|max:500',
-            'journal' => 'nullable|string|max:255',
-            'doi' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:255',
+            'publication_title' => ValidationRules::title(required: true, max: 500),
+            'journal' => ValidationRules::title(required: false, max: 255),
+            'doi' => ValidationRules::referenceCode(required: false, max: 255),
+            'status' => ValidationRules::title(required: false, max: 255),
             'indexed' => 'boolean',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'count_for_urc' => 'nullable|integer|min:0',
             'notes' => 'nullable|string',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

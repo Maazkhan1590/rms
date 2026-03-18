@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ConferenceActivity;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -160,17 +161,17 @@ class ConferenceActivityController extends Controller
         }
 
         $validated = $request->validate([
-            'conference' => 'required|string|max:255',
+            'conference' => ValidationRules::title(required: true, max: 255),
             'activity_type' => 'nullable|in:keynote,invited,regular,plenary',
-            'country' => 'nullable|string|max:255',
+            'country' => ValidationRules::organization(required: false, max: 255),
             'date' => 'nullable|date',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'notes' => 'nullable|string',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

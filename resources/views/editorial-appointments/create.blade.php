@@ -43,6 +43,8 @@
                         Journal/Conference Name <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="journal_conference" name="journal_conference" required 
+                           placeholder="e.g., Nature, IEEE Access"
+                           title="Avoid special/control characters"
                            value="{{ old('journal_conference') }}">
                     @error('journal_conference')
                         <div class="form-error">{{ $message }}</div>
@@ -85,18 +87,19 @@
 
                 <div class="form-group">
                     <label for="notes">Notes</label>
-                    <textarea class="form-control" id="notes" name="notes" rows="4">{{ old('notes') }}</textarea>
+                    <textarea class="form-control" id="notes" name="notes" rows="4" placeholder="Optional notes">{{ old('notes') }}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="evidence_link">Evidence Link</label>
                     <input type="url" class="form-control" id="evidence_link" name="evidence_link"
+                           placeholder="https://example.com/evidence"
                            value="{{ old('evidence_link') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="evidence_description">Evidence Description</label>
-                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3">{{ old('evidence_description') }}</textarea>
+                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3" placeholder="Briefly describe the evidence">{{ old('evidence_description') }}</textarea>
                 </div>
 
                 <!-- Evidence Upload Section -->

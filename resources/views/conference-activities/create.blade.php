@@ -43,6 +43,8 @@
                         Conference <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="conference" name="conference" required 
+                           placeholder="e.g., IEEE ICASSP 2026"
+                           title="Avoid special/control characters"
                            value="{{ old('conference') }}">
                     @error('conference')
                         <div class="form-error">{{ $message }}</div>
@@ -66,6 +68,9 @@
                         <div class="form-group">
                             <label for="country">Country</label>
                             <input type="text" class="form-control" id="country" name="country"
+                                   placeholder="e.g., Oman"
+                                   pattern="[A-Za-z0-9 \\.,&'()\\/\\-]{2,255}"
+                                   title="Use letters/numbers and common punctuation only"
                                    value="{{ old('country') }}">
                         </div>
                     </div>
@@ -90,18 +95,19 @@
 
                 <div class="form-group">
                     <label for="notes">Notes</label>
-                    <textarea class="form-control" id="notes" name="notes" rows="4">{{ old('notes') }}</textarea>
+                    <textarea class="form-control" id="notes" name="notes" rows="4" placeholder="Optional notes">{{ old('notes') }}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="evidence_link">Evidence Link</label>
                     <input type="url" class="form-control" id="evidence_link" name="evidence_link"
+                           placeholder="https://example.com/evidence"
                            value="{{ old('evidence_link') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="evidence_description">Evidence Description</label>
-                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3">{{ old('evidence_description') }}</textarea>
+                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3" placeholder="Briefly describe the evidence">{{ old('evidence_description') }}</textarea>
                 </div>
 
                 <!-- Evidence Upload Section -->

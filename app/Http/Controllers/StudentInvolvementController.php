@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\StudentInvolvement;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -151,16 +152,16 @@ class StudentInvolvementController extends Controller
         }
 
         $validated = $request->validate([
-            'category' => 'required|string|max:255',
+            'category' => ValidationRules::organization(required: true, max: 255),
             'count' => 'required|integer|min:1',
             'date' => 'nullable|date',
-            'academic_year' => 'nullable|string|max:255',
+            'academic_year' => ValidationRules::referenceCode(required: false, max: 255),
             'notes' => 'nullable|string',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

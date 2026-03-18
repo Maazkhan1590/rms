@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SdgContribution;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -167,18 +168,18 @@ class SdgContributionController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:500',
+            'title' => ValidationRules::title(required: true, max: 500),
             'type' => 'nullable|in:paper,project,talk,other',
             'sdg' => 'required|integer|min:1|max:17',
             'date' => 'nullable|date',
-            'evidence_link' => 'nullable|url|max:500',
-            'related_type' => 'nullable|string|max:255',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
+            'related_type' => ValidationRules::organization(required: false, max: 255),
             'related_id' => 'nullable|integer',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

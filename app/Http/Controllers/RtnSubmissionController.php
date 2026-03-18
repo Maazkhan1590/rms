@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RtnSubmission;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\LoggingService;
 use App\Services\FileUploadService;
@@ -150,7 +151,7 @@ class RtnSubmissionController extends Controller
         
         $validated = $request->validate([
             'rtn_type' => 'required|in:RTN-3,RTN-4',
-            'title' => 'required|string|max:500',
+            'title' => ValidationRules::title(required: true, max: 500),
             'description' => 'nullable|string',
             'year' => 'required|integer|min:1900|max:' . date('Y'),
             'evidence_description' => 'nullable|string|max:1000',
@@ -159,7 +160,7 @@ class RtnSubmissionController extends Controller
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
         ]);
 
         // Convert RTN type from hyphen format (RTN-3) to underscore format (RTN_3) for database

@@ -134,9 +134,18 @@
                 validClass: 'is-valid',
                 errorElement: 'div',
                 errorPlacement: function(error, element) {
-                    // If element is in a form-group, append error after it
-                    if (element.parent('.form-group').length) {
-                        error.addClass('invalid-feedback').appendTo(element.parent('.form-group'));
+                    // Prefer existing per-field error container inside the form-group
+                    const $group = element.closest('.form-group');
+                    const $inlineError = $group.find('.form-error').first();
+
+                    if ($inlineError.length) {
+                        $inlineError.text(error.text()).show();
+                        return;
+                    }
+
+                    // Fallback to standard invalid-feedback placement
+                    if ($group.length) {
+                        error.addClass('invalid-feedback').appendTo($group);
                     } else if (element.parent('.input-group').length) {
                         error.addClass('invalid-feedback').appendTo(element.parent('.input-group').parent());
                     } else {
@@ -144,7 +153,14 @@
                     }
                 },
                 success: function(label, element) {
-                    // Remove error label
+                    // Clear inline error container if present
+                    const $group = $(element).closest('.form-group');
+                    const $inlineError = $group.find('.form-error').first();
+                    if ($inlineError.length) {
+                        $inlineError.text('').hide();
+                    }
+
+                    // Remove generated error label (fallback mode)
                     label.remove();
                     // Add valid class to input
                     $(element).removeClass('is-invalid').addClass('is-valid');
@@ -159,6 +175,7 @@
                     // Remove any existing error messages
                     $form.find('.is-invalid').removeClass('is-invalid');
                     $form.find('.invalid-feedback').remove();
+                    $form.find('.form-error').text('').hide();
                     
                     // Submit the form
                     form.submit();
