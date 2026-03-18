@@ -637,7 +637,7 @@
                                 <span><strong>Type:</strong> {{ $item->type ?? $item->mou_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -702,7 +702,7 @@
                                 <span><strong>Type:</strong> {{ $item->type ?? $item->commercialization_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -770,7 +770,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -835,7 +835,7 @@
                                 <span><strong>Organization:</strong> {{ $item->awarding_organization ?? $item->organization ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -903,7 +903,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -971,7 +971,7 @@
                                     <span><strong>Date:</strong> {{ \Carbon\Carbon::parse($item->date)->format('M Y') }}</span>
                                 @endif
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1037,7 +1037,7 @@
                                 <span><strong>Degree:</strong> {{ $item->degree ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1102,7 +1102,7 @@
                                 <span><strong>Role:</strong> {{ $item->role ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1167,7 +1167,7 @@
                                 <span><strong>Count:</strong> {{ $item->count ?? 'N/A' }}</span>
                                 <span><strong>Academic Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1232,7 +1232,7 @@
                                 <span><strong>Journal:</strong> {{ Str::limit($item->journal ?? 'N/A', 40) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1298,7 +1298,7 @@
                                 <span><strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $item->type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1366,7 +1366,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1434,7 +1434,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1499,7 +1499,7 @@
                                 <span><strong>RTN Type:</strong> {{ str_replace('_', ' ', strtoupper($item->rtn_type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="position: absolute; top: 2rem; right: 2rem;">
+                            <div style="position: absolute; top: {{ (auth()->check() && $itemStatus === 'draft' && (($item->submitted_by ?? null) === auth()->id() || ($item->user_id ?? null) === auth()->id())) ? '7.5rem' : '2rem' }}; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
