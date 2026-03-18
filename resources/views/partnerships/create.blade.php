@@ -98,7 +98,9 @@
                         Partner Organization <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="partner_organization" name="partner_organization" required 
-                           placeholder="Enter partner organization name"
+                           placeholder="e.g., Sultan Qaboos University"
+                           pattern="[A-Za-z0-9 \\.,&'()\\/\\-]{2,255}"
+                           title="Use letters/numbers and common punctuation only"
                            value="{{ old('partner_organization') }}">
                     @error('partner_organization')
                         <div class="form-error">{{ $message }}</div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\RegistrationEmail;
+use App\Support\ValidationRules;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
@@ -46,17 +47,17 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name'          => ['required', 'string', 'max:255'],
+            'name'          => ValidationRules::personName(required: true, max: 255),
             'email'         => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password'      => ['required', 'string', 'min:8', 'confirmed'],
-            'employee_id'   => ['nullable', 'string', 'max:255', 'unique:users'],
-            'phone'         => ['nullable', 'string', 'max:20'],
+            'employee_id'   => array_merge(ValidationRules::employeeId(required: false, max: 255), ['unique:users']),
+            'phone'         => ValidationRules::phone(required: false, max: 20),
             'college_id'    => ['nullable', 'exists:colleges,id'],
             'department_id' => ['nullable', 'exists:departments,id'],
-            'designation'   => ['nullable', 'string', 'max:255'],
-            'orcid'         => ['nullable', 'string', 'max:19'],
-            'google_scholar'=> ['nullable', 'string', 'max:500'],
-            'research_gate' => ['nullable', 'string', 'max:500'],
+            'designation'   => ValidationRules::organization(required: false, max: 255),
+            'orcid'         => ValidationRules::orcid(required: false),
+            'google_scholar'=> ValidationRules::url(required: false, max: 500),
+            'research_gate' => ValidationRules::url(required: false, max: 500),
         ]);
     }
 

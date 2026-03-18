@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Consultancy;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -159,14 +160,14 @@ class ConsultancyController extends Controller
         }
 
         $validated = $request->validate([
-            'project_consultancy_name' => 'required|string|max:255',
+            'project_consultancy_name' => ValidationRules::title(required: true, max: 255),
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'client_sponsor' => 'nullable|string|max:255',
+            'client_sponsor' => ValidationRules::organization(required: false, max: 255),
             'amount_omr' => 'nullable|numeric|min:0',
             'income_type' => 'nullable|in:consultancy,service,product',
-            'lead_staff' => 'nullable|string|max:255',
-            'evidence_link' => 'nullable|url|max:500',
+            'lead_staff' => ValidationRules::personName(required: false, max: 255),
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'sdg_s' => 'nullable|string|max:255',
             'reporting_period' => 'nullable|in:q1,q2,q3,q4',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
@@ -174,7 +175,7 @@ class ConsultancyController extends Controller
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

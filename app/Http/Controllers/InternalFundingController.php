@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\InternalFunding;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -151,18 +152,18 @@ class InternalFundingController extends Controller
         }
 
         $validated = $request->validate([
-            'project_title' => 'required|string|max:255',
-            'funding_source' => 'nullable|string|max:255',
+            'project_title' => ValidationRules::title(required: true, max: 255),
+            'funding_source' => ValidationRules::organization(required: false, max: 255),
             'amount_omr' => 'nullable|numeric|min:0',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'notes' => 'nullable|string',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

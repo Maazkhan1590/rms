@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Grant;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\LoggingService;
 use App\Services\FileUploadService;
@@ -150,17 +151,17 @@ class GrantController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:500',
+            'title' => ValidationRules::title(required: true, max: 500),
             'summary' => 'nullable|string',
             'grant_type' => 'required|in:RG,GRG,URG,EJAAD,external_grant,external_matching_grant,grg_urg_advisor,patent_copyright,grant_application,other',
             'role' => 'required|in:PI,Co-PI,Co-I,Advisor,Mentor,Applicant',
-            'sponsor_name' => 'nullable|string|max:255',
-            'sponsor' => 'nullable|string|max:255',
+            'sponsor_name' => ValidationRules::organization(required: false, max: 255),
+            'sponsor' => ValidationRules::organization(required: false, max: 255),
             'amount_omr' => 'nullable|numeric|min:0',
-            'reference_code' => 'nullable|string|max:255',
+            'reference_code' => ValidationRules::referenceCode(required: false, max: 255),
             'award_year' => 'required|integer|min:1900|max:' . date('Y'),
-            'matching_grant_moa' => 'nullable|string|max:255',
-            'patent_registration_number' => 'nullable|string|max:255',
+            'matching_grant_moa' => ValidationRules::referenceCode(required: false, max: 255),
+            'patent_registration_number' => ValidationRules::referenceCode(required: false, max: 255),
             'patent_su_registered' => 'boolean',
             'grant_status' => 'nullable|in:submitted,accepted,ongoing,completed,draft',
             'application_date' => 'nullable|date',
@@ -171,11 +172,11 @@ class GrantController extends Controller
             'sdgs' => 'nullable|array',
             'sdgs.*' => 'nullable|string|max:255',
             'reporting_period' => 'nullable|in:Q1,Q2,Q3,Q4',
-            'faculty' => 'nullable|string|max:255',
+            'faculty' => ValidationRules::organization(required: false, max: 255),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
         ]);
 
         $user = auth()->user();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ResearchInvestment;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -160,19 +161,19 @@ class ResearchInvestmentController extends Controller
         }
 
         $validated = $request->validate([
-            'item' => 'required|string|max:255',
+            'item' => ValidationRules::title(required: true, max: 255),
             'category' => 'nullable|in:equipment,software,apc,travel,training,other',
             'date' => 'nullable|date',
             'amount_omr' => 'nullable|numeric|min:0',
-            'funding_source' => 'nullable|string|max:255',
-            'evidence_link' => 'nullable|url|max:500',
+            'funding_source' => ValidationRules::organization(required: false, max: 255),
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'notes' => 'nullable|string',
             'reporting_period' => 'nullable|in:q1,q2,q3,q4',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

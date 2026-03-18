@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Award;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -158,19 +159,19 @@ class AwardController extends Controller
         }
 
         $validated = $request->validate([
-            'award_name' => 'required|string|max:255',
+            'award_name' => ValidationRules::title(required: true, max: 255),
             'description' => 'nullable|string',
-            'awarding_organization' => 'nullable|string|max:255',
+            'awarding_organization' => ValidationRules::organization(required: false, max: 255),
             'award_date' => 'nullable|date',
             'award_type' => 'nullable|in:national,international,regional,institutional,other',
-            'category' => 'nullable|string|max:255',
+            'category' => ValidationRules::organization(required: false, max: 255),
             'achievement_description' => 'nullable|string',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 

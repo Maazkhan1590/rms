@@ -88,6 +88,8 @@
                         Project/Consultancy Name <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="project_consultancy_name" name="project_consultancy_name" required 
+                           placeholder="e.g., Industry advisory project"
+                           title="Avoid special/control characters"
                            value="{{ old('project_consultancy_name') }}">
                     @error('project_consultancy_name')
                         <div class="form-error">{{ $message }}</div>
@@ -114,6 +116,9 @@
                 <div class="form-group">
                     <label for="client_sponsor">Client/Sponsor</label>
                     <input type="text" class="form-control" id="client_sponsor" name="client_sponsor"
+                           placeholder="e.g., Ministry of Health"
+                           pattern="[A-Za-z0-9 \\.,&'()\\/\\-]{2,255}"
+                           title="Use letters/numbers and common punctuation only"
                            value="{{ old('client_sponsor') }}">
                 </div>
 
@@ -150,12 +155,13 @@
                 <div class="form-group">
                     <label for="evidence_link">Evidence Link</label>
                     <input type="url" class="form-control" id="evidence_link" name="evidence_link"
+                           placeholder="https://example.com/evidence"
                            value="{{ old('evidence_link') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="evidence_description">Evidence Description</label>
-                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3">{{ old('evidence_description') }}</textarea>
+                    <textarea class="form-control" id="evidence_description" name="evidence_description" rows="3" placeholder="Briefly describe the evidence">{{ old('evidence_description') }}</textarea>
                 </div>
 
                 <!-- Evidence Upload Section -->

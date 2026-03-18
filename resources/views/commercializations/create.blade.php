@@ -98,7 +98,8 @@
                         Product/Service Name <span style="color: var(--danger);">*</span>
                     </label>
                     <input type="text" class="form-control" id="product_service_name" name="product_service_name" required 
-                           placeholder="Enter product or service name"
+                           placeholder="e.g., Water Quality Analyzer"
+                           title="Avoid special/control characters"
                            value="{{ old('product_service_name') }}">
                     @error('product_service_name')
                         <div class="form-error">{{ $message }}</div>
@@ -163,7 +164,9 @@
                 <div class="form-group">
                     <label for="client_market">Client/Market</label>
                     <input type="text" class="form-control" id="client_market" name="client_market"
-                           placeholder="Describe target client or market"
+                           placeholder="e.g., Hospitals, SMEs, Government"
+                           pattern="[A-Za-z0-9 \\.,&'()\\/\\-]{2,255}"
+                           title="Use letters/numbers and common punctuation only"
                            value="{{ old('client_market') }}">
                     @error('client_market')
                         <div class="form-error">{{ $message }}</div>

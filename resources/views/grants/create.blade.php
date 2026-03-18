@@ -154,7 +154,9 @@
                 <div class="form-group">
                     <label for="sponsor_name">Sponsor Name</label>
                     <input type="text" class="form-control" id="sponsor_name" name="sponsor_name" 
-                           placeholder="Enter sponsor name"
+                           placeholder="e.g., Research Council"
+                           pattern="[A-Za-z0-9 .,&'()\\/\\-]{2,255}"
+                           title="Use letters/numbers and common punctuation only"
                            value="{{ old('sponsor_name') }}">
                     @error('sponsor_name')
                         <div class="form-error">{{ $message }}</div>
@@ -273,7 +275,9 @@
                 <div class="form-group" id="matching_grant_group" style="display: none;">
                     <label for="matching_grant_moa">Matching Grant MoA Reference</label>
                     <input type="text" class="form-control" id="matching_grant_moa" name="matching_grant_moa" 
-                           placeholder="Enter MoA reference"
+                           placeholder="e.g., MOA-2026-001"
+                           pattern="[A-Za-z0-9][A-Za-z0-9_\\-\\.\\/]{0,254}"
+                           title="Letters/numbers and _ - . / only"
                            value="{{ old('matching_grant_moa') }}">
                     @error('matching_grant_moa')
                         <div class="form-error">{{ $message }}</div>
@@ -283,7 +287,9 @@
                 <div class="form-group" id="patent_group" style="display: none;">
                     <label for="patent_registration_number">Patent Registration Number</label>
                     <input type="text" class="form-control" id="patent_registration_number" name="patent_registration_number" 
-                           placeholder="Enter patent registration number"
+                           placeholder="e.g., PAT-12345"
+                           pattern="[A-Za-z0-9][A-Za-z0-9_\\-\\.\\/]{0,254}"
+                           title="Letters/numbers and _ - . / only"
                            value="{{ old('patent_registration_number') }}">
                     <div style="margin-top: 0.5rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
@@ -299,7 +305,9 @@
                 <div class="form-group">
                     <label for="reference_code">Reference Code</label>
                     <input type="text" class="form-control" id="reference_code" name="reference_code" 
-                           placeholder="Enter reference code"
+                           placeholder="e.g., GRANT-2026-XYZ"
+                           pattern="[A-Za-z0-9][A-Za-z0-9_\\-\\.\\/]{0,254}"
+                           title="Letters/numbers and _ - . / only"
                            value="{{ old('reference_code') }}">
                     @error('reference_code')
                         <div class="form-error">{{ $message }}</div>

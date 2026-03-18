@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PartnershipMou;
 use App\Models\ApprovalWorkflow;
 use App\Models\EvidenceFile;
+use App\Support\ValidationRules;
 use App\Services\WorkflowService;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -187,20 +188,20 @@ class PartnershipController extends Controller
         }
 
         $validated = $request->validate([
-            'partner_organization' => 'required|string|max:255',
+            'partner_organization' => ValidationRules::organization(required: true, max: 255),
             'type' => 'required|in:mou,moa,project,industry',
             'date_signed' => 'nullable|date',
             'expiry_date' => 'nullable|date|after_or_equal:date_signed',
             'scope_theme' => 'nullable|string',
             'lead_staff_id' => 'nullable|exists:users,id',
             'outputs_papers_grants_events' => 'nullable|string',
-            'evidence_link' => 'nullable|url|max:500',
+            'evidence_link' => ValidationRules::url(required: false, max: 500),
             'sdg_s' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'evidence_files' => 'nullable|array',
             'evidence_files.*' => 'file|mimes:pdf,doc,docx,zip,jpg,jpeg,png,gif|max:10240',
             'evidence_urls' => 'nullable|array',
-            'evidence_urls.*' => 'nullable|url|max:500',
+            'evidence_urls.*' => ValidationRules::url(required: false, max: 500),
             'evidence_description' => 'nullable|string|max:1000',
         ]);
 
