@@ -49,23 +49,59 @@
 @include('partials.public-footer')
 
 <!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- jQuery Validation Plugin -->
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js"></script>
-<script src="{{ asset('js/script.js') }}"></script>
-<!-- Form Submit Blocker - Prevents duplicate submissions -->
-<script src="{{ asset('js/form-blocker.js') }}"></script>
-<!-- Form Validation Script -->
-<script src="{{ asset('js/form-validation.js') }}"></script>
+<script src="{{ asset('js/script.js') }}" defer></script>
+
+<script>
+    // Load heavier form libraries only when a form exists on the page
+    (function () {
+        function hasForms() {
+            return !!document.querySelector('form.auth-form, form.needs-validation');
+        }
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = src;
+                s.defer = true;
+                s.onload = resolve;
+                s.onerror = reject;
+                document.body.appendChild(s);
+            });
+        }
+
+        async function bootFormValidation() {
+            try {
+                // jQuery + jQuery Validate (required by form-validation.js)
+                await loadScript('https://code.jquery.com/jquery-3.6.0.min.js');
+                await loadScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js');
+                await loadScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js');
+
+                // Local helpers
+                await loadScript('{{ asset('js/form-blocker.js') }}');
+                await loadScript('{{ asset('js/form-validation.js') }}');
+            } catch (e) {
+                // Silent fail: avoid breaking page render if CDN blocked
+                console.warn('Form validation scripts failed to load', e);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () {
+                if (hasForms()) bootFormValidation();
+            });
+        } else {
+            if (hasForms()) bootFormValidation();
+        }
+    })();
+</script>
 @if(request()->routeIs('welcome'))
-    <script src="{{ asset('js/slider.js') }}"></script>
+    <script src="{{ asset('js/slider.js') }}" defer></script>
 @endif
 @if(request()->routeIs('login') || request()->routeIs('register'))
-    <script src="{{ asset('js/auth.js') }}"></script>
+    <script src="{{ asset('js/auth.js') }}" defer></script>
 @endif
 @if(request()->routeIs('publications.*'))
-    <script src="{{ asset('js/publications.js') }}"></script>
+    <script src="{{ asset('js/publications.js') }}" defer></script>
 @endif
 
 @stack('scripts')
