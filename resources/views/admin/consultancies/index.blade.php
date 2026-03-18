@@ -11,11 +11,21 @@
         display: block;
         width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     #consultancies-table {
         width: 100%;
         margin: 0;
         table-layout: auto;
+    }
+
+    .dataTables_wrapper {
+        width: 100%;
+        overflow-x: visible;
+    }
+
+    .dataTables_wrapper .dataTables_scrollBody {
+        overflow-x: visible !important;
     }
 </style>
 @endpush
@@ -119,6 +129,7 @@ $(document).ready(function() {
         serverSide: true,
         ajax: {
             url: '{{ route("admin.consultancies.index") }}',
+            type: 'GET',
             data: function(d) {
                 d.status = $('#status-filter').val();
                 d.type = $('#type-filter').val();
@@ -128,25 +139,82 @@ $(document).ready(function() {
         },
         columns: [
             { data: 'id', name: 'id' },
-            { data: 'project_consultancy_name', name: 'project_consultancy_name' },
-            { data: 'income_type', name: 'income_type' },
-            { data: 'submitted_by', name: 'submitted_by' },
+            { data: 'project_consultancy_name', name: 'project_consultancy_name', orderable: false },
+            { data: 'income_type', name: 'income_type', orderable: false },
+            { data: 'submitted_by', name: 'submitted_by', orderable: true },
             { data: 'year', name: 'year' },
-            { data: 'status', name: 'status' },
+            { data: 'status', name: 'status', orderable: false },
             { data: 'workflow', name: 'workflow', orderable: false },
-            { data: 'points', name: 'points_allocated' },
-            { data: 'submitted', name: 'submitted_at' },
+            { data: 'points', name: 'points_allocated', orderable: false },
+            { data: 'submitted', name: 'submitted_at', orderable: false },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
         order: [[0, 'desc']],
-        pageLength: 25,
+        pageLength: 15,
+        lengthMenu: [[10, 15, 25, 50, 100], [10, 15, 25, 50, 100]],
         language: {
-            processing: '<i class="fas fa-spinner fa-spin"></i> Loading consultancies...'
-        }
+            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>'
+        },
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+             "<'row'<'col-sm-12'tr>>" +
+             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        select: false,
+        responsive: false,
+        autoWidth: false,
+        columnDefs: [
+            { targets: 0, orderable: true, searchable: true, className: '' }
+        ]
     });
 
     $('#status-filter, #type-filter, #year-filter, #user-filter').on('change', function() {
         table.draw();
+    });
+
+    $(document).on('submit', '.approve-consultancy-form', function (e) {
+        e.preventDefault();
+        const form = $(this);
+        Swal.fire({
+            title: 'Approve Consultancy?',
+            text: 'Are you sure you want to approve this consultancy?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, approve',
+            confirmButtonColor: '#22c55e'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form[0].submit();
+            }
+        });
+    });
+
+    $(document).on('click', '.btn-reject-consultancy', function (e) {
+        e.preventDefault();
+        const consultancyId = $(this).data('consultancy-id');
+        Swal.fire({
+            title: 'Reject Consultancy?',
+            html: '<textarea id="swal-reject-comments" class="swal2-textarea" placeholder="Enter reason for rejection (optional)..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, reject',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            preConfirm: () => {
+                return document.getElementById('swal-reject-comments').value;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const comments = result.value || '';
+                const form = $('<form>', {
+                    method: 'POST',
+                    action: '/admin/consultancies/' + consultancyId + '/reject'
+                });
+                form.append($('<input>', { type: 'hidden', name: '_token', value: $('meta[name="csrf-token"]').attr('content') }));
+                form.append($('<input>', { type: 'hidden', name: 'comments', value: comments }));
+                $('body').append(form);
+                form.submit();
+            }
+        });
     });
 });
 </script>

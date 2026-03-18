@@ -7,14 +7,9 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="mb-0">
-            <span class="material-icons-outlined" style="vertical-align: middle;">briefcase</span>
+            <span class="material-icons-outlined" style="vertical-align: middle;">business_center</span>
             <span style="vertical-align: middle;">Consultancy/KT Details</span>
         </h3>
-        <div>
-            <a href="{{ route('admin.consultancies.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to List
-            </a>
-        </div>
     </div>
     <div class="card-body">
         <div class="row">
@@ -28,7 +23,9 @@
                     </tr>
                     <tr>
                         <th>Income Type</th>
-                        <td>{{ ucfirst($consultancy->income_type ?? 'N/A') }}</td>
+                        <td>
+                            <span class="badge badge-info">{{ ucfirst($consultancy->income_type ?? 'N/A') }}</span>
+                        </td>
                     </tr>
                     <tr>
                         <th>Year</th>
@@ -65,13 +62,13 @@
                     @if($consultancy->amount_omr)
                     <tr>
                         <th>Amount (OMR)</th>
-                        <td>{{ number_format($consultancy->amount_omr, 2) }}</td>
+                        <td><strong>{{ number_format($consultancy->amount_omr, 2) }} OMR</strong></td>
                     </tr>
                     @endif
                     @if($consultancy->submitter)
                     <tr>
                         <th>Submitted By</th>
-                        <td>{{ $consultancy->submitter->name }}</td>
+                        <td>{{ $consultancy->submitter->name }} ({{ $consultancy->submitter->email ?? 'N/A' }})</td>
                     </tr>
                     @endif
                     <tr>
@@ -99,19 +96,36 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Workflow Status</h5>
+                        <h5 class="mb-0">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">account_tree</span>
+                            <span style="vertical-align: middle;">Workflow Information</span>
+                        </h5>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered">
                             <tr>
-                                <th width="200">Current Status</th>
+                                <th width="200">Workflow Status</th>
                                 <td>
-                                    @if($consultancy->workflow->status == 'approved')
-                                        <span class="badge badge-success">Approved</span>
-                                    @elseif($consultancy->workflow->status == 'pending_coordinator')
-                                        <span class="badge badge-warning">Pending Coordinator</span>
+                                    @if($consultancy->workflow->status == 'pending_coordinator')
+                                        <span class="badge badge-warning">
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">supervisor_account</span>
+                                            Pending Coordinator Approval
+                                        </span>
                                     @elseif($consultancy->workflow->status == 'pending_dean')
-                                        <span class="badge badge-info">Pending Dean</span>
+                                        <span class="badge badge-info">
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">school</span>
+                                            Pending Dean Approval
+                                        </span>
+                                    @elseif($consultancy->workflow->status == 'approved')
+                                        <span class="badge badge-success">
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">check_circle</span>
+                                            Approved
+                                        </span>
+                                    @elseif($consultancy->workflow->status == 'rejected')
+                                        <span class="badge badge-danger">
+                                            <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">cancel</span>
+                                            Rejected
+                                        </span>
                                     @else
                                         <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $consultancy->workflow->status)) }}</span>
                                     @endif
@@ -120,24 +134,10 @@
                             @if($consultancy->workflow->assignee)
                             <tr>
                                 <th>Assigned To</th>
-                                <td>{{ $consultancy->workflow->assignee->name }}</td>
+                                <td>{{ $consultancy->workflow->assignee->name }} ({{ $consultancy->workflow->assignee->email ?? 'N/A' }})</td>
                             </tr>
                             @endif
                         </table>
-
-                        @if(in_array($consultancy->workflow->status, ['pending_coordinator', 'pending_dean']) && $consultancy->workflow->assigned_to == auth()->id())
-                        <div class="mt-3">
-                            <form action="{{ route('admin.consultancies.approve', $consultancy->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                            </form>
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                        </div>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -149,7 +149,10 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Evidence Files</h5>
+                        <h5 class="mb-0">
+                            <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">attach_file</span>
+                            <span style="vertical-align: middle;">Evidence Files & Attachments ({{ $consultancy->evidenceFiles->count() }})</span>
+                        </h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -184,12 +187,14 @@
                                         <td>{{ $file->uploaded_at ? $file->uploaded_at->format('M d, Y') : 'N/A' }}</td>
                                         <td>
                                             @if($file->file_type === 'text/url')
-                                                <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-external-link-alt"></i> Open
+                                                <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">open_in_new</span>
+                                                    Open URL
                                                 </a>
                                             @else
-                                                <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-download"></i> Download
+                                                <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">download</span>
+                                                    Download
                                                 </a>
                                             @endif
                                         </td>
@@ -203,6 +208,48 @@
             </div>
         </div>
         @endif
+
+        <div style="margin-top: 20px;">
+            <a href="{{ route('admin.consultancies.index') }}" class="btn btn-outline-secondary btn-sm">
+                <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">arrow_back</span>
+                <span style="vertical-align: middle;">Back to List</span>
+            </a>
+            @php
+                $workflow = $consultancy->workflow ?? null;
+                $workflowStatus = $workflow->status ?? null;
+                $workflowCompleted = $workflowStatus && in_array($workflowStatus, ['approved', 'rejected']);
+                $user = auth()->user();
+
+                $canApprove = false;
+                if ($workflow) {
+                    if ($workflow->assigned_to == $user->id) {
+                        $canApprove = true;
+                    } elseif ($workflow->status == 'pending_coordinator' && $user->isResearchCoordinator()) {
+                        $canApprove = true;
+                    } elseif ($workflow->status == 'pending_dean' && $user->isDean()) {
+                        $canApprove = true;
+                    }
+                }
+
+                $canShowActions = !in_array($consultancy->status, ['approved', 'rejected'])
+                                  && !$workflowCompleted
+                                  && in_array($consultancy->status, ['submitted', 'pending_coordinator', 'pending_dean'])
+                                  && $canApprove;
+            @endphp
+            @if($canShowActions)
+                <form action="{{ route('admin.consultancies.approve', $consultancy->id) }}" method="POST" style="display: inline;" class="approve-consultancy-show-form">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-success btn-sm approve-consultancy-btn">
+                        <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">check_circle</span>
+                        <span style="vertical-align: middle;">Approve Consultancy</span>
+                    </button>
+                </form>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="showRejectModal()">
+                    <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">cancel</span>
+                    <span style="vertical-align: middle;">Reject Consultancy</span>
+                </button>
+            @endif
+        </div>
     </div>
 </div>
 
@@ -231,4 +278,27 @@
         </div>
     </div>
 </div>
+
+<script>
+    function showRejectModal() {
+        $('#rejectModal').modal('show');
+    }
+
+    $(document).on('submit', '.approve-consultancy-show-form', function (e) {
+        e.preventDefault();
+        const form = $(this);
+        Swal.fire({
+            title: 'Approve Consultancy?',
+            text: 'Are you sure you want to approve this consultancy?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, approve',
+            confirmButtonColor: '#22c55e'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form[0].submit();
+            }
+        });
+    });
+</script>
 @endsection
