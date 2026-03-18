@@ -345,7 +345,8 @@
                         <tr>
                             <th>File Name</th>
                             <th>Type</th>
-                            <th>Size</th>
+                            <th>Category</th>
+                            <th>Uploaded By</th>
                             <th>Uploaded</th>
                             <th>Actions</th>
                         </tr>
@@ -353,29 +354,28 @@
                     <tbody>
                         @foreach($partnership->evidenceFiles as $file)
                         <tr>
-                            <td>{{ $file->file_name }}</td>
+                            <td style="font-weight: 500;">{{ $file->file_name }}</td>
                             <td>
                                 @if($file->file_type === 'text/url')
-                                    <span class="badge badge-info">URL</span>
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 0.8rem; font-weight: 600;">URL</span>
+                                @elseif(str_contains($file->file_type, 'image'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #d1fae5; color: #065f46; font-size: 0.8rem; font-weight: 600;">Image</span>
+                                @elseif(str_contains($file->file_type, 'pdf'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #fee2e2; color: #991b1b; font-size: 0.8rem; font-weight: 600;">PDF</span>
                                 @else
-                                    <span class="badge badge-secondary">{{ strtoupper(pathinfo($file->file_name, PATHINFO_EXTENSION)) }}</span>
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #f3f4f6; color: #374151; font-size: 0.8rem; font-weight: 600;">{{ $file->file_type }}</span>
                                 @endif
                             </td>
-                            <td>
-                                @if($file->file_type !== 'text/url')
-                                    {{ number_format($file->file_size / 1024, 2) }} KB
-                                @else
-                                    N/A
-                                @endif
-                            </td>
+                            <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                            <td>{{ $file->uploader->name ?? 'N/A' }}</td>
                             <td>{{ $file->uploaded_at ? $file->uploaded_at->format('M d, Y') : 'N/A' }}</td>
                             <td>
                                 @if($file->file_type === 'text/url')
-                                    <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-info">
+                                    <a href="{{ $file->file_path }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
                                         <i class="fas fa-external-link-alt"></i> Open
                                     </a>
                                 @else
-                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-primary">
+                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" download="{{ $file->file_name }}" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
                                         <i class="fas fa-download"></i> Download
                                     </a>
                                 @endif
@@ -384,6 +384,11 @@
                         @endforeach
                     </tbody>
                 </table>
+                @else
+                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 2rem; text-align: center;">
+                    <i class="fas fa-folder-open" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+                    <p style="color: #6b7280; font-size: 1rem; margin: 0;">No evidence files or attachments have been uploaded yet.</p>
+                </div>
                 @endif
             </div>
 

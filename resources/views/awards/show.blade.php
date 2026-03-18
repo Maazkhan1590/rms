@@ -217,9 +217,10 @@
                         <tr>
                             <th>File Name</th>
                             <th>Type</th>
-                            <th>Size</th>
+                            <th>Category</th>
+                            <th>Uploaded By</th>
                             <th>Uploaded</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -237,13 +238,8 @@
                                     <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #f3f4f6; color: #374151; font-size: 0.8rem; font-weight: 600;">{{ $file->file_type }}</span>
                                 @endif
                             </td>
-                            <td>
-                                @if($file->file_type !== 'text/url')
-                                    {{ number_format($file->file_size / 1024, 2) }} KB
-                                @else
-                                    N/A
-                                @endif
-                            </td>
+                            <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                            <td>{{ $file->uploader->name ?? 'N/A' }}</td>
                             <td>{{ $file->uploaded_at ? $file->uploaded_at->format('M d, Y') : 'N/A' }}</td>
                             <td>
                                 @if($file->file_type === 'text/url')

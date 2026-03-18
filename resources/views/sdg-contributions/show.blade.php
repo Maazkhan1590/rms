@@ -179,46 +179,74 @@
             @if($contribution->evidence_link || $contribution->evidenceFiles->count() > 0 || $contribution->evidence_description)
             <div style="margin-bottom: 2.5rem;">
                 <h2 class="section-title">
-                    <i class="fas fa-paperclip" style="color: #3b82f6; margin-right: 0.5rem;"></i>Evidence
+                    <i class="fas fa-paperclip" style="color: #3b82f6; margin-right: 0.5rem;"></i>Evidence & Attachments
                 </h2>
                 
                 @if($contribution->evidence_description)
                 <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f9fafb; border-radius: 8px;">
-                    <strong>Description:</strong>
-                    <p style="margin: 0.5rem 0 0 0;">{{ $contribution->evidence_description }}</p>
+                    <strong style="color: #374151; display: block; margin-bottom: 0.5rem;">Description:</strong>
+                    <p style="color: #4b5563; margin: 0;">{{ $contribution->evidence_description }}</p>
                 </div>
                 @endif
 
                 @if($contribution->evidence_link)
                 <div style="margin-bottom: 1.5rem;">
-                    <strong>Evidence Link:</strong>
-                    <a href="{{ $contribution->evidence_link }}" target="_blank" style="color: #3b82f6;">
+                    <strong style="color: #374151; display: block; margin-bottom: 0.5rem;">Evidence Link:</strong>
+                    <a href="{{ $contribution->evidence_link }}" target="_blank" style="color: #3b82f6; text-decoration: none; word-break: break-all;">
                         <i class="fas fa-external-link-alt"></i> {{ $contribution->evidence_link }}
                     </a>
                 </div>
                 @endif
 
                 @if($contribution->evidenceFiles && $contribution->evidenceFiles->count() > 0)
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    @foreach($contribution->evidenceFiles as $file)
-                    <div style="padding: 1rem; background: #f9fafb; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <strong>{{ $file->file_name }}</strong>
-                            @if($file->file_type !== 'text/url')
-                                <span style="color: #6b7280; font-size: 0.875rem;">({{ number_format($file->file_size / 1024, 2) }} KB)</span>
-                            @endif
-                        </div>
-                        @if($file->file_type === 'text/url')
-                            <a href="{{ $file->file_path }}" target="_blank" class="btn btn-sm btn-info">
-                                <i class="fas fa-external-link-alt"></i> Open
-                            </a>
-                        @else
-                            <a href="{{ Storage::disk('public')->url($file->file_path) }}" target="_blank" class="btn btn-sm btn-primary">
-                                <i class="fas fa-download"></i> Download
-                            </a>
-                        @endif
-                    </div>
-                    @endforeach
+                <table class="evidence-table">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Uploaded By</th>
+                            <th>Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($contribution->evidenceFiles as $file)
+                        <tr>
+                            <td style="font-weight: 500;">{{ $file->file_name }}</td>
+                            <td>
+                                @if($file->file_type === 'text/url')
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 0.8rem; font-weight: 600;">URL</span>
+                                @elseif(str_contains($file->file_type, 'image'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #d1fae5; color: #065f46; font-size: 0.8rem; font-weight: 600;">Image</span>
+                                @elseif(str_contains($file->file_type, 'pdf'))
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #fee2e2; color: #991b1b; font-size: 0.8rem; font-weight: 600;">PDF</span>
+                                @else
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 6px; background: #f3f4f6; color: #374151; font-size: 0.8rem; font-weight: 600;">{{ $file->file_type }}</span>
+                                @endif
+                            </td>
+                            <td>{{ ucfirst(str_replace('_', ' ', $file->file_category ?? 'other')) }}</td>
+                            <td>{{ $file->uploader->name ?? 'N/A' }}</td>
+                            <td>{{ $file->uploaded_at ? $file->uploaded_at->format('M d, Y') : 'N/A' }}</td>
+                            <td>
+                                @if($file->file_type === 'text/url')
+                                    <a href="{{ $file->file_path }}" target="_blank" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                        <i class="fas fa-external-link-alt"></i> Open
+                                    </a>
+                                @else
+                                    <a href="{{ Storage::disk('public')->url($file->file_path) }}" download="{{ $file->file_name }}" style="padding: 0.4rem 0.9rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                @else
+                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 2rem; text-align: center;">
+                    <i class="fas fa-folder-open" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+                    <p style="color: #6b7280; font-size: 1rem; margin: 0;">No evidence files or attachments have been uploaded yet.</p>
                 </div>
                 @endif
             </div>
