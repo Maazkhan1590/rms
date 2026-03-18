@@ -27,6 +27,8 @@
                 @if($slider->image_url)
                     @if(filter_var($slider->image_url, FILTER_VALIDATE_URL))
                         <div class="slide-image" style="background-image: url('{{ $slider->image_url }}');"></div>
+                    @elseif(\Illuminate\Support\Str::startsWith($slider->image_url, ['assets/', '/assets/']))
+                        <div class="slide-image" style="background-image: url('{{ asset(ltrim($slider->image_url, '/')) }}');"></div>
                     @else
                         <div class="slide-image" style="background-image: url('{{ asset('storage/' . $slider->image_url) }}');"></div>
                     @endif
