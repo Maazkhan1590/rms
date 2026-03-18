@@ -3,6 +3,16 @@
 @section('content')
 @php
     use Illuminate\Support\Facades\Storage;
+
+    $workflow = \App\Models\ApprovalWorkflow::where('submission_type', 'consultancy')
+        ->where('submission_id', $consultancy->id)
+        ->with(['submitter', 'assignee', 'history.performer'])
+        ->first();
+
+    $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'consultancy')
+        ->where('submission_id', $consultancy->id)
+        ->with('uploader')
+        ->get();
 @endphp
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -91,7 +101,7 @@
             </div>
         </div>
 
-        @if($consultancy->workflow)
+        @if($workflow)
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
@@ -106,35 +116,35 @@
                             <tr>
                                 <th width="200">Workflow Status</th>
                                 <td>
-                                    @if($consultancy->workflow->status == 'pending_coordinator')
+                                    @if($workflow->status == 'pending_coordinator')
                                         <span class="badge badge-warning">
                                             <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">supervisor_account</span>
                                             Pending Coordinator Approval
                                         </span>
-                                    @elseif($consultancy->workflow->status == 'pending_dean')
+                                    @elseif($workflow->status == 'pending_dean')
                                         <span class="badge badge-info">
                                             <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">school</span>
                                             Pending Dean Approval
                                         </span>
-                                    @elseif($consultancy->workflow->status == 'approved')
+                                    @elseif($workflow->status == 'approved')
                                         <span class="badge badge-success">
                                             <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">check_circle</span>
                                             Approved
                                         </span>
-                                    @elseif($consultancy->workflow->status == 'rejected')
+                                    @elseif($workflow->status == 'rejected')
                                         <span class="badge badge-danger">
                                             <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">cancel</span>
                                             Rejected
                                         </span>
                                     @else
-                                        <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $consultancy->workflow->status)) }}</span>
+                                        <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $workflow->status)) }}</span>
                                     @endif
                                 </td>
                             </tr>
-                            @if($consultancy->workflow->assignee)
+                            @if($workflow->assignee)
                             <tr>
                                 <th>Assigned To</th>
-                                <td>{{ $consultancy->workflow->assignee->name }} ({{ $consultancy->workflow->assignee->email ?? 'N/A' }})</td>
+                                <td>{{ $workflow->assignee->name }} ({{ $workflow->assignee->email ?? 'N/A' }})</td>
                             </tr>
                             @endif
                         </table>
@@ -144,17 +154,17 @@
         </div>
         @endif
 
-        @if($consultancy->evidenceFiles && $consultancy->evidenceFiles->count() > 0)
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <span class="material-icons-outlined" style="font-size:18px;vertical-align:middle;">attach_file</span>
-                            <span style="vertical-align: middle;">Evidence Files & Attachments ({{ $consultancy->evidenceFiles->count() }})</span>
+                            <span style="vertical-align: middle;">Evidence Files & Attachments ({{ $evidenceFiles->count() }})</span>
                         </h5>
                     </div>
                     <div class="card-body">
+                        @if($evidenceFiles->count() > 0)
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
@@ -167,7 +177,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($consultancy->evidenceFiles as $file)
+                                    @foreach($evidenceFiles as $file)
                                     <tr>
                                         <td>{{ $file->file_name }}</td>
                                         <td>
@@ -203,11 +213,16 @@
                                 </tbody>
                             </table>
                         </div>
+                        @else
+                        <div style="text-align:center;padding:2rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;">
+                            <span class="material-icons-outlined" style="font-size:48px;color:#d1d5db;">folder_open</span>
+                            <p style="color:#6b7280;margin-top:1rem;margin-bottom:0;">No evidence files have been uploaded yet.</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
-        @endif
 
         <div style="margin-top: 20px;">
             <a href="{{ route('admin.consultancies.index') }}" class="btn btn-outline-secondary btn-sm">
@@ -215,7 +230,6 @@
                 <span style="vertical-align: middle;">Back to List</span>
             </a>
             @php
-                $workflow = $consultancy->workflow ?? null;
                 $workflowStatus = $workflow->status ?? null;
                 $workflowCompleted = $workflowStatus && in_array($workflowStatus, ['approved', 'rejected']);
                 $user = auth()->user();
