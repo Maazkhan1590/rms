@@ -631,13 +631,13 @@
                                 @endif
                             @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
-                                <a href="{{ route('partnerships.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->partner_name ?? 'N/A' }}</a>
+                                <a href="{{ route('partnerships.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->partner_organization ?? $item->partner_name ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
-                                <span><strong>Type:</strong> {{ $item->mou_type ?? 'N/A' }}</span>
+                                <span><strong>Type:</strong> {{ $item->type ?? $item->mou_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -696,13 +696,13 @@
                                 @endif
                             @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
-                                <a href="{{ route('commercializations.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
+                                <a href="{{ route('commercializations.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->product_service_name ?? $item->title ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
-                                <span><strong>Type:</strong> {{ $item->commercialization_type ?? 'N/A' }}</span>
+                                <span><strong>Type:</strong> {{ $item->type ?? $item->commercialization_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -761,7 +761,7 @@
                                 @endif
                             @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
-                                <a href="{{ route('consultancies.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
+                                <a href="{{ route('consultancies.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->project_consultancy_name ?? $item->title ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
                                 <span><strong>Type:</strong> {{ $item->income_type ?? 'N/A' }}</span>
@@ -770,7 +770,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -829,13 +829,13 @@
                                 @endif
                             @endauth
                             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">
-                                <a href="{{ route('awards.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->title ?? 'N/A' }}</a>
+                                <a href="{{ route('awards.show', $item->id) }}" style="color: inherit; text-decoration: none;">{{ $item->award_name ?? $item->title ?? 'N/A' }}</a>
                             </h3>
                             <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
-                                <span><strong>Organization:</strong> {{ $item->organization ?? 'N/A' }}</span>
+                                <span><strong>Organization:</strong> {{ $item->awarding_organization ?? $item->organization ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -903,7 +903,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -971,7 +971,7 @@
                                     <span><strong>Date:</strong> {{ \Carbon\Carbon::parse($item->date)->format('M Y') }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1037,7 +1037,7 @@
                                 <span><strong>Degree:</strong> {{ $item->degree ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1102,7 +1102,7 @@
                                 <span><strong>Role:</strong> {{ $item->role ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1167,7 +1167,7 @@
                                 <span><strong>Count:</strong> {{ $item->count ?? 'N/A' }}</span>
                                 <span><strong>Academic Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1232,7 +1232,7 @@
                                 <span><strong>Journal:</strong> {{ Str::limit($item->journal ?? 'N/A', 40) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1298,7 +1298,7 @@
                                 <span><strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $item->type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1366,7 +1366,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1434,7 +1434,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1499,7 +1499,7 @@
                                 <span><strong>RTN Type:</strong> {{ str_replace('_', ' ', strtoupper($item->rtn_type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem;">
+                            <div style="margin-top: 1rem; text-align: right;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
