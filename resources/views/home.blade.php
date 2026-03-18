@@ -31,7 +31,7 @@
                         <div class="slide-image" style="background-image: url('{{ asset('storage/' . $slider->image_url) }}');"></div>
                     @endif
                 @else
-                    <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
+                    <div class="slide-image" style="background-image: url('{{ asset('assets/images/default-hero.jpg') }}');"></div>
                 @endif
                 <div class="slide-content">
                     <div class="container">
@@ -66,7 +66,7 @@
             <!-- Default slider if no sliders in database -->
             <div class="slide active">
                 <div class="slide-overlay"></div>
-                <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
+                <div class="slide-image" style="background-image: url('{{ asset('assets/images/default-hero.jpg') }}');"></div>
                 <div class="slide-content">
                     <div class="container">
                         <div class="slide-tag">New Research</div>

@@ -26,7 +26,7 @@
 
         <div class="dropdown" style="position: relative;">
             <button class="btn btn-secondary" id="userMenuBtn" aria-haspopup="true" aria-expanded="false">
-                <img src="https://www.gravatar.com/avatar/?d=mp&s=28" alt="Avatar" class="rounded-full" style="width:28px;height:28px;">
+                <img src="{{ asset('assets/images/avatar-default.svg') }}" alt="Avatar" class="rounded-full" style="width:28px;height:28px;">
                 <span class="hidden md:inline">{{ auth()->user()->name ?? 'User' }}</span>
                 <i class="bi bi-caret-down-fill"></i>
             </button>

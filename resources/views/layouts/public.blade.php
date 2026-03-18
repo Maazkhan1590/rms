@@ -21,11 +21,24 @@
     @if(request()->routeIs('welcome'))
         <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
     @endif
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Local fonts (replaces Google Fonts) -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/playfair-display/400.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/playfair-display/500.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/playfair-display/600.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/playfair-display/700.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/playfair-display/800.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/300.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/400.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/500.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/600.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/700.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/cormorant-garamond/400.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/cormorant-garamond/500.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/cormorant-garamond/600.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/cormorant-garamond/700.css') }}">
+    <!-- Icon fonts -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome6/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/font/bootstrap-icons.css') }}">
 
     @stack('styles')
 </head>
@@ -72,9 +85,9 @@
         async function bootFormValidation() {
             try {
                 // jQuery + jQuery Validate (required by form-validation.js)
-                await loadScript('https://code.jquery.com/jquery-3.6.0.min.js');
-                await loadScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js');
-                await loadScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js');
+                await loadScript('{{ asset('assets/vendor/jquery/jquery.min.js') }}');
+                await loadScript('{{ asset('assets/vendor/jquery-validation/jquery.validate.min.js') }}');
+                await loadScript('{{ asset('assets/vendor/jquery-validation/additional-methods.min.js') }}');
 
                 // Local helpers
                 await loadScript('{{ asset('js/form-blocker.js') }}');

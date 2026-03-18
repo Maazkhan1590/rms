@@ -20,6 +20,11 @@
     
     <!-- Stylesheets -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
+    <!-- Local fonts (replaces Google Fonts import in CSS) -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/400.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/500.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/600.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/inter/700.css') }}">
     @yield('styles')
 </head>
 <body>
@@ -28,8 +33,8 @@
     </div>
     
     <!-- Custom Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/axios/axios.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <!-- Form Submit Blocker - Prevents duplicate submissions -->
     <script src="{{ asset('js/form-blocker.js') }}"></script>

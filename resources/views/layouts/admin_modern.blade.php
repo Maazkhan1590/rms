@@ -7,9 +7,9 @@
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
     <!-- Charts CDN (lightweight for demo) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script src="{{ asset('assets/vendor/chartjs/chart.umd.js') }}" defer></script>
     <!-- Bootstrap Icons (for simple icons without setup) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/font/bootstrap-icons.css') }}">
 </head>
 <body class="h-100" data-theme>
     <header class="topbar">
@@ -34,7 +34,7 @@
         </div>
     </footer>
     <!-- Custom Admin Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="{{ asset('assets/vendor/axios/axios.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     @stack('scripts')
 </body>

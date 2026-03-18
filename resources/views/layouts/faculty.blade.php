@@ -3,7 +3,7 @@
 @section('title', 'Faculty Portal - RMS')
 
 @section('styles')
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('assets/vendor/bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

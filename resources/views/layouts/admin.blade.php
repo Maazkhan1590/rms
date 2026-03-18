@@ -22,14 +22,14 @@
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
     <!-- Material Icons for modern action buttons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <link href="{{ asset('assets/vendor/material-icons/iconfont/material-icons.css') }}" rel="stylesheet" />
     <!-- DataTables core + extensions (vanilla theme) -->
-    <link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css" rel="stylesheet" />
+    <link href="{{ asset('assets/vendor/datatables/1.13.8/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/vendor/datatables/1.13.8/css/responsive.dataTables.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/vendor/datatables/1.13.8/css/buttons.dataTables.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/vendor/datatables/1.13.8/css/select.dataTables.min.css') }}" rel="stylesheet" />
     <!-- Select2 CSS for multi-select fields in admin forms -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" rel="stylesheet" />
+    <link href="{{ asset('assets/vendor/select2/css/select2.min.css') }}" rel="stylesheet" />
     @yield('styles')
 </head>
 <body>
@@ -1112,19 +1112,19 @@
     </script>
 
     <!-- Vendor scripts for legacy admin pages (DataTables, Select2, etc.) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap JS for modals and other components -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
+    <script src="{{ asset('assets/vendor/bootstrap4/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/1.13.8/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/1.13.8/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/1.13.8/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/1.13.8/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/1.13.8/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/1.13.8/js/dataTables.select.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datetimepicker/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/dropzone/dropzone.min.js') }}"></script>
 
         <script>
             // Initialize Select2 and wire Select all / Deselect all for multi-selects
@@ -1187,9 +1187,9 @@
         </script>
 
     <!-- Custom Admin Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="{{ asset('assets/vendor/axios/axios.min.js') }}"></script>
     <!-- SweetAlert2 for nicer confirmation dialogs -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('assets/vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <!-- Form Submit Blocker - Prevents duplicate submissions -->
     <script src="{{ asset('js/form-blocker.js') }}"></script>
