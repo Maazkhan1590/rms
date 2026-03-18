@@ -266,7 +266,7 @@
             @if($publications->count() > 0)
                 <div class="publications-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($publications as $publication)
-                        <div class="publication-item" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: box-shadow 0.3s ease;">
+                        <div class="publication-item" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; transition: box-shadow 0.3s ease;">
                             <!-- Draft Submit Banner -->
                             @auth
                                 @if($publication->status === 'draft' && ($publication->submitted_by === auth()->id() || $publication->primary_author_id === auth()->id()))
@@ -372,7 +372,7 @@
             @if($grants->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($grants as $grant)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             <!-- Draft Submit Banner -->
                             @auth
                                 @if($grant->status === 'draft' && $grant->submitted_by === auth()->id())
@@ -453,7 +453,7 @@
             @if($rtnSubmissions->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($rtnSubmissions as $rtn)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             <!-- Draft Submit Banner -->
                             @auth
                                 @if($rtn->status === 'draft' && $rtn->user_id === auth()->id())
@@ -519,7 +519,7 @@
             @if($bonusRecognitions->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($bonusRecognitions as $bonus)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             <!-- Draft Submit Banner -->
                             @auth
                                 @if($bonus->status === 'draft' && $bonus->user_id === auth()->id())
@@ -597,7 +597,7 @@
             @if($partnerships->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($partnerships as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -637,7 +637,7 @@
                                 <span><strong>Type:</strong> {{ $item->type ?? $item->mou_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -662,7 +662,7 @@
             @if($commercializations->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($commercializations as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -702,7 +702,7 @@
                                 <span><strong>Type:</strong> {{ $item->type ?? $item->commercialization_type ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -727,7 +727,7 @@
             @if($consultancies->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($consultancies as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -770,7 +770,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -795,7 +795,7 @@
             @if($awards->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($awards as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -835,7 +835,7 @@
                                 <span><strong>Organization:</strong> {{ $item->awarding_organization ?? $item->organization ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -860,7 +860,7 @@
             @if($researchInvestments->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($researchInvestments as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -903,7 +903,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -928,7 +928,7 @@
             @if($conferenceActivities->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($conferenceActivities as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -971,7 +971,7 @@
                                     <span><strong>Date:</strong> {{ \Carbon\Carbon::parse($item->date)->format('M Y') }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -996,7 +996,7 @@
             @if($supervisionExams->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($supervisionExams as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1037,7 +1037,7 @@
                                 <span><strong>Degree:</strong> {{ $item->degree ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1062,7 +1062,7 @@
             @if($editorialAppointments->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($editorialAppointments as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1102,7 +1102,7 @@
                                 <span><strong>Role:</strong> {{ $item->role ?? 'N/A' }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1127,7 +1127,7 @@
             @if($studentInvolvements->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($studentInvolvements as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1167,7 +1167,7 @@
                                 <span><strong>Count:</strong> {{ $item->count ?? 'N/A' }}</span>
                                 <span><strong>Academic Year:</strong> {{ $item->academic_year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1192,7 +1192,7 @@
             @if($researchFellows->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($researchFellows as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1232,7 +1232,7 @@
                                 <span><strong>Journal:</strong> {{ Str::limit($item->journal ?? 'N/A', 40) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1257,7 +1257,7 @@
             @if($sdgContributions->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($sdgContributions as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1298,7 +1298,7 @@
                                 <span><strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', $item->type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1323,7 +1323,7 @@
             @if($internalFundings->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($internalFundings as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1366,7 +1366,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1391,7 +1391,7 @@
             @if($blockFundings->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($blockFundings as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1434,7 +1434,7 @@
                                     <span><strong>Amount:</strong> OMR {{ number_format($item->amount_omr, 2) }}</span>
                                 @endif
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
@@ -1459,7 +1459,7 @@
             @if($rtnCourseDetails->count() > 0)
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @foreach($rtnCourseDetails as $item)
-                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                             @php
                                 $itemStatus = $item->status ?? $item->workflow_status ?? 'draft';
                                 $statusColors = [
@@ -1499,7 +1499,7 @@
                                 <span><strong>RTN Type:</strong> {{ str_replace('_', ' ', strtoupper($item->rtn_type ?? 'N/A')) }}</span>
                                 <span><strong>Year:</strong> {{ $item->year ?? 'N/A' }}</span>
                             </div>
-                            <div style="margin-top: 1rem; text-align: right;">
+                            <div style="position: absolute; top: 2rem; right: 2rem;">
                                 <span class="badge" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; background: {{ $bgColor }}; color: white;">
                                     {{ ucfirst($itemStatus) }}
                                 </span>
