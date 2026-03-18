@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Consultancy;
-use App\Models\User;
 use App\Models\ApprovalWorkflow;
 use App\Services\ScoringService;
 use App\Services\WorkflowService;
@@ -34,12 +33,7 @@ class ConsultancyController extends Controller
             return $this->getDataTableData($request);
         }
 
-        $statuses = ['draft', 'submitted', 'pending_coordinator', 'pending_dean', 'approved', 'rejected', 'returned', 'ongoing', 'completed'];
-        $years = Consultancy::distinct()->pluck('year')->filter()->sortDesc()->values();
-        $types = Consultancy::distinct()->pluck('income_type')->filter()->sort()->values();
-        $users = User::whereHas('consultancies')->pluck('name', 'id');
-
-        return view('admin.consultancies.index', compact('statuses', 'years', 'types', 'users'));
+        return view('admin.consultancies.index');
     }
 
     private function getDataTableData(Request $request)
