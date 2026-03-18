@@ -114,8 +114,15 @@ class StudentInvolvementController extends Controller
 
     public function show($id)
     {
-        $involvement = StudentInvolvement::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $involvement = StudentInvolvement::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('student-involvements.show', compact('involvement'));
     }

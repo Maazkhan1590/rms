@@ -144,8 +144,15 @@ class PartnershipController extends Controller
      */
     public function show($id)
     {
-        $partnership = PartnershipMou::with(['submitter', 'leadStaff', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $partnership = PartnershipMou::with([
+            'submitter',
+            'leadStaff',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('partnerships.show', compact('partnership'));
     }

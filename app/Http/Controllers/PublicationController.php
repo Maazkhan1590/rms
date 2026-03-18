@@ -151,8 +151,15 @@ class PublicationController extends Controller
      */
     public function show($id)
     {
-        $publication = Publication::with(['submitter', 'primaryAuthor', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $publication = Publication::with([
+            'submitter',
+            'primaryAuthor',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         // If AJAX request, return JSON for modal
         if (request()->ajax() || request()->wantsJson()) {

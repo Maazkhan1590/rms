@@ -123,8 +123,15 @@ class ResearchInvestmentController extends Controller
 
     public function show($id)
     {
-        $investment = ResearchInvestment::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $investment = ResearchInvestment::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('research-investments.show', compact('investment'));
     }

@@ -123,8 +123,15 @@ class ConferenceActivityController extends Controller
 
     public function show($id)
     {
-        $activity = ConferenceActivity::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $activity = ConferenceActivity::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('conference-activities.show', compact('activity'));
     }

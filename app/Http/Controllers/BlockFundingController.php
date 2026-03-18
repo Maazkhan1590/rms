@@ -114,8 +114,15 @@ class BlockFundingController extends Controller
 
     public function show($id)
     {
-        $funding = BlockFunding::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $funding = BlockFunding::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('block-fundings.show', compact('funding'));
     }

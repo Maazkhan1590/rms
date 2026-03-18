@@ -124,8 +124,15 @@ class RtnCourseDetailController extends Controller
 
     public function show($id)
     {
-        $course = RtnCourseDetail::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $course = RtnCourseDetail::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('rtn-course-details.show', compact('course'));
     }

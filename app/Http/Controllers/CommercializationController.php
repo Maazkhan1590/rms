@@ -134,8 +134,15 @@ class CommercializationController extends Controller
      */
     public function show($id)
     {
-        $commercialization = Commercialization::with(['submitter', 'ownerTeam', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $commercialization = Commercialization::with([
+            'submitter',
+            'ownerTeam',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('commercializations.show', compact('commercialization'));
     }

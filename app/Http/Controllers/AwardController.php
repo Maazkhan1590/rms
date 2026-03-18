@@ -122,8 +122,14 @@ class AwardController extends Controller
 
     public function show($id)
     {
-        $award = Award::with(['submitter', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $award = Award::with([
+            'submitter',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('awards.show', compact('award'));
     }

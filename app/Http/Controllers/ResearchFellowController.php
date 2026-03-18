@@ -114,8 +114,15 @@ class ResearchFellowController extends Controller
 
     public function show($id)
     {
-        $fellow = ResearchFellow::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $fellow = ResearchFellow::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('research-fellows.show', compact('fellow'));
     }

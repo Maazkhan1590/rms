@@ -130,8 +130,15 @@ class SdgContributionController extends Controller
 
     public function show($id)
     {
-        $contribution = SdgContribution::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $contribution = SdgContribution::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('sdg-contributions.show', compact('contribution'));
     }

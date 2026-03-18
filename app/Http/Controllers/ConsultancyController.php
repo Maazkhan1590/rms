@@ -122,8 +122,15 @@ class ConsultancyController extends Controller
 
     public function show($id)
     {
-        $consultancy = Consultancy::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $consultancy = Consultancy::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('consultancies.show', compact('consultancy'));
     }

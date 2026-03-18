@@ -106,8 +106,15 @@ class EditorialAppointmentController extends Controller
 
     public function show($id)
     {
-        $appointment = EditorialAppointment::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $appointment = EditorialAppointment::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('editorial-appointments.show', compact('appointment'));
     }

@@ -240,7 +240,13 @@ class RtnSubmissionController extends Controller
      */
     public function show($id)
     {
-        $rtn = RtnSubmission::with(['user', 'workflow.history.performer', 'evidenceFiles.uploader'])->findOrFail($id);
+        $rtn = RtnSubmission::with([
+            'user',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
         
         // Allow public viewing for approved RTN, or if user owns it, or if admin/coordinator/dean
         if ($rtn->status !== 'approved' && auth()->check() && $rtn->user_id !== auth()->id() && !auth()->user()->hasAnyRole(['Admin', 'Dean', 'Coordinator'])) {

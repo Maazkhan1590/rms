@@ -114,8 +114,15 @@ class InternalFundingController extends Controller
 
     public function show($id)
     {
-        $funding = InternalFunding::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $funding = InternalFunding::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('internal-fundings.show', compact('funding'));
     }

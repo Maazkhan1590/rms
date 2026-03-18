@@ -620,6 +620,145 @@
             </div>
             @endif
 
+            <!-- Approval & Workflow Timeline Section -->
+            @if($publication->workflow)
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <i class="fas fa-history" style="color: #3b82f6; margin-right: 0.5rem;"></i>Approval Timeline
+                </h2>
+
+                @php
+                    $historyEntries = ($publication->workflow && $publication->workflow->history)
+                        ? $publication->workflow->history->sortBy('created_at')->values()
+                        : collect();
+
+                    $hasDraftEntry = $historyEntries->contains(function ($entry) {
+                        return isset($entry->new_status) && $entry->new_status === 'draft';
+                    });
+
+                    if (!$hasDraftEntry && $publication->workflow && $publication->workflow->created_at) {
+                        $draftEntry = new \stdClass();
+                        $draftEntry->action = 'submitted';
+                        $draftEntry->new_status = 'draft';
+                        $draftEntry->previous_status = null;
+                        $draftEntry->comments = 'Draft created';
+                        $draftEntry->created_at = $publication->workflow->created_at;
+                        $draftEntry->performer = $publication->workflow->submitter;
+
+                        $historyEntries = $historyEntries
+                            ->prepend($draftEntry)
+                            ->sortBy(function ($entry) {
+                                if (is_object($entry->created_at) && method_exists($entry->created_at, 'getTimestamp')) {
+                                    return $entry->created_at->getTimestamp();
+                                }
+                                if (is_string($entry->created_at)) {
+                                    return strtotime($entry->created_at);
+                                }
+                                return 0;
+                            })
+                            ->values();
+                    }
+                @endphp
+
+                @if($historyEntries->count() > 0)
+                    <div class="approval-timeline" style="margin-top: 1.5rem;">
+                        @foreach($historyEntries as $history)
+                            @php
+                                $action = isset($history->action) ? $history->action : 'submitted';
+                                $newStatus = isset($history->new_status) ? $history->new_status : null;
+                                $previousStatus = isset($history->previous_status) ? $history->previous_status : null;
+
+                                $isApproved = $action === 'approved';
+                                $isRejected = $action === 'rejected';
+                                $isDraft = $newStatus === 'draft';
+
+                                if ($isApproved) {
+                                    $iconColor = '#22c55e';
+                                    $iconBg = '#f0fdf4';
+                                    $icon = 'check_circle';
+                                } elseif ($isRejected) {
+                                    $iconColor = '#ef4444';
+                                    $iconBg = '#fef2f2';
+                                    $icon = 'cancel';
+                                } elseif ($isDraft) {
+                                    $iconColor = '#f59e0b';
+                                    $iconBg = '#fef3c7';
+                                    $icon = 'drafts';
+                                } else {
+                                    $iconColor = '#3b82f6';
+                                    $iconBg = '#eff6ff';
+                                    $icon = 'pending';
+                                }
+
+                                $performerName = 'N/A';
+                                if (isset($history->performer) && is_object($history->performer) && isset($history->performer->name)) {
+                                    $performerName = $history->performer->name;
+                                } elseif (isset($history->performer) && is_string($history->performer)) {
+                                    $performerName = $history->performer;
+                                }
+
+                                $formattedTime = 'N/A';
+                                if (isset($history->created_at) && is_object($history->created_at) && method_exists($history->created_at, 'format')) {
+                                    $formattedTime = $history->created_at->format('M d, Y H:i');
+                                } elseif (isset($history->created_at) && is_string($history->created_at)) {
+                                    $formattedTime = date('M d, Y H:i', strtotime($history->created_at));
+                                }
+                            @endphp
+
+                            <div style="position: relative; padding-left: 48px; padding-bottom: 20px;">
+                                @if(!$loop->last)
+                                    <div style="position: absolute; left: 18px; top: 36px; bottom: -6px; width: 2px; background: linear-gradient(180deg, {{ $iconColor }} 0%, #e5e7eb 100%);"></div>
+                                @endif
+
+                                <div style="position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; background: {{ $iconBg }}; border: 2px solid {{ $iconColor }}; display: flex; align-items: center; justify-content: center; z-index: 1;">
+                                    @if($isApproved)
+                                        <i class="fas fa-check" style="font-size: 18px; color: {{ $iconColor }};"></i>
+                                    @elseif($isRejected)
+                                        <i class="fas fa-times" style="font-size: 18px; color: {{ $iconColor }};"></i>
+                                    @elseif($isDraft)
+                                        <i class="fas fa-file-alt" style="font-size: 18px; color: {{ $iconColor }};"></i>
+                                    @else
+                                        <i class="fas fa-hourglass-half" style="font-size: 18px; color: {{ $iconColor }};"></i>
+                                    @endif
+                                </div>
+
+                                <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
+                                        <div>
+                                            <span style="display: inline-block; background: {{ $iconColor }}; color: #fff; font-size: 12px; padding: 4px 8px; border-radius: 4px; font-weight: 600;">{{ ucfirst($action) }}</span>
+                                            @if($previousStatus || $newStatus)
+                                                <span style="font-size: 12px; color: #6b7280; margin-left: 6px;">
+                                                    {{ $previousStatus ? ucwords(str_replace('_', ' ', $previousStatus)) : 'N/A' }}
+                                                    @if($newStatus) → {{ ucwords(str_replace('_', ' ', $newStatus)) }} @endif
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <span style="font-size: 12px; color: #6b7280; white-space: nowrap;">{{ $formattedTime }}</span>
+                                    </div>
+
+                                    <div style="margin-top: 8px; font-size: 14px; color: #111827;">
+                                        <strong>{{ $performerName }}</strong>
+                                    </div>
+
+                                    @if(isset($history->comments) && $history->comments)
+                                        <div style="margin-top: 8px; padding: 8px; background: #f9fafb; border-left: 3px solid {{ $iconColor }}; border-radius: 4px;">
+                                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Comments</div>
+                                            <div style="font-size: 13px; color: #374151;">{{ $history->comments }}</div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 2rem; text-align: center;">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+                        <p style="color: #6b7280; font-size: 1rem; margin: 0;">No approval history available.</p>
+                    </div>
+                @endif
+            </div>
+            @endif
+
             <!-- External Links -->
             @if($publication->published_link || $publication->proceedings_link)
             <div style="padding-top: 2rem; border-top: 2px solid #e5e7eb;">

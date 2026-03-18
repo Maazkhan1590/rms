@@ -125,8 +125,15 @@ class SupervisionExamController extends Controller
 
     public function show($id)
     {
-        $supervision = SupervisionExam::with(['submitter', 'user', 'approver', 'evidenceFiles'])
-            ->findOrFail($id);
+        $supervision = SupervisionExam::with([
+            'submitter',
+            'user',
+            'approver',
+            'evidenceFiles',
+            'workflow.history.performer',
+            'workflow.submitter',
+            'workflow.assignee',
+        ])->findOrFail($id);
 
         return view('supervision-exams.show', compact('supervision'));
     }
