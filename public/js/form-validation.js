@@ -125,23 +125,80 @@
             // Build validation rules
             const { rules, messages } = buildValidationRules($form);
 
+            function getSubmitButtons() {
+                return $form.find('button[type="submit"], input[type="submit"]');
+            }
+
+            function setSubmitDisabled(disabled) {
+                const $btns = getSubmitButtons();
+                $btns.prop('disabled', !!disabled);
+                $btns.attr('aria-disabled', disabled ? 'true' : 'false');
+                if (disabled) {
+                    $btns.addClass('is-disabled');
+                } else {
+                    $btns.removeClass('is-disabled');
+                }
+            }
+
+            function updateSubmitState(validator) {
+                if (!validator) return;
+                // checkForm() updates internal invalid list without forcing a full submit
+                validator.checkForm();
+                setSubmitDisabled(validator.numberOfInvalids() > 0);
+            }
+
             // Initialize validation
-            $form.validate({
+            const validator = $form.validate({
                 rules: rules,
                 messages: messages,
                 ignore: ':hidden:not([name*="[]"])', // Ignore hidden fields except array inputs
                 errorClass: 'is-invalid',
                 validClass: 'is-valid',
                 errorElement: 'div',
+                onkeyup: function(element) {
+                    // Validate live on typing
+                    this.element(element);
+                    updateSubmitState(this);
+                },
+                onfocusout: function(element) {
+                    this.element(element);
+                    updateSubmitState(this);
+                },
+                onclick: function(element) {
+                    // For selects/checkboxes
+                    this.element(element);
+                    updateSubmitState(this);
+                },
                 errorPlacement: function(error, element) {
-                    // Prefer existing per-field error container inside the form-group
+                    const fieldName = element.attr('name') || element.attr('id') || '';
                     const $group = element.closest('.form-group');
-                    const $inlineError = $group.find('.form-error').first();
 
-                    if ($inlineError.length) {
-                        $inlineError.text(error.text()).show();
-                        return;
+                    // Create/find a per-field inline error container close to the input
+                    let $inlineError = null;
+                    if (fieldName) {
+                        $inlineError = $group.find('.form-error[data-for="' + CSS.escape(fieldName) + '"]').first();
+                    } else {
+                        $inlineError = $group.find('.form-error').first();
                     }
+
+                    if (!$inlineError || !$inlineError.length) {
+                        $inlineError = $('<div class="form-error show" data-for=""></div>');
+                        if (fieldName) $inlineError.attr('data-for', fieldName);
+
+                        // Place under the field:
+                        // - For evidence URL rows (flex), insert after the whole row so it doesn't appear on the right.
+                        // - For input-groups, insert after the group wrapper.
+                        const $evidenceRow = element.closest('.evidence-url-item');
+                        if ($evidenceRow.length) {
+                            $inlineError.insertAfter($evidenceRow);
+                        } else {
+                            const $wrapper = element.parent('.input-group').length ? element.parent('.input-group') : element;
+                            $inlineError.insertAfter($wrapper);
+                        }
+                    }
+
+                    $inlineError.text(error.text()).addClass('show');
+                    return;
 
                     // Fallback to standard invalid-feedback placement
                     if ($group.length) {
@@ -155,32 +212,43 @@
                 success: function(label, element) {
                     // Clear inline error container if present
                     const $group = $(element).closest('.form-group');
-                    const $inlineError = $group.find('.form-error').first();
-                    if ($inlineError.length) {
-                        $inlineError.text('').hide();
+                    const fieldName = $(element).attr('name') || $(element).attr('id') || '';
+                    let $inlineError = null;
+                    if (fieldName) {
+                        $inlineError = $group.find('.form-error[data-for="' + CSS.escape(fieldName) + '"]').first();
+                    } else {
+                        $inlineError = $group.find('.form-error').first();
+                    }
+                    if ($inlineError && $inlineError.length) {
+                        $inlineError.text('').removeClass('show');
                     }
 
                     // Remove generated error label (fallback mode)
                     label.remove();
                     // Add valid class to input
                     $(element).removeClass('is-invalid').addClass('is-valid');
+                    updateSubmitState($form.validate());
                 },
                 highlight: function(element, errorClass, validClass) {
                     $(element).addClass('is-invalid').removeClass('is-valid');
+                    updateSubmitState($form.validate());
                 },
                 unhighlight: function(element, errorClass, validClass) {
                     $(element).removeClass('is-invalid').addClass('is-valid');
+                    updateSubmitState($form.validate());
                 },
                 submitHandler: function(form) {
                     // Remove any existing error messages
                     $form.find('.is-invalid').removeClass('is-invalid');
                     $form.find('.invalid-feedback').remove();
-                    $form.find('.form-error').text('').hide();
+                    $form.find('.form-error').text('').removeClass('show');
+                    setSubmitDisabled(true);
                     
                     // Submit the form
                     form.submit();
                 },
                 invalidHandler: function(event, validator) {
+                    updateSubmitState(validator);
                     // Scroll to first error
                     const firstError = $form.find('.is-invalid').first();
                     if (firstError.length) {
@@ -190,6 +258,15 @@
                         firstError.focus();
                     }
                 }
+            });
+
+            // Initial state: keep submit disabled until valid
+            setSubmitDisabled(true);
+            updateSubmitState(validator);
+
+            // Also update state on dynamic changes (e.g. added URL inputs)
+            $form.on('input change', 'input, select, textarea', function() {
+                updateSubmitState($form.validate());
             });
         });
     }
@@ -253,6 +330,16 @@
     if (!$('#form-validation-styles').length) {
         $('<style id="form-validation-styles">')
             .text(`
+                .auth-form .is-disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed !important;
+                }
+                .auth-form .form-error.show {
+                    display: block !important;
+                    color: #ef4444 !important;
+                    font-size: 0.875rem;
+                    margin-top: 0.5rem;
+                }
                 .form-control.is-invalid {
                     border-color: #dc3545;
                     padding-right: calc(1.5em + 0.75rem);
