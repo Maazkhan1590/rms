@@ -557,8 +557,8 @@
         <tbody>
         @foreach($partnerships as $partnership)
         <tr>
-            <td class="title-col">{{ $partnership->partner_name ?? 'N/A' }}</td>
-            <td>{{ $partnership->mou_type ?? 'N/A' }}</td>
+            <td class="title-col">{{ $partnership->partner_organization ?? 'N/A' }}</td>
+            <td>{{ $partnership->type ?? 'N/A' }}</td>
             <td style="text-align: center;">{{ $partnership->year ?? 'N/A' }}</td>
             <td style="text-align: center;">
                 <span class="status-badge status-{{ $partnership->status === 'approved' ? 'approved' : ($partnership->status === 'rejected' ? 'rejected' : 'submitted') }}">
@@ -586,8 +586,8 @@
         <tbody>
         @foreach($commercializations as $commercialization)
         <tr>
-            <td class="title-col">{{ $commercialization->title ?? 'N/A' }}</td>
-            <td>{{ $commercialization->commercialization_type ?? 'N/A' }}</td>
+            <td class="title-col">{{ $commercialization->product_service_name ?? 'N/A' }}</td>
+            <td>{{ $commercialization->type ?? 'N/A' }}</td>
             <td style="text-align: center;">{{ $commercialization->year ?? 'N/A' }}</td>
             <td style="text-align: center;">
                 <span class="status-badge status-{{ $commercialization->status === 'approved' ? 'approved' : ($commercialization->status === 'rejected' ? 'rejected' : 'submitted') }}">
@@ -616,7 +616,7 @@
         <tbody>
         @foreach($consultancies as $consultancy)
         <tr>
-            <td class="title-col">{{ $consultancy->title ?? 'N/A' }}</td>
+            <td class="title-col">{{ $consultancy->project_consultancy_name ?? 'N/A' }}</td>
             <td>{{ $consultancy->income_type ?? 'N/A' }}</td>
             <td style="text-align: center;">{{ $consultancy->year ?? 'N/A' }}</td>
             <td style="text-align: right;">{{ $consultancy->amount_omr ? number_format($consultancy->amount_omr, 2) : 'N/A' }}</td>
@@ -646,8 +646,8 @@
         <tbody>
         @foreach($awards as $award)
         <tr>
-            <td class="title-col">{{ $award->title ?? 'N/A' }}</td>
-            <td>{{ $award->organization ?? 'N/A' }}</td>
+            <td class="title-col">{{ $award->award_name ?? 'N/A' }}</td>
+            <td>{{ $award->awarding_organization ?? 'N/A' }}</td>
             <td style="text-align: center;">{{ $award->year ?? 'N/A' }}</td>
             <td style="text-align: center;">
                 <span class="status-badge status-{{ $award->status === 'approved' ? 'approved' : ($award->status === 'rejected' ? 'rejected' : 'submitted') }}">
