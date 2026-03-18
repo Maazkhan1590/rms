@@ -49,46 +49,7 @@
     </div>
 
     <div class="card-body">
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <label>Status:</label>
-                <select id="status-filter" class="form-control form-control-sm">
-                    <option value="">All Statuses</option>
-                    @foreach($statuses as $status)
-                        <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label>Role:</label>
-                <select id="role-filter" class="form-control form-control-sm">
-                    <option value="">All Roles</option>
-                    @foreach($roles as $role)
-                        <option value="{{ $role }}">{{ $role }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label>Degree:</label>
-                <select id="degree-filter" class="form-control form-control-sm">
-                    <option value="">All Degrees</option>
-                    @foreach($degrees as $degree)
-                        <option value="{{ $degree }}">{{ $degree }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label>User:</label>
-                <select id="user-filter" class="form-control form-control-sm">
-                    <option value="">All Users</option>
-                    @foreach($users as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-        <div class="table-responsive">
+<div class="table-responsive">
             <table id="supervision-exams-table" class="table table-bordered table-striped table-hover" style="width:100%;">
                 <thead>
                     <tr>
@@ -118,13 +79,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: '{{ route("admin.supervision-exams.index") }}',
-            data: function(d) {
-                d.status = $('#status-filter').val();
-                d.role = $('#role-filter').val();
-                d.degree = $('#degree-filter').val();
-                d.user_id = $('#user-filter').val();
-            }
+            url: '{{ route("admin.supervision-exams.index") }}'
         },
         columns: [
             { data: 'id', name: 'id' },
@@ -143,10 +98,6 @@ $(document).ready(function() {
         language: {
             processing: '<i class="fas fa-spinner fa-spin"></i> Loading supervision/exam records...'
         }
-    });
-
-    $('#status-filter, #role-filter, #degree-filter, #user-filter').on('change', function() {
-        table.draw();
     });
 });
 </script>

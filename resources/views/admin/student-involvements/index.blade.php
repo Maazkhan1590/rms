@@ -49,37 +49,7 @@
     </div>
 
     <div class="card-body">
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label>Status:</label>
-                <select id="status-filter" class="form-control form-control-sm">
-                    <option value="">All Statuses</option>
-                    @foreach($statuses as $status)
-                        <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label>Category:</label>
-                <select id="category-filter" class="form-control form-control-sm">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category }}">{{ ucfirst($category) }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label>User:</label>
-                <select id="user-filter" class="form-control form-control-sm">
-                    <option value="">All Users</option>
-                    @foreach($users as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-        <div class="table-responsive">
+<div class="table-responsive">
             <table id="student-involvements-table" class="table table-bordered table-striped table-hover" style="width:100%;">
                 <thead>
                     <tr>
@@ -108,12 +78,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: '{{ route("admin.student-involvements.index") }}',
-            data: function(d) {
-                d.status = $('#status-filter').val();
-                d.category = $('#category-filter').val();
-                d.user_id = $('#user-filter').val();
-            }
+            url: '{{ route("admin.student-involvements.index") }}'
         },
         columns: [
             { data: 'id', name: 'id' },
@@ -131,10 +96,6 @@ $(document).ready(function() {
         language: {
             processing: '<i class="fas fa-spinner fa-spin"></i> Loading student involvements...'
         }
-    });
-
-    $('#status-filter, #category-filter, #user-filter').on('change', function() {
-        table.draw();
     });
 });
 </script>

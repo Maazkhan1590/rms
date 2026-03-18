@@ -128,14 +128,15 @@ class ConferenceActivityController extends Controller
             $points = $item->points_allocated ? number_format($item->points_allocated, 2) : '0.00';
             $year = $item->year ?? ($item->date ? $item->date->format('Y') : 'N/A');
 
-            $actions = '<div class="btn-group" role="group">';
-            $actions .= '<a href="' . route('admin.conference-activities.show', $item->id) . '" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
+            $actions = '<div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">';
+            $actions .= '<a class="btn btn-sm btn-outline-primary" href="' . route('admin.conference-activities.show', $item->id) . '" title="View" aria-label="View"><span class="material-icons-outlined">visibility</span></a>';
             
             if (in_array($item->status, ['pending_coordinator', 'pending_dean']) && $workflow && $workflow->assigned_to == auth()->id()) {
-                $actions .= '<form action="' . route('admin.conference-activities.approve', $item->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Are you sure you want to approve this conference activity?\');">';
+                $actions .= '<form action="' . route('admin.conference-activities.approve', $item->id) . '" method="POST" style="display: inline;" class="approve-submission-form">';
                 $actions .= csrf_field();
-                $actions .= '<button type="submit" class="btn btn-sm btn-success" title="Approve"><i class="fa fa-check"></i></button>';
+                $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve"><span class="material-icons-outlined">check_circle</span></button>';
                 $actions .= '</form>';
+                $actions .= '<button type="button" class="btn btn-sm btn-outline-danger btn-reject-submission" title="Reject" aria-label="Reject" data-reject-url="' . route('admin.conference-activities.reject', $item->id) . '"><span class="material-icons-outlined">cancel</span></button>';
             }
             
             $actions .= '</div>';
@@ -166,7 +167,20 @@ class ConferenceActivityController extends Controller
     {
         abort_if(Gate::denies('publication_read'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $activity->load(['submitter', 'user', 'approver', 'evidenceFiles', 'workflow']);
+        $activity->load(['submitter', 'user', 'approver']);
+
+        $workflow = ApprovalWorkflow::where('submission_type', 'conference_activity')
+            ->where('submission_id', $activity->id)
+            ->with(['submitter', 'assignee', 'history.performer'])
+            ->first();
+
+        $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'conference_activity')
+            ->where('submission_id', $activity->id)
+            ->with('uploader')
+            ->get();
+
+        $activity->setRelation('workflow', $workflow);
+        $activity->setRelation('evidenceFiles', $evidenceFiles);
 
         return view('admin.conference-activities.show', compact('activity'));
     }

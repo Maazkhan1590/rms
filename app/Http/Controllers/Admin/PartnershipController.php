@@ -151,14 +151,15 @@ class PartnershipController extends Controller
             $points = $partnership->points_allocated ? number_format($partnership->points_allocated, 2) : '0.00';
             $year = $partnership->year ?? ($partnership->date_signed ? $partnership->date_signed->format('Y') : 'N/A');
 
-            $actions = '<div class="btn-group" role="group">';
-            $actions .= '<a href="' . route('admin.partnerships.show', $partnership->id) . '" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
+            $actions = '<div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">';
+            $actions .= '<a class="btn btn-sm btn-outline-primary" href="' . route('admin.partnerships.show', $partnership->id) . '" title="View" aria-label="View"><span class="material-icons-outlined">visibility</span></a>';
             
             if (in_array($partnership->status, ['pending_coordinator', 'pending_dean']) && $workflow && $workflow->assigned_to == auth()->id()) {
-                $actions .= '<form action="' . route('admin.partnerships.approve', $partnership->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Are you sure you want to approve this partnership/MOU?\');">';
+                $actions .= '<form action="' . route('admin.partnerships.approve', $partnership->id) . '" method="POST" style="display: inline;" class="approve-submission-form">';
                 $actions .= csrf_field();
-                $actions .= '<button type="submit" class="btn btn-sm btn-success" title="Approve"><i class="fa fa-check"></i></button>';
+                $actions .= '<button type="submit" class="btn btn-sm btn-outline-success" title="Approve" aria-label="Approve"><span class="material-icons-outlined">check_circle</span></button>';
                 $actions .= '</form>';
+                $actions .= '<button type="button" class="btn btn-sm btn-outline-danger btn-reject-submission" title="Reject" aria-label="Reject" data-reject-url="' . route('admin.partnerships.reject', $partnership->id) . '"><span class="material-icons-outlined">cancel</span></button>';
             }
             
             $actions .= '</div>';
@@ -192,7 +193,20 @@ class PartnershipController extends Controller
     {
         abort_if(Gate::denies('publication_read'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $partnership->load(['submitter', 'leadStaff', 'approver', 'evidenceFiles', 'workflow']);
+        $partnership->load(['submitter', 'leadStaff', 'approver']);
+
+        $workflow = ApprovalWorkflow::where('submission_type', 'mou')
+            ->where('submission_id', $partnership->id)
+            ->with(['submitter', 'assignee', 'history.performer'])
+            ->first();
+
+        $evidenceFiles = \App\Models\EvidenceFile::where('submission_type', 'mou')
+            ->where('submission_id', $partnership->id)
+            ->with('uploader')
+            ->get();
+
+        $partnership->setRelation('workflow', $workflow);
+        $partnership->setRelation('evidenceFiles', $evidenceFiles);
 
         return view('admin.partnerships.show', compact('partnership'));
     }

@@ -52,46 +52,6 @@
     </div>
 
     <div class="card-body">
-        <!-- Filters -->
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <label>Status:</label>
-                <select id="status-filter" class="form-control form-control-sm">
-                    <option value="">All Statuses</option>
-                    @foreach($statuses as $status)
-                        <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label>Type:</label>
-                <select id="type-filter" class="form-control form-control-sm">
-                    <option value="">All Types</option>
-                    @foreach($types as $type)
-                        <option value="{{ $type }}">{{ ucfirst($type) }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label>Year:</label>
-                <select id="year-filter" class="form-control form-control-sm">
-                    <option value="">All Years</option>
-                    @foreach($years as $year)
-                        <option value="{{ $year }}">{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label>User:</label>
-                <select id="user-filter" class="form-control form-control-sm">
-                    <option value="">All Users</option>
-                    @foreach($users as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
         <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
             <table id="commercializations-table" class="table table-bordered table-striped table-hover" style="width:100%;">
                 <thead>
@@ -123,13 +83,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: '{{ route("admin.commercializations.index") }}',
-            data: function(d) {
-                d.status = $('#status-filter').val();
-                d.type = $('#type-filter').val();
-                d.year = $('#year-filter').val();
-                d.user_id = $('#user-filter').val();
-            }
+            url: '{{ route("admin.commercializations.index") }}'
         },
         columns: [
             { data: 'id', name: 'id' },
@@ -148,10 +102,6 @@ $(document).ready(function() {
         language: {
             processing: '<i class="fas fa-spinner fa-spin"></i> Loading commercializations...'
         }
-    });
-
-    $('#status-filter, #type-filter, #year-filter, #user-filter').on('change', function() {
-        table.draw();
     });
 });
 </script>
