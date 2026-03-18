@@ -32,6 +32,22 @@
         line-height: 1.3;
         margin-bottom: 1rem;
     }
+
+    .publication-badges {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+    }
+
+    .badge-pill {
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
     .section-title {
         font-size: 1.5rem;
         font-weight: 600;
@@ -103,6 +119,25 @@
                     <strong>Submitted by:</strong> {{ $appointment->submitter->name }}
                 </div>
                 @endif
+            
+                @php
+                    $displayStatus = $appointment->status;
+                    $statusColors = [
+                        'approved' => ['bg' => '#22c55e', 'text' => '#fff'],
+                        'pending' => ['bg' => '#eab308', 'text' => '#fff'],
+                        'pending_coordinator' => ['bg' => '#6b7280', 'text' => '#fff'],
+                        'pending_dean' => ['bg' => '#6b7280', 'text' => '#fff'],
+                        'submitted' => ['bg' => '#3b82f6', 'text' => '#fff'],
+                        'rejected' => ['bg' => '#ef4444', 'text' => '#fff'],
+                        'draft' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                    ];
+                    $color = $statusColors[$displayStatus ?? 'draft'] ?? ['bg' => '#6b7280', 'text' => '#fff'];
+                @endphp
+                <div class="publication-badges">
+                    <span class="badge-pill" style="background: {{ $color['bg'] }}; color: {{ $color['text'] }};">
+                        {{ strtoupper(str_replace('_', ' ', $displayStatus ?? 'draft')) }}
+                    </span>
+                </div>
             </div>
 
             <div style="margin-bottom: 2.5rem;">
