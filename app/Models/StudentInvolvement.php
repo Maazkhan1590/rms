@@ -64,13 +64,13 @@ class StudentInvolvement extends Model
 
     public function evidenceFiles()
     {
-        return $this->morphMany(EvidenceFile::class, 'submission', 'submission_type', 'submission_id')
+        return $this->hasMany(EvidenceFile::class, 'submission_id', 'id')
             ->where('submission_type', 'student_involvement');
     }
 
     public function workflow()
     {
-        return $this->morphOne(ApprovalWorkflow::class, 'submission', 'submission_type', 'submission_id')
+        return $this->hasOne(ApprovalWorkflow::class, 'submission_id', 'id')
             ->where('submission_type', 'student_involvement');
     }
 
