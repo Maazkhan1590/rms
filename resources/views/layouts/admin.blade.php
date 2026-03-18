@@ -1160,12 +1160,8 @@
                         pagingType: 'full_numbers',
                         pageLength: 10,
                         lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-                        dom: "<'dt-toolbar'<'dt-left'lB><'dt-right'f>>t<'dt-footer'ip>",
-                        buttons: [
-                            { extend: 'copy', text: 'Copy' },
-                            { extend: 'csv', text: 'CSV' },
-                            { extend: 'print', text: 'Print' }
-                        ],
+                        dom: "<'dt-toolbar'<'dt-left'l><'dt-right'f>>t<'dt-footer'ip>",
+                        buttons: [],
                         select: {
                             style: 'multi+shift',
                             selector: 'td:first-child'
