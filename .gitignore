@@ -32,3 +32,4 @@ auth.json
 /storage
 /template/.idea
 /.idea
+/%APPDATA%
