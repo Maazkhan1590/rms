@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RMS Comprehensive Status and URC2 Report - April 2026</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      --brand: #12343b;
+      --brand-2: #2d5d62;
+      --accent: #0f766e;
+      --ok-bg: #dcfce7;
+      --ok-fg: #166534;
+      --warn-bg: #fef3c7;
+      --warn-fg: #92400e;
+      --risk-bg: #fee2e2;
+      --risk-fg: #991b1b;
+      --page-bg: #f5f7fa;
+      --card: #ffffff;
+      --line: #dbe1e8;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --shadow: 0 3px 12px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--page-bg);
+      color: var(--text);
+      line-height: 1.55;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1260px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 28px 34px 40px;
+    }
+
+    header {
+      border-bottom: 3px solid var(--brand-2);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: var(--brand);
+      font-size: 29px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .meta-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .meta-item {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 11px;
+      font-size: 13px;
+    }
+
+    .meta-item strong {
+      color: var(--brand-2);
+    }
+
+    section {
+      margin-top: 26px;
+    }
+
+    h2 {
+      color: var(--brand);
+      font-size: 22px;
+      border-left: 4px solid var(--brand-2);
+      padding-left: 10px;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      color: #0b4f4a;
+      font-size: 17px;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin: 7px 0;
+      color: #374151;
+    }
+
+    ul {
+      margin: 7px 0 7px 22px;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    .status {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+
+    .done {
+      background: var(--ok-bg);
+      color: var(--ok-fg);
+    }
+
+    .progress {
+      background: var(--warn-bg);
+      color: var(--warn-fg);
+    }
+
+    .risk {
+      background: var(--risk-bg);
+      color: var(--risk-fg);
+    }
+
+    .summary-box {
+      background: #ecfeff;
+      border-left: 4px solid var(--accent);
+      border-radius: 4px;
+      padding: 12px 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #eef6f6;
+      color: #0f3d3e;
+      font-weight: 700;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafcff;
+    }
+
+    .note {
+      margin-top: 6px;
+      padding: 9px 10px;
+      border-left: 4px solid #eab308;
+      background: #fffbeb;
+      color: #6b4f00;
+      font-size: 13px;
+    }
+
+    .print-btn {
+      margin-top: 12px;
+      background: var(--brand-2);
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+
+      .container {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 10px;
+      }
+
+      .print-btn {
+        display: none !important;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      th,
+      td {
+        font-size: 11px;
+        padding: 5px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>RMS Comprehensive Module, Reporting, and URC2 Requirements Report</h1>
+      <div class="subtitle">Compiled from the March 2026 RMS module status update and URC2 (FCIT) requirements</div>
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Project:</strong> Research Management System (RMS)</div>
+        <div class="meta-item"><strong>Prepared For:</strong> FCIT URC and AB monitoring</div>
+        <div class="meta-item"><strong>Version Date:</strong> April 6, 2026</div>
+        <div class="meta-item"><strong>Reference Sources:</strong> RMS status report (Mar 27, 2026) + URC2 (FCIT) updated requirements</div>
+      </div>
+      <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    </header>
+
+    <section>
+      <h2>1. Executive Summary</h2>
+      <div class="summary-box">
+        <p>Most core RMS research modules are now completed and operational. The current effort is focused on enhancement streams for administrative workflows, profile enrichment, implementation visibility, and advanced reporting outputs.</p>
+        <p>This document adds a full reporting-workflow explanation and consolidates URC2 requirements into KPI, quarterly monitoring, and annual target tracking tables so the same report can be used for project and governance review.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. RMS Module Status (Detailed)</h2>
+      <h3>2.1 Completed Modules</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 28%;">Module</th>
+            <th style="width: 15%;">Status</th>
+            <th style="width: 25%;">Operational Scope</th>
+            <th>Implementation Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Publications</td><td><span class="status done">Completed</span></td><td>Entry, validation, tracking</td><td>Core publication records are in production use.</td></tr>
+          <tr><td>Grants</td><td><span class="status done">Completed</span></td><td>Grant submissions and tracking</td><td>Supports core grant lifecycle management.</td></tr>
+          <tr><td>RTN Submissions</td><td><span class="status done">Completed</span></td><td>RTN data submission flow</td><td>Submission and storage are operational.</td></tr>
+          <tr><td>Bonus Recognitions</td><td><span class="status done">Completed</span></td><td>Recognition entry and listing</td><td>Core recognition flow operational.</td></tr>
+          <tr><td>Evidence File Management</td><td><span class="status done">Completed</span></td><td>Upload, association, validation</td><td>Evidence attachment and validation enabled.</td></tr>
+          <tr><td>Consultancies and KT</td><td><span class="status done">Completed</span></td><td>Consultancy and transfer capture</td><td>Completed and marked in latest update.</td></tr>
+          <tr><td>Commercializations</td><td><span class="status done">Completed</span></td><td>Commercialization records</td><td>Base commercialization module is available.</td></tr>
+          <tr><td>Awards</td><td><span class="status done">Completed</span></td><td>Award capture and summaries</td><td>Award records module completed.</td></tr>
+          <tr><td>Conference Activities</td><td><span class="status done">Completed</span></td><td>Conference participation records</td><td>Conference module completed.</td></tr>
+          <tr><td>Supervision and Exams</td><td><span class="status done">Completed</span></td><td>Supervision and exam records</td><td>Operational and included in current release.</td></tr>
+          <tr><td>Editorial Appointments</td><td><span class="status done">Completed</span></td><td>Editorial role tracking</td><td>Completed and available in records.</td></tr>
+          <tr><td>Student Involvements</td><td><span class="status done">Completed</span></td><td>Student research participation</td><td>Module available for participation records.</td></tr>
+          <tr><td>Internal Fundings</td><td><span class="status done">Completed</span></td><td>Internal funding records</td><td>Core functionality available.</td></tr>
+          <tr><td>Block Fundings</td><td><span class="status done">Completed</span></td><td>Block funding tracking</td><td>Base tracking and values available.</td></tr>
+          <tr><td>SDG Contributions</td><td><span class="status done">Completed</span></td><td>SDG mapping records</td><td>Contribution data capture available.</td></tr>
+          <tr><td>Partnerships and MOUs</td><td><span class="status done">Completed</span></td><td>Collaboration records</td><td>Partnership records maintained.</td></tr>
+          <tr><td>Adjunct Professors</td><td><span class="status done">Completed</span></td><td>Adjunct profile and contributions</td><td>Completed and included in reporting scope.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>2.2 In-Progress Modules and Enhancements</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">Module / Enhancement</th>
+            <th style="width: 14%;">Status</th>
+            <th style="width: 31%;">Current Working State</th>
+            <th>Remaining Work</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Admin Portal</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Administrative controls and usability refinements are active.</td>
+            <td>Finalize role views, approval shortcuts, and operational dashboards.</td>
+          </tr>
+          <tr>
+            <td>Workflow System</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Workflow updates and better implementation visibility are underway.</td>
+            <td>Complete rule visualization, active-stage clarity, and execution trace views.</td>
+          </tr>
+          <tr>
+            <td>Research Fellows</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Core module near completion with targeted refinements.</td>
+            <td>Close outstanding UX and validation refinements.</td>
+          </tr>
+          <tr>
+            <td>Reporting System</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Enhanced reports under implementation.</td>
+            <td>Complete final templates and governance-aligned exports.</td>
+          </tr>
+          <tr>
+            <td>Faculty Profile</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Profile enhancement work remains active.</td>
+            <td>Improve profile completeness, visibility, and quality controls.</td>
+          </tr>
+          <tr>
+            <td>Enhanced Faculty CV with Maximum Information</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Comprehensive CV expansion is ongoing.</td>
+            <td>Finalize complete data grouping and richer printable output.</td>
+          </tr>
+          <tr>
+            <td>Maximum Information in Faculty Profile</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Expanded profile display is under development.</td>
+            <td>Ensure all linked entities are visible with clear categories.</td>
+          </tr>
+          <tr>
+            <td>Active Policy View for Clarity (Scoring Policy)</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Active policy visibility improvements are underway.</td>
+            <td>Finalize active-version indicators and policy context details.</td>
+          </tr>
+          <tr>
+            <td>Workflow Implementation View Page</td>
+            <td><span class="status progress">In Progress</span></td>
+            <td>Implementation visualization page is under development.</td>
+            <td>Add complete state diagram and stage-level audit display.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>3. Reporting System Working (How Reports Operate)</h2>
+      <h3>3.1 Report Data Flow</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 20%;">Stage</th>
+            <th style="width: 33%;">What Happens</th>
+            <th>Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Data Collection</td>
+            <td>Module records are captured from publications, grants, RTN, income, students, editorial, adjunct, and related entities.</td>
+            <td>Structured source records with user ownership and timestamps.</td>
+          </tr>
+          <tr>
+            <td>Validation</td>
+            <td>Inputs are checked for mandatory fields, type validity, and required evidence attachment consistency.</td>
+            <td>Reliable data prepared for summaries and KPI calculations.</td>
+          </tr>
+          <tr>
+            <td>Aggregation</td>
+            <td>Reporting logic groups data by faculty, period, category, and KPI dimensions (target, achieved, ratio, amount).</td>
+            <td>Computed metrics for institutional and committee reports.</td>
+          </tr>
+          <tr>
+            <td>Presentation</td>
+            <td>Data is rendered in summary cards and detailed tables for project tracking, committee review, and AB reporting.</td>
+            <td>Human-readable dashboard views and printable report pages.</td>
+          </tr>
+          <tr>
+            <td>Export / Review</td>
+            <td>Reports are prepared for print/PDF and management review workflows with clear status labels and comments.</td>
+            <td>Governance-ready outputs for URC and AB meetings.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 Report Types Supported / Targeted</h3>
+      <ul>
+        <li>Module completion and enhancement status reports.</li>
+        <li>KPI achievement reports (target versus achieved).</li>
+        <li>Quarterly research progress monitoring reports.</li>
+        <li>Annual faculty research plan achievement reports.</li>
+        <li>Faculty profile and enriched CV information reports.</li>
+      </ul>
+
+      <h3>3.3 Current Reporting Focus</h3>
+      <ul>
+        <li>Improve clarity of active policy in scoring-related reporting pages.</li>
+        <li>Improve workflow implementation visibility for operational follow-up.</li>
+        <li>Enhance profile and CV completeness to maximize academic reporting quality.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>4. URC2 (FCIT) Requirements Integrated Into RMS Report</h2>
+      <h3>4.1 Committee and Objective Context</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 30%;">Field</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Committee</td><td>URC</td></tr>
+          <tr><td>Meeting Date</td><td>February 2026</td></tr>
+          <tr><td>Business Type</td><td>Part A (Unreserved)</td></tr>
+          <tr><td>Primary Objective</td><td>Assess FCIT research publication progress and target alignment.</td></tr>
+          <tr><td>Supporting Objectives</td><td>Commercialization review, income analysis, participation monitoring, research investment strategy, and interdisciplinary collaboration improvement.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>4.2 Table 1 - Achievement of Institutional Research Corporate Targets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 33%;">KPI</th>
+            <th style="width: 12%;">Target</th>
+            <th style="width: 12%;">Achieved</th>
+            <th>Comments</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Number of Indexed Publications</td>
+            <td>60</td>
+            <td>41</td>
+            <td>Includes 41 Scopus-indexed journal papers, 4 non-indexed journal papers, and 3 conference papers. Includes student, adjunct, and research fellow contributions.</td>
+          </tr>
+          <tr>
+            <td>Number of Commercialized Products and Services</td>
+            <td>2,500</td>
+            <td>0</td>
+            <td>Commercialization planning initiated for final-year and research projects.</td>
+          </tr>
+          <tr>
+            <td>Research and Knowledge Transfer Income (OMR)</td>
+            <td>120,000</td>
+            <td>126,245</td>
+            <td>Includes ongoing funded projects, accepted EJAAD project, and approved RG/GRG/URG grants.</td>
+          </tr>
+          <tr>
+            <td>Investment in Research and Knowledge Transfer (AB4)</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Data completion is still required for full investment reporting coverage.</td>
+          </tr>
+          <tr>
+            <td>Ratio of Academic Staff Generating Research Output</td>
+            <td>39 staff baseline</td>
+            <td>64%</td>
+            <td>22 existing and 3 newly joined staff produced at least one Scopus-indexed publication.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>4.3 Table 2 - Quarterly Monitoring of Research Progress</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 40%;">Research and Innovation Highlight</th>
+            <th style="width: 18%;">Last Report</th>
+            <th>Current Report (Accumulated)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Adjunct professors count</td><td>11</td><td>9</td></tr>
+          <tr><td>2</td><td>Scopus articles</td><td>36</td><td>5</td></tr>
+          <tr><td>3</td><td>Faculty participating in research output</td><td>22</td><td>25 (64% after newly joined faculty inclusion)</td></tr>
+          <tr><td>4</td><td>Total external income (OMR)</td><td>20,500</td><td>78,850 ongoing and 47,395 recently accepted (2 RG, 3 GRG, 9 URG)</td></tr>
+          <tr><td>5</td><td>Collaborative partnerships with industry and universities</td><td>-</td><td>-</td></tr>
+          <tr><td>6</td><td>Non-indexed outputs and conference highlights</td><td>-</td><td>4 journal papers, 2 conference papers, keynote and chair appointments noted</td></tr>
+          <tr><td>7</td><td>Publications with students</td><td>-</td><td>2</td></tr>
+          <tr><td>8</td><td>Publications by adjunct faculty</td><td>19</td><td>Adjunct faculty publications highlighted in latest update</td></tr>
+          <tr><td>9</td><td>Students involved in research</td><td>143 UG + 4 PhD + 10 Master</td><td>100% engagement statement in source report</td></tr>
+          <tr><td>10</td><td>Editorial appointments</td><td>-</td><td>2 faculty on editorial boards of highly ranked journals</td></tr>
+          <tr><td>11</td><td>Incubation and technology transfer achievements</td><td>-</td><td>-</td></tr>
+          <tr><td>12</td><td>Projects or publications contributing to SDGs</td><td>45</td><td>N/A</td></tr>
+        </tbody>
+      </table>
+
+      <h3>4.4 Table 3 - Achievement of Targets (Annual)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 35%;">Faculty Research Plan Item</th>
+            <th style="width: 12%;">Measure</th>
+            <th style="width: 16%;">Target 2025-2026</th>
+            <th>Achieved / Current State</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Total research and knowledge transfer income</td><td>OMR</td><td>60,000</td><td>In process</td></tr>
+          <tr><td>2</td><td>External grant applications</td><td>No.</td><td>9</td><td>2 submitted</td></tr>
+          <tr><td>3</td><td>Internal funding applications</td><td>No.</td><td>3</td><td>1 submitted</td></tr>
+          <tr><td>4</td><td>Consultancies granted (EJAAD, etc.)</td><td>No.</td><td>1</td><td>Ongoing 1</td></tr>
+          <tr><td>5</td><td>Total block funding income</td><td>OMR</td><td>120,000</td><td>126,245</td></tr>
+          <tr><td>6</td><td>Ongoing internal grant projects</td><td>No.</td><td>2</td><td>1</td></tr>
+          <tr><td>7</td><td>Block funding applications (RG/GRG/URG)</td><td>No.</td><td>3 each</td><td>RG: 1 submitted, GRG: -, URG: 2 submitted</td></tr>
+          <tr><td>8</td><td>Commercialized products and services</td><td>No.</td><td>1</td><td>Planning and progression ongoing</td></tr>
+          <tr><td>9</td><td>Value of commercialized products and services</td><td>OMR</td><td>2,500</td><td>In progress</td></tr>
+          <tr><td>10</td><td>Indexed journal publications (Scopus/WoS)</td><td>No.</td><td>60</td><td>41</td></tr>
+          <tr><td>11</td><td>Students involved in research</td><td>No.</td><td>-</td><td>143 UG + 10 Master + 4 PhD candidates</td></tr>
+          <tr><td>12</td><td>Joint publications with students</td><td>No.</td><td>-</td><td>2</td></tr>
+          <tr><td>13</td><td>Other publications (books, chapters, conferences, reviews)</td><td>No.</td><td>-</td><td>3</td></tr>
+          <tr><td>14</td><td>Publications by adjunct professors</td><td>No.</td><td>-</td><td>24</td></tr>
+          <tr><td>15</td><td>Publications by research fellows</td><td>No.</td><td>3</td><td>3</td></tr>
+          <tr><td>16</td><td>R and I awards and recognitions</td><td>No.</td><td>Faculty self-imposed</td><td>2 faculty in top 2% scientists</td></tr>
+        </tbody>
+      </table>
+
+      <h3>4.5 Joint Academic-Student Publications (Sample from URC2 Table 4)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 18%;">Student / Author</th>
+            <th style="width: 34%;">Title</th>
+            <th style="width: 20%;">Journal</th>
+            <th style="width: 10%;">Volume/Issue</th>
+            <th>DOI / URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reem Al Maawali</td>
+            <td>Improving the learning skills of autistic students using social robotics technologies</td>
+            <td>Journal of Infrastructure, Policy and Development</td>
+            <td>8/16</td>
+            <td>systems.enpress-publisher.com/index.php/jipd/article/viewFile/7974/5043</td>
+          </tr>
+          <tr>
+            <td>Ahmad Albrieki</td>
+            <td>TeacherEval: An AHP-TOPSIS system for data-driven teacher evaluation in the Sultanate of Oman</td>
+            <td>International Journal of Advanced and Applied Sciences</td>
+            <td>Vol. 12, Issue 12</td>
+            <td>science-gate.com/IJAAS/2025/V12I12/1021833ijaas202512017.html</td>
+          </tr>
+          <tr>
+            <td>Salem Salameh</td>
+            <td>Adoption of Cloud-Based Smart Grids: Insights from Oman's Electricity Sector</td>
+            <td>Fusion: Practice and Applications</td>
+            <td>-</td>
+            <td>doi.org/10.54216/FPA.200214</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        Source clean-up note: Values above are harmonized from URC2 text extraction. If committee requires strict final numeric lock, use final verified values from signed URC/AB minutes before external circulation.
+      </div>
+    </section>
+
+    <section>
+      <h2>5. Governance Remarks and Next Actions</h2>
+      <ul>
+        <li>Keep completed modules under controlled maintenance and issue tracking.</li>
+        <li>Prioritize reporting enhancements tied to URC and AB governance templates.</li>
+        <li>Close research investment data gaps to complete AB4-aligned reporting.</li>
+        <li>Finalize commercialization tracking fields and value-capture metrics.</li>
+        <li>Complete active policy clarity and workflow implementation visibility pages.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
