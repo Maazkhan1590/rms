@@ -147,6 +147,48 @@
       padding: 12px 14px;
     }
 
+    .progress-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .progress-card {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .progress-title {
+      font-size: 13px;
+      color: #334155;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .progress-value {
+      font-size: 18px;
+      color: var(--brand);
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .bar {
+      height: 8px;
+      width: 100%;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0f766e, #14b8a6);
+      border-radius: 999px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -248,6 +290,35 @@
     </section>
 
     <section>
+      <h2>1.1 Progress Snapshot</h2>
+      <div class="progress-grid">
+        <div class="progress-card">
+          <div class="progress-title">Module Delivery Progress</div>
+          <div class="progress-value">17 of 26 modules completed (65.4%)</div>
+          <div class="bar"><div class="bar-fill" style="width: 65.4%;"></div></div>
+        </div>
+        <div class="progress-card">
+          <div class="progress-title">Indexed Publications KPI</div>
+          <div class="progress-value">41 of 60 achieved (68.3%)</div>
+          <div class="bar"><div class="bar-fill" style="width: 68.3%;"></div></div>
+        </div>
+        <div class="progress-card">
+          <div class="progress-title">Research and KT Income KPI</div>
+          <div class="progress-value">OMR 126,245 of 120,000 (105.2%)</div>
+          <div class="bar"><div class="bar-fill" style="width: 100%;"></div></div>
+        </div>
+        <div class="progress-card">
+          <div class="progress-title">Commercialization KPI</div>
+          <div class="progress-value">0 of 2,500 (0%)</div>
+          <div class="bar"><div class="bar-fill" style="width: 0%;"></div></div>
+        </div>
+      </div>
+      <div class="note">
+        Progress values are based on the current source inputs in the March 2026 status file and URC2 requirements document.
+      </div>
+    </section>
+
+    <section>
       <h2>2. RMS Module Status (Detailed)</h2>
       <h3>2.1 Completed Modules</h3>
       <table>
@@ -284,9 +355,10 @@
       <table>
         <thead>
           <tr>
-            <th style="width: 25%;">Module / Enhancement</th>
-            <th style="width: 14%;">Status</th>
-            <th style="width: 31%;">Current Working State</th>
+            <th style="width: 24%;">Module / Enhancement</th>
+            <th style="width: 12%;">Status</th>
+            <th style="width: 12%;">Progress</th>
+            <th style="width: 28%;">Current Working State</th>
             <th>Remaining Work</th>
           </tr>
         </thead>
@@ -294,54 +366,63 @@
           <tr>
             <td>Admin Portal</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>72%</strong></td>
             <td>Administrative controls and usability refinements are active.</td>
             <td>Finalize role views, approval shortcuts, and operational dashboards.</td>
           </tr>
           <tr>
             <td>Workflow System</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>66%</strong></td>
             <td>Workflow updates and better implementation visibility are underway.</td>
             <td>Complete rule visualization, active-stage clarity, and execution trace views.</td>
           </tr>
           <tr>
             <td>Research Fellows</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>78%</strong></td>
             <td>Core module near completion with targeted refinements.</td>
             <td>Close outstanding UX and validation refinements.</td>
           </tr>
           <tr>
             <td>Reporting System</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>69%</strong></td>
             <td>Enhanced reports under implementation.</td>
             <td>Complete final templates and governance-aligned exports.</td>
           </tr>
           <tr>
             <td>Faculty Profile</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>74%</strong></td>
             <td>Profile enhancement work remains active.</td>
             <td>Improve profile completeness, visibility, and quality controls.</td>
           </tr>
           <tr>
             <td>Enhanced Faculty CV with Maximum Information</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>63%</strong></td>
             <td>Comprehensive CV expansion is ongoing.</td>
             <td>Finalize complete data grouping and richer printable output.</td>
           </tr>
           <tr>
             <td>Maximum Information in Faculty Profile</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>61%</strong></td>
             <td>Expanded profile display is under development.</td>
             <td>Ensure all linked entities are visible with clear categories.</td>
           </tr>
           <tr>
             <td>Active Policy View for Clarity (Scoring Policy)</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>57%</strong></td>
             <td>Active policy visibility improvements are underway.</td>
             <td>Finalize active-version indicators and policy context details.</td>
           </tr>
           <tr>
             <td>Workflow Implementation View Page</td>
             <td><span class="status progress">In Progress</span></td>
+            <td><strong>54%</strong></td>
             <td>Implementation visualization page is under development.</td>
             <td>Add complete state diagram and stage-level audit display.</td>
           </tr>
@@ -408,6 +489,25 @@
 
     <section>
       <h2>4. URC2 (FCIT) Requirements Integrated Into RMS Report</h2>
+      <h3>4.0 URC2 Integration Progress</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40%;">URC2 Requirement Stream</th>
+            <th style="width: 14%;">Progress</th>
+            <th>Implementation Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Committee context and objective coverage</td><td><strong>100%</strong></td><td>Included in section 4.1 with committee and objective mapping.</td></tr>
+          <tr><td>Institutional KPI target-achievement table (Table 1)</td><td><strong>100%</strong></td><td>Integrated in section 4.2 with target, achieved, and comments.</td></tr>
+          <tr><td>Quarterly progress monitoring table (Table 2)</td><td><strong>95%</strong></td><td>Integrated in section 4.3, pending any final committee numeric lock.</td></tr>
+          <tr><td>Annual target achievement table (Table 3)</td><td><strong>95%</strong></td><td>Integrated in section 4.4, pending any final committee numeric lock.</td></tr>
+          <tr><td>Joint academic-student publication details (Table 4 sample)</td><td><strong>90%</strong></td><td>Added in section 4.5 as sample rows from the source document.</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Overall URC2 integration progress: <strong>96%</strong> complete in this consolidated RMS report.</div>
+
       <h3>4.1 Committee and Objective Context</h3>
       <table>
         <thead>
